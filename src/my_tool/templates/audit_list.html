@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% block title %}对话审计{% endblock %}
+{% block crumb %}<b>对话审计</b>{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>对话审计</h1>
+    <div class="sub">按员工与时间检索历史回答，标记疑似违规的问答</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <form method="get" action="/admin/audit">
+      <div class="row wrap" style="gap:10px;align-items:flex-end">
+        <div class="field" style="margin:0;min-width:150px">
+          <label for="user_id">员工</label>
+          <select class="input" id="user_id" name="user_id">
+            <option value="">全部</option>
+            {% for e in employees %}
+              <option value="{{ e.id }}" {% if filters.user_id == e.id %}selected{% endif %}>
+                {{ e.display_name }}（{{ e.username }}）
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="field" style="margin:0">
+          <label for="date_from">开始日期</label>
+          <input class="input" id="date_from" name="date_from" type="date" value="{{ filters.date_from }}">
+        </div>
+        <div class="field" style="margin:0">
+          <label for="date_to">结束日期</label>
+          <input class="input" id="date_to" name="date_to" type="date" value="{{ filters.date_to }}">
+        </div>
+        <div class="field" style="margin:0;min-width:120px">
+          <label for="status">回答状态</label>
+          <select class="input" id="status" name="status">
+            <option value="">全部</option>
+            {% for key, label in status_label.items() %}
+              <option value="{{ key }}" {% if filters.status == key %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="field" style="margin:0;flex:1;min-width:160px">
+          <label for="keyword">关键词</label>
+          <input class="input" id="keyword" name="keyword" value="{{ filters.keyword }}"
+                 placeholder="问题或回答里包含…">
+        </div>
+        <div class="field" style="margin:0">
+          <label style="display:flex;align-items:center;gap:6px;height:32px">
+            <input type="checkbox" name="risk" value="1" {% if filters.risk == '1' %}checked{% endif %}>
+            只看系统预筛
+          </label>
+        </div>
+        <button class="btn btn-primary" type="submit">筛选</button>
+        <a class="btn" href="/admin/audit">重置</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% if truncated %}
+  <div class="alert alert-info">
+    预筛只在最近 {{ scan_limit }} 条回答里计算，更早的数据请用日期范围缩小后再筛。
+  </div>
+{% endif %}
+
+<div class="card">
+  <div class="card-head">
+    <h2>问答记录</h2>
+    <div class="spacer"></div>
+    <span class="hint">共 {{ total }} 条</span>
+  </div>
+  <div class="card-body tight">
+    {% if items %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>时间</th><th>员工</th><th>问题</th><th>回答摘要</th>
+            <th>状态</th><th class="num">引用</th><th>系统预筛</th><th>人工标记</th><th></th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for m in items %}
+          <tr>
+            <td class="num small nowrap">{{ m.created_at | dt }}</td>
+            <td class="small nowrap">{{ m.display_name or m.user_id or '—' }}</td>
+            <td class="small" style="max-width:220px">{{ m.question_preview }}</td>
+            <td class="small muted" style="max-width:260px">{{ m.answer_preview }}</td>
+            <td>
+              <span class="badge {% if m.answer_status == 'answered' %}badge-ok
+                {% elif m.answer_status == 'refused' %}badge-muted
+                {% elif m.answer_status == 'partial' %}badge-warn
+                {% else %}badge-danger{% endif %}">{{ m.status_label }}</span>
+            </td>
+            <td class="num small">{{ m.citation_count }}</td>
+            <td>
+              {% if m.risks %}
+                <span class="badge badge-warn" title="{{ m.risk_text }}">{{ m.risks | length }} 项</span>
+              {% else %}
+                <span class="muted small">—</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if m.flag %}
+                <span class="badge {% if m.flag.flag == 'confirmed' %}badge-danger
+                  {% elif m.flag.flag == 'suspect' %}badge-warn
+                  {% else %}badge-muted{% endif %}">
+                  {{ {'suspect':'疑似','confirmed':'违规','cleared':'已清除'}[m.flag.flag] }}
+                </span>
+              {% else %}
+                <span class="muted small">—</span>
+              {% endif %}
+            </td>
+            <td class="actions">
+              <a class="btn-link" href="/admin/audit/{{ m.session_id }}">查看对话</a>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="empty">
+        <b>没有符合条件的记录</b>
+        换个时间范围或去掉筛选条件试试
+      </div>
+    {% endif %}
+  </div>
+  {% if pages > 1 %}
+    <div class="pager">
+      <span class="info">第 {{ page }} / {{ pages }} 页</span>
+      {% if page > 1 %}<a class="btn btn-sm" href="{{ page_url(page - 1) }}">上一页</a>{% endif %}
+      {% if page < pages %}<a class="btn btn-sm" href="{{ page_url(page + 1) }}">下一页</a>{% endif %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

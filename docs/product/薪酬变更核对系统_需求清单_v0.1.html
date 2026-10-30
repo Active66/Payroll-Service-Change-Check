@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>薪酬服务变更核对系统 · 需求清单 v0.1</title>
+<style>
+:root{
+  --ink:#1f2328; --ink2:#57606a; --ink3:#8b949e;
+  --line:#e3e6ea; --line2:#d0d7de; --soft:#f6f7f9;
+  --accent:#1f4e79; --accent-soft:#eef4fa;
+  --warn:#8a5d00; --warn-soft:#fdf6e3; --warn-line:#e6c86e;
+  --bad:#a4232b; --bad-soft:#fdeeee; --bad-line:#e8a9a9;
+  --ok:#1a6b4d; --ok-soft:#eaf7f1;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; padding:0 24px 96px;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  color:var(--ink); background:#fff;
+  font-size:14.5px; line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1000px;margin:0 auto}
+
+/* header */
+.doc-head{padding:56px 0 28px;border-bottom:1px solid var(--line2)}
+.eyebrow{font-size:12px;letter-spacing:.14em;color:var(--ink3);text-transform:uppercase;margin-bottom:14px}
+h1{font-size:29px;line-height:1.35;margin:0 0 10px;font-weight:600;letter-spacing:-.01em}
+.sub{color:var(--ink2);font-size:15px;margin:0 0 26px}
+.meta{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.meta div{padding:12px 16px 12px 0;border-right:1px solid var(--line)}
+.meta div:last-child{border-right:none}
+.meta .k{font-size:11.5px;color:var(--ink3);letter-spacing:.06em;margin-bottom:3px}
+.meta .v{font-size:13.5px;color:var(--ink);font-weight:500}
+
+/* sections */
+h2{font-size:19px;margin:52px 0 6px;font-weight:600;padding-top:8px;letter-spacing:-.01em}
+h2 .num{color:var(--accent);font-variant-numeric:tabular-nums;margin-right:10px;font-weight:600}
+h3{font-size:15px;margin:32px 0 8px;font-weight:600;color:var(--ink)}
+h3::before{content:"";display:inline-block;width:3px;height:13px;background:var(--accent);margin-right:9px;vertical-align:-1px;border-radius:1px}
+p{margin:10px 0;color:var(--ink)}
+.lead{color:var(--ink2);font-size:14px;margin:8px 0 20px;max-width:78ch}
+
+/* tables */
+table{width:100%;border-collapse:collapse;margin:14px 0 8px;font-size:13.5px}
+th{background:var(--soft);text-align:left;font-weight:600;color:var(--ink);padding:9px 12px;border:1px solid var(--line);white-space:nowrap;font-size:12.5px;letter-spacing:.02em}
+td{padding:9px 12px;border:1px solid var(--line);vertical-align:top;line-height:1.65}
+tbody tr:nth-child(even) td{background:#fcfcfd}
+td.c,th.c{text-align:center}
+td.mono,code,.mono{font-family:ui-monospace,"SFMono-Regular",Consolas,"Liberation Mono",monospace;font-size:12.5px}
+
+/* chips */
+.chip{display:inline-block;padding:1px 7px;border-radius:4px;font-size:11.5px;font-weight:500;line-height:1.7;white-space:nowrap}
+.chip.l1{background:var(--accent-soft);color:var(--accent)}
+.chip.l2{background:var(--warn-soft);color:var(--warn)}
+.chip.l3{background:var(--bad-soft);color:var(--bad)}
+.chip.l4{background:#3a1214;color:#ffd9d9}
+.chip.ok{background:var(--ok-soft);color:var(--ok)}
+.chip.gray{background:var(--soft);color:var(--ink2)}
+
+/* callout */
+.note{border-left:3px solid var(--accent);background:var(--accent-soft);padding:13px 18px;margin:18px 0;font-size:13.5px;color:#173d5e;border-radius:0 4px 4px 0}
+.note b{color:#0f2f4a}
+.note.warn{border-left-color:var(--warn-line);background:var(--warn-soft);color:#5e4200}
+.note.warn b{color:#3d2b00}
+
+/* lists */
+ul.clean{margin:10px 0;padding-left:0;list-style:none}
+ul.clean li{position:relative;padding-left:20px;margin:7px 0;font-size:14px}
+ul.clean li::before{content:"";position:absolute;left:4px;top:.72em;width:5px;height:5px;border-radius:50%;background:var(--ink3)}
+ul.clean.no{color:var(--ink2)}
+ul.clean.no li::before{background:transparent;border:1.5px solid var(--bad);width:6px;height:6px;top:.62em;border-radius:2px}
+
+/* flow diagram */
+.flow{display:flex;align-items:stretch;gap:0;margin:20px 0 6px;flex-wrap:wrap}
+.flow .node{flex:1;min-width:150px;border:1px solid var(--line2);border-radius:8px;padding:12px 14px;background:#fff}
+.flow .node.self{background:var(--accent-soft);border-color:#b6cfe4}
+.flow .node .t{font-size:13px;font-weight:600;margin-bottom:4px}
+.flow .node .d{font-size:12px;color:var(--ink2);line-height:1.6}
+.flow .arw{display:flex;align-items:center;justify-content:center;width:34px;color:var(--ink3);font-size:15px;flex:0 0 34px}
+
+/* layer diagram */
+.layers{margin:20px 0 6px}
+.layer{display:flex;align-items:stretch;border:1px solid var(--line2);border-radius:8px;overflow:hidden;margin-bottom:8px;background:#fff}
+.layer .tag{flex:0 0 92px;background:var(--soft);padding:13px 12px;font-size:12.5px;font-weight:600;color:var(--ink2);display:flex;align-items:center;border-right:1px solid var(--line);letter-spacing:.04em}
+.layer .body{padding:13px 16px;font-size:13px;color:var(--ink);line-height:1.7;flex:1}
+.layer.hi .tag{background:var(--accent-soft);color:var(--accent)}
+.layer.hi{border-color:#b6cfe4}
+
+/* pre */
+pre{background:#f8f9fb;border:1px solid var(--line);border-radius:8px;padding:16px 18px;overflow-x:auto;margin:14px 0;font-size:12.5px;line-height:1.7}
+pre code{font-family:ui-monospace,"SFMono-Regular",Consolas,monospace;color:#24292f}
+
+/* kv list for invariants */
+.inv{margin:14px 0}
+.inv .row{display:flex;gap:14px;padding:11px 0;border-bottom:1px dashed var(--line)}
+.inv .row:last-child{border-bottom:none}
+.inv .id{flex:0 0 40px;font-family:ui-monospace,Consolas,monospace;font-size:12px;color:var(--accent);font-weight:600;padding-top:2px}
+.inv .txt{font-size:13.5px;line-height:1.7}
+.inv .txt b{font-weight:600}
+
+hr.sep{border:none;border-top:1px solid var(--line);margin:44px 0 0}
+.foot{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink3)}
+
+@media print{
+  body{font-size:11pt;padding:0}
+  h2{page-break-after:avoid}
+  table,.flow,.layers,.inv .row{page-break-inside:avoid}
+  .doc-head{padding-top:0}
+}
+@media (max-width:720px){
+  .meta{grid-template-columns:repeat(2,1fr)}
+  .flow .arw{width:100%;height:20px;flex:0 0 100%}
+  .layer{flex-direction:column}
+  .layer .tag{flex:none;border-right:none;border-bottom:1px solid var(--line)}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="doc-head">
+  <div class="eyebrow">需求规格说明书 · Draft</div>
+  <h1>薪酬服务变更核对系统<br>需求清单</h1>
+  <p class="sub">基于十项基线架构决策的方案定稿草案，供需求评审会使用。</p>
+  <div class="meta">
+    <div><div class="k">版本</div><div class="v">v0.1 草案</div></div>
+    <div><div class="k">日期</div><div class="v">2026-10-30</div></div>
+    <div><div class="k">基线决策</div><div class="v">10 项已锁定</div></div>
+    <div><div class="k">状态</div><div class="v">待需求评审</div></div>
+  </div>
+</div>
+
+<h2><span class="num">00</span>基线决策记录</h2>
+<p class="lead">以下十项决策构成本方案的骨架。后文所有需求条目均可回溯到这里的某一行；若某项决策变更，受影响的章节已在右列标出。</p>
+
+<table>
+<thead><tr><th style="width:46px" class="c">编号</th><th style="width:120px">决策项</th><th style="width:190px">选定取值</th><th>对架构的约束</th></tr></thead>
+<tbody>
+<tr><td class="c mono">D1</td><td>系统边界</td><td>C · 变更管理 + 核对双主体</td><td>变更域与核对域分离，事件驱动串联，不共用事务边界</td></tr>
+<tr><td class="c mono">D2</td><td>数据主权</td><td>B · 旁路 + 结果快照留存</td><td>不接管主数据；快照只读、不可变、可复算</td></tr>
+<tr><td class="c mono">D3</td><td>规模</td><td>B · 3 千至 3 万人 / 多法人</td><td>模块化单体 + 异步 Worker，不做微服务</td></tr>
+<tr><td class="c mono">D4</td><td>规则形态</td><td>B · 配置化字段比对</td><td>规则以声明式 DSL 存储，判定收敛到单一 RuleEvaluator</td></tr>
+<tr><td class="c mono">D5</td><td>差异处置</td><td>D · 阈值分级（放行 / 阻断）</td><td>需要等级判定与阈值策略层，批次准入需守卫</td></tr>
+<tr><td class="c mono">D6</td><td>员工端</td><td>C · 可发起指定变更</td><td>实名核验、冻结期、审批回环、防冒改审计</td></tr>
+<tr><td class="c mono">D7</td><td>租户模型</td><td>B · 单企业多法人（集团）</td><td>法人维度贯穿全部数据与权限，政策按法人 × 地区版本化</td></tr>
+<tr><td class="c mono">D8</td><td>合规等级</td><td>C · 等保三级对齐</td><td>字段级加密 + KMS 轮换 + 动态脱敏 + 不可篡改审计</td></tr>
+<tr><td class="c mono">D9</td><td>集成通道</td><td>B · 文件为主 + 少量 API</td><td>文件适配器与 API 适配器并存，统一幂等与补偿</td></tr>
+<tr><td class="c mono">D10</td><td>时间维度</td><td>D · 双时态模型</td><td>全部业务表带生效区间 + 记录时间，禁止原地更新</td></tr>
+</tbody>
+</table>
+
+<div class="note"><b>最重要的一条约束：</b>D10 必须在 P0 建表阶段就落地，不能等到"以后要做回溯"时再补。功能可以分期，数据模型不能分期——双时态一旦漏建，追溯调薪与劳动仲裁场景的返工成本高于重建系统。</div>
+
+<h2><span class="num">01</span>系统定位与边界</h2>
+
+<h3>1.1 一句话定位</h3>
+<p>本系统是<b>员工薪酬变更的受理、核对与留证中枢</b>：它不生产薪酬主数据，也不计算工资，但它是唯一有权决定"某条变更能否进入本期发薪"的地方。</p>
+<p>换句话说，它坐在数据流的关键卡口上，是<b>准入控制器</b>，不是数据仓库，也不是薪酬引擎。</p>
+
+<h3>1.2 在系统版图中的位置</h3>
+<div class="flow">
+  <div class="node"><div class="t">上游</div><div class="d">HR 主数据 · 考勤<br>员工自助申请</div></div>
+  <div class="arw">&#8594;</div>
+  <div class="node self"><div class="t">本系统</div><div class="d">变更受理 &#8594; 核对 &#8594; 差异处置 &#8594; 快照留证</div></div>
+  <div class="arw">&#8594;</div>
+  <div class="node"><div class="t">下游</div><div class="d">薪酬计算（外部）· 银行代发<br>个税申报 · 社保申报 · 财务总账</div></div>
+</div>
+<p class="lead">注意右侧：<b>薪酬计算在本系统之外</b>。本系统输出的是"已核对通过的变更集"，算薪由既有系统完成。这是 D2 的直接推论，也是本方案能控制在 3 万人体量的前提。</p>
+
+<h3>1.3 范围内（做什么）</h3>
+<ul class="clean">
+<li>变更单的创建、受理、撤回、冲正与全生命周期状态管理</li>
+<li>按配置化规则对变更单做自动核对，产出可解释的判定结论</li>
+<li>差异的分级、分派、处置、豁免与关闭闭环</li>
+<li>发薪批次准入判定：给出"可进入本期"的变更集与不可进入的原因清单</li>
+<li>核对结果快照与员工薪资时点快照，支持复算与举证</li>
+<li>员工自助：指定字段的变更发起与工资条查看</li>
+<li>政策参数库维护（社保公积金上下限、比例区间、个税扣除标准）</li>
+<li>全链路审计与导出管控</li>
+</ul>
+
+<h3>1.4 明确不做（Out of Scope）</h3>
+<ul class="clean no">
+<li><b>不做薪酬计算</b>——不实现计税算法、不生成应发实发，只核对输入数据的正确性</li>
+<li><b>不接管员工主数据</b>——员工基本信息仍以 HR 系统为权威源，本系统仅持有核对所需快照</li>
+<li><b>不做银行直连</b>——只生成符合银行模板的加密代发文件，不承担银企对接</li>
+<li><b>不做个税申报报送</b>——只生成申报数据文件，报送在税务端完成</li>
+<li><b>不做考勤核算</b>——考勤数据作为输入接收，不校验考勤规则本身</li>
+<li><b>不做劳动合同与人事流程</b>——入离调转的审批仍在原系统</li>
+<li><b>P0 不做规则引擎</b>——先做配置化比对，Drools 类引擎留作 P2 的替换选项</li>
+</ul>
+
+<h2><span class="num">02</span>角色与权限</h2>
+
+<h3>2.1 角色定义</h3>
+<table>
+<thead><tr><th style="width:130px">角色</th><th style="width:120px">数据范围</th><th>职责</th></tr></thead>
+<tbody>
+<tr><td><b>员工</b></td><td>仅本人</td><td>发起指定字段变更、查看本人工资条、确认签收</td></tr>
+<tr><td><b>业务 HRBP</b></td><td>所辖组织</td><td>审批调薪类变更、对差异做业务解释</td></tr>
+<tr><td><b>SSC 专员</b></td><td>指定法人</td><td>代录变更、处置差异、上传与解析文件</td></tr>
+<tr><td><b>薪酬 COE</b></td><td>全部法人</td><td>维护规则与政策参数、处理阻断类差异、豁免审批</td></tr>
+<tr><td><b>法人管理员</b></td><td>本法人</td><td>本法人参数、批次启停、人员与权限分配</td></tr>
+<tr><td><b>系统管理员</b></td><td>平台</td><td>集成配置、作业调度、系统参数；<b>不接触业务明文</b></td></tr>
+<tr><td><b>审计员</b></td><td>全部（只读）</td><td>查阅审计链、核对记录、导出流水，无任何写权限</td></tr>
+<tr><td><b>服务账号</b></td><td>按接口约定</td><td>文件与 API 集成，最小权限，独立密钥</td></tr>
+</tbody>
+</table>
+
+<h3>2.2 权限矩阵</h3>
+<p class="lead">● 全权 　◐ 受限（需审批或范围收窄） 　○ 只读 　— 无权限</p>
+<table>
+<thead><tr><th>能力</th><th class="c">员工</th><th class="c">HRBP</th><th class="c">SSC</th><th class="c">COE</th><th class="c">法人管理员</th><th class="c">系统管理员</th><th class="c">审计员</th></tr></thead>
+<tbody>
+<tr><td>发起变更</td><td class="c">◐</td><td class="c">●</td><td class="c">●</td><td class="c">●</td><td class="c">●</td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td>审批变更</td><td class="c">—</td><td class="c">◐</td><td class="c">—</td><td class="c">●</td><td class="c">●</td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td>执行核对</td><td class="c">—</td><td class="c">—</td><td class="c">●</td><td class="c">●</td><td class="c">◐</td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td>处置差异</td><td class="c">—</td><td class="c">◐</td><td class="c">●</td><td class="c">●</td><td class="c">◐</td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td>差异豁免</td><td class="c">—</td><td class="c">—</td><td class="c">—</td><td class="c">◐</td><td class="c">◐</td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td>配置核对规则</td><td class="c">—</td><td class="c">—</td><td class="c">—</td><td class="c">●</td><td class="c">—</td><td class="c">—</td><td class="c">○</td></tr>
+<tr><td>维护政策参数</td><td class="c">—</td><td class="c">—</td><td class="c">—</td><td class="c">●</td><td class="c">◐</td><td class="c">—</td><td class="c">○</td></tr>
+<tr><td>查看薪资明细</td><td class="c">◐ 本人</td><td class="c">◐</td><td class="c">◐</td><td class="c">●</td><td class="c">◐</td><td class="c">—</td><td class="c">◐ 脱敏</td></tr>
+<tr><td>数据导出</td><td class="c">◐ 本人</td><td class="c">—</td><td class="c">◐</td><td class="c">◐</td><td class="c">◐</td><td class="c">—</td><td class="c">○ 流水</td></tr>
+<tr><td>查看审计链</td><td class="c">—</td><td class="c">—</td><td class="c">—</td><td class="c">○</td><td class="c">○</td><td class="c">○</td><td class="c">●</td></tr>
+</tbody>
+</table>
+
+<h3>2.3 字段级可见性</h3>
+<table>
+<thead><tr><th style="width:150px">字段组</th><th style="width:170px">默认展示</th><th>查看明文的条件</th></tr></thead>
+<tbody>
+<tr><td>证件号码</td><td class="mono">110***********1234</td><td>SSC 及以上角色 + 二次授权，逐次记录</td></tr>
+<tr><td>银行账号</td><td class="mono">6222 **** **** 8888</td><td>COE / 代发作业角色，仅发薪窗口内可见</td></tr>
+<tr><td>薪资明细</td><td>仅本人与审批链内人员</td><td>HRBP 仅可见所辖组织的汇总与区间，不可见逐人明细</td></tr>
+<tr><td>家庭与专项附加扣除</td><td>仅本人与 COE</td><td>需个税核算事由 + 审批</td></tr>
+<tr><td>差异与核对结论</td><td>按法人隔离</td><td>跨法人查询需法人管理员双签</td></tr>
+</tbody>
+</table>
+
+<h2><span class="num">03</span>核心对象与状态机</h2>
+
+<h3>3.1 领域对象清单</h3>
+<table>
+<thead><tr><th style="width:170px">对象</th><th style="width:110px">聚合根</th><th>职责与关键字段</th></tr></thead>
+<tbody>
+<tr><td class="mono">LegalEntity</td><td>是</td><td>法人主体、统一社会信用代码、所属地区、薪酬日历</td></tr>
+<tr><td class="mono">Employee</td><td>是</td><td>工号、证件、入职离职日期、法人归属、薪酬组（快照，非权威源）</td></tr>
+<tr><td class="mono">PayrollGroup</td><td>是</td><td>薪酬组：发薪日、参保地区、政策包版本</td></tr>
+<tr><td class="mono">ChangeRequest</td><td>是</td><td>变更单：类型、生效日期、来源、申请人、当前状态、批次号</td></tr>
+<tr><td class="mono">ChangeItem</td><td>否</td><td>变更明细：字段、原值、新值、证据附件；一单可含多项</td></tr>
+<tr><td class="mono">ReconJob</td><td>是</td><td>核对任务：范围、规则集版本、政策参数版本、执行状态</td></tr>
+<tr><td class="mono">ReconResult</td><td>否</td><td>判定结论：明细粒度，含规则 ID、等级、证据、是否可解释</td></tr>
+<tr><td class="mono">Discrepancy</td><td>是</td><td>差异单：等级、责任人、SLA、处置动作、结论、关闭时间</td></tr>
+<tr><td class="mono">RuleDefinition</td><td>是</td><td>规则：适用范围、条件、断言、等级、提示文案、版本</td></tr>
+<tr><td class="mono">PolicyParam</td><td>是</td><td>政策参数：地区 × 年度 × 险种 × 上下限/比例</td></tr>
+<tr><td class="mono">PayrollSnapshot</td><td>是</td><td>时点快照：周期、范围、内容哈希、生成时间，不可变</td></tr>
+<tr><td class="mono">AuditEvent</td><td>是</td><td>审计事件：主体、动作、对象、前后值、时间、前序哈希</td></tr>
+</tbody>
+</table>
+
+<h3>3.2 变更单状态机</h3>
+<div class="flow">
+  <div class="node"><div class="t">草稿</div><div class="d">Draft</div></div>
+  <div class="arw">&#8594;</div>
+  <div class="node"><div class="t">待核对</div><div class="d">Submitted</div></div>
+  <div class="arw">&#8594;</div>
+  <div class="node self"><div class="t">核对中</div><div class="d">Reconciling</div></div>
+  <div class="arw">&#8594;</div>
+  <div class="node"><div class="t">待审批</div><div class="d">Approving</div></div>
+  <div class="arw">&#8594;</div>
+  <div class="node"><div class="t">已生效</div><div class="d">Effective</div></div>
+</div>
+<table>
+<thead><tr><th style="width:120px">当前状态</th><th style="width:190px">可迁移至</th><th style="width:160px">触发事件</th><th>守卫条件</th></tr></thead>
+<tbody>
+<tr><td>草稿</td><td>待核对 / 已作废</td><td>提交 / 撤回</td><td>必填项完整；附件齐全</td></tr>
+<tr><td>待核对</td><td>核对中 / 已撤回</td><td>核对任务被调度</td><td>规则集与政策参数版本已就绪</td></tr>
+<tr><td>核对中</td><td>待审批 / 退回修改 / 已驳回</td><td>核对完成</td><td>无 L3 及以上未处置差异</td></tr>
+<tr><td>待审批</td><td>审批中 / 已驳回</td><td>提交审批</td><td>审批链按变更类型路由</td></tr>
+<tr><td>审批中</td><td>已生效 / 已驳回</td><td>审批通过 / 驳回</td><td>门槛内金额单签，超阈值双签</td></tr>
+<tr><td>已生效</td><td>已应用 / 已冲正</td><td>进入批次 / 发起冲正</td><td>仅可冲正，禁止修改</td></tr>
+<tr><td>任意态</td><td>挂起</td><td>政策待定 / 证据不足</td><td>挂起需填写原因与预计解除日</td></tr>
+</tbody>
+</table>
+
+<h3>3.3 关键不变量</h3>
+<p class="lead">这些是系统的"物理定律"，实现时可以妥协交互，但不能妥协它们。每一条都应有对应的自动化测试守住。</p>
+<div class="inv">
+  <div class="row"><div class="id">I1</div><div class="txt"><b>无核对则不发薪。</b>任何进入发薪批次的数据，必须存在核对通过记录或有效期内的豁免记录。系统不提供"跳过核对"的开关。</div></div>
+  <div class="row"><div class="id">I2</div><div class="txt"><b>已生效不可改。</b>已生效变更的任何字段不得原地更新，只能追加冲正单。冲正单自身也要走核对与审批。</div></div>
+  <div class="row"><div class="id">I3</div><div class="txt"><b>同键唯一生效。</b>同一员工、同一字段、同一生效月份，最多存在一条生效记录；重入的其余记录必须被显式覆盖或驳回并留痕。</div></div>
+  <div class="row"><div class="id">I4</div><div class="txt"><b>追溯必标注。</b>生效日期早于当前薪酬周期的变更，一律标记为追溯件，走独立审批路径并强制要求业务事由。</div></div>
+  <div class="row"><div class="id">I5</div><div class="txt"><b>员工端冻结期。</b>员工自助提交的变更，生效时间不得早于提交时间加上冻结期（银行账号默认 3 个自然日，且须避开发薪日 T-3 至 T+1）。</div></div>
+  <div class="row"><div class="id">I6</div><div class="txt"><b>结论必须可溯源。</b>每条核对结论必须绑定规则集版本号与政策参数版本号；缺少任一项时判定为"不可判定"，按 L3 阻断处理，不得默认通过。</div></div>
+  <div class="row"><div class="id">I7</div><div class="txt"><b>审计只追加。</b>审计表在数据库层撤销 UPDATE / DELETE 权限，应用层无删除接口。任何"清理日志"需求一律拒绝，只能归档到冷存储。</div></div>
+  <div class="row"><div class="id">I8</div><div class="txt"><b>快照不可变。</b>快照生成后即冻结，内容哈希写入审计链；重建快照必须生成新版本号，不得覆盖旧版本。</div></div>
+</div>
+
+<h2><span class="num">04</span>核对规则目录</h2>
+
+<h3>4.1 规则分类</h3>
+<table>
+<thead><tr><th style="width:56px" class="c">编号</th><th style="width:120px">类别</th><th>判定内容</th><th style="width:100px">默认等级</th><th style="width:100px">维护人</th></tr></thead>
+<tbody>
+<tr><td class="c mono">R1</td><td>完整性</td><td>必填字段非空：银行账号、证件号、薪酬组、生效日期</td><td><span class="chip l2">L2</span></td><td>IT</td></tr>
+<tr><td class="c mono">R2</td><td>格式合法性</td><td>银行卡 Luhn 校验、身份证校验位、手机号段、日期合法性</td><td><span class="chip l2">L2</span></td><td>IT</td></tr>
+<tr><td class="c mono">R3</td><td>跨系统一致性</td><td>变更单新值 vs HR 主数据 vs 上期生效值，三方比对</td><td><span class="chip l2">L2</span></td><td>数据治理</td></tr>
+<tr><td class="c mono">R4</td><td>政策合规</td><td>社保基数落在地区上下限内、公积金比例在区间内、个税扣除不超上限</td><td><span class="chip l3">L3</span></td><td>薪酬 COE</td></tr>
+<tr><td class="c mono">R5</td><td>业务约束</td><td>调薪幅度不超薪酬带宽、生效日不早于入职/晚于离职、管理岗任职资格</td><td><span class="chip l3">L3</span></td><td>薪酬 COE</td></tr>
+<tr><td class="c mono">R6</td><td>金额阈值</td><td>单笔变动、月度累计变动是否超阈值，超则升级审批</td><td><span class="chip l3">L3</span></td><td>法人管理员</td></tr>
+<tr><td class="c mono">R7</td><td>时序冲突</td><td>同字段同生效月重复变更、变更区间重叠、被后续变更覆盖</td><td><span class="chip l2">L2</span></td><td>SSC</td></tr>
+<tr><td class="c mono">R8</td><td>批量异常</td><td>同法人同一规则触发比例超阈值（默认 5%），判定为系统性异常</td><td><span class="chip l4">L4</span></td><td>系统</td></tr>
+</tbody>
+</table>
+
+<h3>4.2 规则配置模型（声明式 DSL）</h3>
+<p class="lead">D4 选的是配置化字段比对，因此规则不是代码，而是可版本化的声明式文档。判定逻辑全部收敛到一个 <span class="mono">RuleEvaluator</span> 接口，将来换规则引擎只需替换该实现。</p>
+<pre><code>{
+  "id": "R4-SI-BASE-RANGE",
+  "name": "社保缴费基数上下限校验",
+  "version": 3,
+  "scope": { "legalEntity": "*", "region": "310000", "payrollGroup": "*" },
+  "when":   { "field": "socialInsuranceBase", "changed": true },
+  "assert": "value &gt;= policy('SI_BASE_MIN', region, period)
+             &amp;&amp; value &lt;= policy('SI_BASE_MAX', region, period)",
+  "level":  "L3",
+  "slaHours": 24,
+  "message": "社保基数 ${value} 超出 ${region} ${period} 区间 [${min}, ${max}]",
+  "effectiveFrom": "2026-07-01"
+}</code></pre>
+<p class="lead">约束：<span class="mono">assert</span> 只允许引用入参、上下文与 <span class="mono">policy()</span> 函数，禁止跨表查询与副作用；每条规则必须给出可读的 <span class="mono">message</span>，否则视为规则不可交付——员工和管理员看到结论时必须知道"哪条规则、为什么"。</p>
+
+<h3>4.3 规则治理</h3>
+<table>
+<thead><tr><th style="width:140px">治理项</th><th>约定</th></tr></thead>
+<tbody>
+<tr><td>变更流程</td><td>草稿 &#8594; 试运行（对历史数据干跑，出影响面报告）&#8594; 上线。未通过试运行的规则不得生效</td></tr>
+<tr><td>版本策略</td><td>规则集按"法人 × 生效日"发布版本号；核对结论必须记录版本号，支持按版本重放</td></tr>
+<tr><td>灰度</td><td>P2 实现：新规则先对 10% 薪酬组生效，观察差异率无异常后全量</td></tr>
+<tr><td>下线</td><td>规则不物理删除，置为停用并保留历史版本，保证历史结论可复算</td></tr>
+<tr><td>责任人</td><td>每条规则必须有唯一 Owner，缺失 Owner 的规则不允许启用</td></tr>
+</tbody>
+</table>
+
+<h2><span class="num">05</span>异常处置矩阵</h2>
+
+<h3>5.1 差异分级定义</h3>
+<table>
+<thead><tr><th style="width:80px">等级</th><th style="width:110px">名称</th><th style="width:160px">对批次的影响</th><th>典型场景</th></tr></thead>
+<tbody>
+<tr><td class="c"><span class="chip l1">L1</span></td><td>提示</td><td>不阻断，自动通过</td><td>地址格式不规范、联系人缺失，不影响金额</td></tr>
+<tr><td class="c"><span class="chip l2">L2</span></td><td>警告</td><td>默认阻断，可经审批放行</td><td>跨系统字段不一致、重复变更、员工临期换卡</td></tr>
+<tr><td class="c"><span class="chip l3">L3</span></td><td>阻断</td><td>强制阻断，须修正或豁免</td><td>社保基数越界、调薪超带宽、追溯件、政策参数缺失</td></tr>
+<tr><td class="c"><span class="chip l4">L4</span></td><td>熔断</td><td>终止整个批次并告警</td><td>同法人同一规则触发超 5%，疑似上游数据错版</td></tr>
+</tbody>
+</table>
+
+<h3>5.2 处置矩阵</h3>
+<table>
+<thead><tr><th style="width:190px">差异类型</th><th style="width:60px" class="c">等级</th><th style="width:150px">处置动作</th><th style="width:120px">责任人</th><th style="width:90px">时效</th></tr></thead>
+<tbody>
+<tr><td>必填字段缺失 / 格式非法</td><td class="c"><span class="chip l2">L2</span></td><td>退回申请人补正</td><td>HRBP / 员工</td><td>24 小时</td></tr>
+<tr><td>变更单与 HR 主数据不一致</td><td class="c"><span class="chip l2">L2</span></td><td>运营核验后择一为准，双方留痕</td><td>SSC + 数据治理</td><td>1 工作日</td></tr>
+<tr><td>同字段同月重复变更</td><td class="c"><span class="chip l2">L2</span></td><td>冲突合并，保留后提交者，前单作废</td><td>SSC</td><td>24 小时</td></tr>
+<tr><td>员工发薪前 3 日内换卡</td><td class="c"><span class="chip l2">L2</span></td><td>冻结至下一周期，运营电话复核</td><td>SSC</td><td>自动 + 复核</td></tr>
+<tr><td>社保 / 公积金基数越界</td><td class="c"><span class="chip l3">L3</span></td><td>阻断，退回修正；确需例外走豁免</td><td>薪酬 COE</td><td>本期截止前</td></tr>
+<tr><td>调薪幅度超薪酬带宽</td><td class="c"><span class="chip l3">L3</span></td><td>阻断，需 HRBP + COE 双签方可放行</td><td>HRBP + COE</td><td>2 工作日</td></tr>
+<tr><td>单笔变动超金额阈值</td><td class="c"><span class="chip l3">L3</span></td><td>升级审批链，追加一级签批</td><td>法人管理员</td><td>1 工作日</td></tr>
+<tr><td>追溯变更（生效日早于本周期）</td><td class="c"><span class="chip l3">L3</span></td><td>独立审批路径，强制填写事由</td><td>薪酬经理</td><td>2 工作日</td></tr>
+<tr><td>政策参数缺失导致不可判定</td><td class="c"><span class="chip l3">L3</span></td><td>阻断，不得默认放行</td><td>政策维护人</td><td>立即</td></tr>
+<tr><td>批量同规则触发超阈值</td><td class="c"><span class="chip l4">L4</span></td><td>熔断批次，冻结并通知上游核查</td><td>系统负责人 + COE</td><td>立即</td></tr>
+</tbody>
+</table>
+
+<h3>5.3 阈值策略默认值</h3>
+<table>
+<thead><tr><th style="width:220px">阈值项</th><th style="width:140px">默认值</th><th>可覆盖层级与说明</th></tr></thead>
+<tbody>
+<tr><td>单笔变动金额升级阈值</td><td class="mono">¥ 5,000</td><td>法人管理员可调，上限 ¥50,000，调整本身需审计</td></tr>
+<tr><td>月度累计变动金额阈值</td><td class="mono">¥ 20,000</td><td>法人级配置，按员工维度累计</td></tr>
+<tr><td>批量异常触发比例</td><td class="mono">5%</td><td>系统级配置，仅系统管理员可改</td></tr>
+<tr><td>员工端换卡冻结期</td><td class="mono">3 自然日</td><td>系统级，且强制避开发薪窗口</td></tr>
+<tr><td>豁免有效期上限</td><td class="mono">1 个薪酬周期</td><td>到期自动失效，需重新申请</td></tr>
+</tbody>
+</table>
+
+<h2><span class="num">06</span>集成清单</h2>
+
+<table>
+<thead><tr><th style="width:130px">系统</th><th style="width:60px" class="c">方向</th><th style="width:90px">通道</th><th style="width:100px">频率</th><th>内容与关键约束</th></tr></thead>
+<tbody>
+<tr><td>HR 主数据</td><td class="c">入</td><td>文件 + API</td><td>月度全量 + 每日增量</td><td>员工基本信息、组织、入离职。全量文件作为对账基线，增量作为触发信号</td></tr>
+<tr><td>考勤系统</td><td class="c">入</td><td>文件</td><td>每月 T-5</td><td>出勤汇总。仅接收，不校验考勤规则</td></tr>
+<tr><td>员工自助端</td><td class="c">内部</td><td>页面</td><td>实时</td><td>变更申请、工资条查看。走本系统自身认证</td></tr>
+<tr><td>薪酬计算系统</td><td class="c">出</td><td>文件 / API</td><td>每周期</td><td>输出"已核对通过的变更集"。<b>必须携带核对批次号与快照哈希</b></td></tr>
+<tr><td>银行代发</td><td class="c">出</td><td>文件</td><td>每周期 T-1</td><td>加密代发文件 + 校验文件 + 回盘解析，三者缺一不可</td></tr>
+<tr><td>个税申报端</td><td class="c">出</td><td>文件</td><td>每周期</td><td>符合自然人电子税务局模板；模板版本须登记</td></tr>
+<tr><td>社保 / 公积金申报</td><td class="c">出</td><td>文件</td><td>按当地申报期</td><td>各地格式不同，按地区维护模板与列映射</td></tr>
+<tr><td>财务总账</td><td class="c">出</td><td>文件 / API</td><td>每周期</td><td>薪酬计提与发放凭证数据</td></tr>
+</tbody>
+</table>
+
+<h3>6.1 文件通道规范</h3>
+<ul class="clean">
+<li><b>幂等键</b>：法人 + 薪酬周期 + 文件类型 + 文件内容哈希。重复上传判定为同一批次，不重复入库</li>
+<li><b>模板注册表</b>：每个文件类型维护多个版本，绑定生效日期区间；解析时按业务日期选版本，禁止"最新版本一刀切"</li>
+<li><b>列映射配置</b>：源表列名 &#8594; 系统字段的映射可配置，避免因上游改列名而改代码</li>
+<li><b>干跑预检</b>：正式导入前必须支持"只解析不入库"，输出错误行号与单元格定位（如 <span class="mono">第 42 行 · D 列 · 银行卡号校验失败</span>）</li>
+<li><b>补偿机制</b>：文件批次可整批回滚（软删 + 标记），但已产生审计事件不可撤销</li>
+<li><b>人工通道视为一等公民</b>：考虑到行业现实，上传界面必须支持断点续传、失败重试、错误行下载修正后重传</li>
+</ul>
+
+<h2><span class="num">07</span>双时态与快照</h2>
+
+<h3>7.1 建模规则</h3>
+<ul class="clean">
+<li>所有业务实体表统一携带 <span class="mono">valid_from</span> / <span class="mono">valid_to</span>（业务生效区间，左闭右开）</li>
+<li>所有业务实体表统一携带 <span class="mono">recorded_at</span>（系统记录时间，单调递增，只追加）</li>
+<li>关键字段禁止 UPDATE，变更一律 INSERT 新版本并把上一版本 <span class="mono">valid_to</span> 置为切换点</li>
+<li>查询统一通过 <span class="mono">asOf(businessTime, systemTime)</span> 接口，禁止业务代码直接写裸 SQL 读表</li>
+</ul>
+
+<div class="note warn"><b>这条最容易做错：</b>很多团队只加了 <span class="mono">valid_from / valid_to</span> 就自称双时态，实际上仍用 UPDATE 改历史行。真正的双时态是"任何时刻发生的事，都能区分'事情本身何时生效'和'我们何时才知道它'"，这两个时间轴缺一不可——追溯调薪恰恰依赖后者。</div>
+
+<h3>7.2 必须支持的查询场景</h3>
+<table>
+<thead><tr><th style="width:220px">场景</th><th style="width:200px">查询形式</th><th>用途</th></tr></thead>
+<tbody>
+<tr><td>还原某期发薪的输入</td><td class="mono">asOf(2026-03-31, 2026-03-25)</td><td>争议举证、补发核算</td></tr>
+<tr><td>该员工在该期社保基数是多少</td><td class="mono">fieldAsOf(emp, SI_BASE, t)</td><td>社保稽核</td></tr>
+<tr><td>这条差异当时按哪版规则判的</td><td class="mono">result.ruleSetVersion</td><td>规则争议、复盘</td></tr>
+<tr><td>这个结论是什么时候被改过的</td><td>审计链按对象检索</td><td>内审、合规检查</td></tr>
+</tbody>
+</table>
+
+<h3>7.3 快照策略</h3>
+<table>
+<thead><tr><th style="width:150px">快照类型</th><th style="width:130px">生成时机</th><th>保留与用途</th></tr></thead>
+<tbody>
+<tr><td>核对输入快照</td><td>每次核对任务开始时</td><td>保留 5 年，保证结论可复算</td></tr>
+<tr><td>核对结论快照</td><td>任务完成时</td><td>保留 10 年，作为准入证据</td></tr>
+<tr><td>员工时点快照</td><td>每次发薪周期结束时</td><td>保留 10 年，争议举证主证据</td></tr>
+<tr><td>政策参数快照</td><td>参数版本发布时</td><td>永久保留，历史结论复算依赖</td></tr>
+</tbody>
+</table>
+
+<h2><span class="num">08</span>非功能需求</h2>
+
+<h3>8.1 规模基线</h3>
+<table>
+<thead><tr><th style="width:220px">指标</th><th style="width:160px">基线值</th><th>设计余量</th></tr></thead>
+<tbody>
+<tr><td>员工总数</td><td>3 万（上限）</td><td>按 5 万设计，避免两年后重构</td></tr>
+<tr><td>月度变更单量</td><td>5,000 – 20,000</td><td>峰值按 3 万设计</td></tr>
+<tr><td>单月变更明细行</td><td>约 5 万</td><td>按 10 万设计</td></tr>
+<tr><td>法人数</td><td>5 – 20</td><td>按 50 设计（含并购预留）</td></tr>
+<tr><td>规则条数</td><td>80 – 150</td><td>按 300 设计</td></tr>
+<tr><td>政策参数条目</td><td>约 2,000 / 年</td><td>按 1 万设计</td></tr>
+</tbody>
+</table>
+
+<h3>8.2 性能指标</h3>
+<table>
+<thead><tr><th style="width:250px">操作</th><th style="width:150px">目标</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td>单张变更单核对</td><td>P95 &lt; 800 ms</td><td>同步反馈，员工提交后可立即看到结论</td></tr>
+<tr><td>全量核对跑批（3 万人）</td><td>&lt; 10 分钟</td><td>约 24 万次规则判定，Worker 横向扩展</td></tr>
+<tr><td>单文件解析（5 万行）</td><td>&lt; 60 秒</td><td>含校验与错误定位</td></tr>
+<tr><td>工资条查看（发薪日）</td><td>P95 &lt; 500 ms / 3,000 QPS</td><td>读缓存 + 只读副本</td></tr>
+<tr><td>审计查询（单员工全量）</td><td>&lt; 2 秒</td><td>按对象索引 + 时间分区</td></tr>
+</tbody>
+</table>
+
+<h3>8.3 可用性</h3>
+<ul class="clean">
+<li>发薪窗口（每月 T-3 至 T+2）：<b>99.9%</b>，窗口内禁止计划内变更发布</li>
+<li>非发薪窗口：99.5%</li>
+<li>RPO &lt; 15 分钟，RTO &lt; 2 小时；核对任务失败可重跑，属可恢复故障</li>
+<li>降级策略：核对服务不可用时，<b>禁止</b>降级为"默认通过"，只能挂起并提示稍后重试——这是 I1 的直接要求</li>
+</ul>
+
+<h3>8.4 安全与合规（对齐等保三级）</h3>
+<table>
+<thead><tr><th style="width:150px">控制项</th><th>要求</th></tr></thead>
+<tbody>
+<tr><td>传输加密</td><td>全站 TLS 1.2+，文件通道另行加密（信封加密，密钥与数据分离传递）</td></tr>
+<tr><td>存储加密</td><td>证件号、银行账号、薪资、家庭信息字段级加密（AES-256-GCM），密钥托管 KMS，按法人分密钥，年度轮换</td></tr>
+<tr><td>脱敏</td><td>默认展示脱敏；查看明文需二次授权并逐次记录；列表页永不出现明文</td></tr>
+<tr><td>授权</td><td>RBAC + ABAC（法人 × 薪酬组 × 字段 × 时间窗）；权限变更本身产生审计事件</td></tr>
+<tr><td>身份</td><td>管理员强制双因子；员工端实名核验（证件尾号 + 短信，可选人脸）</td></tr>
+<tr><td>审计</td><td>append-only + 哈希链；数据库层撤销 UPDATE/DELETE 权限；审计与应用库物理分离</td></tr>
+<tr><td>导出管控</td><td>导出需审批、加水印（含操作人与时间）、限次数、全量留痕；禁止整表导出无审批</td></tr>
+<tr><td>留存</td><td>薪资与核对记录：在职期间 + 离职后 10 年；审计日志：10 年；快照：见 7.3</td></tr>
+<tr><td>销毁</td><td>到期数据走审批后归档至冷存储，不做物理删除；销毁申请须审计员复核</td></tr>
+</tbody>
+</table>
+
+<h2><span class="num">09</span>架构方案</h2>
+
+<h3>9.1 逻辑分层</h3>
+<div class="layers">
+  <div class="layer"><div class="tag">接入层</div><div class="body">Web 管理端 · 员工端 H5（企业微信内嵌）· 文件通道（上传/下载/回盘）· OpenAPI · 统一认证与网关</div></div>
+  <div class="layer hi"><div class="tag">应用层</div><div class="body"><b>变更域</b>（受理 · 冲正 · 生命周期）　<b>核对域</b>（规则执行 · 结论产出）　<b>审批域</b>（路由 · 签批）　<b>差异域</b>（分级 · 分派 · 豁免）　<b>员工自助域</b>（申请 · 工资条）</div></div>
+  <div class="layer"><div class="tag">平台层</div><div class="body">规则配置中心 · 政策参数库 · 文件解析引擎 · 快照服务 · 审计服务 · 通知服务 · 作业调度</div></div>
+  <div class="layer"><div class="tag">数据层</div><div class="body">业务主库（读写分离）· 快照库 · 审计库（独立实例）· 对象存储（附件/原始文件/快照归档）· 缓存 · 消息队列</div></div>
+</div>
+
+<h3>9.2 四个关键设计决策</h3>
+<table>
+<thead><tr><th style="width:170px">决策</th><th style="width:150px">选型</th><th>理由与代价</th></tr></thead>
+<tbody>
+<tr><td>系统形态</td><td>模块化单体 + 独立 Worker</td><td>事务边界集中在变更单与批次准入，微服务会引入分布式事务却换不来收益。代价：模块边界靠约定与包结构维持，需定期做依赖检查</td></tr>
+<tr><td>核对执行</td><td>异步事件驱动</td><td>变更单提交后发事件，Worker 消费后回写结论。<b>核对绝不写在提交事务里</b>，否则长事务与阻塞会拖垮发薪窗口</td></tr>
+<tr><td>事件可靠性</td><td>事务性发件箱（Outbox）</td><td>业务写入与事件写入同事务，独立投递器负责发送，避免"业务成功、事件丢失"导致变更永不核对</td></tr>
+<tr><td>规则判定</td><td>单一 RuleEvaluator 接口</td><td>D4 阶段用表达式解释器（Aviator / SpEL），语义统一；将来若升级为规则引擎，只替换该接口实现</td></tr>
+</tbody>
+</table>
+
+<h3>9.3 技术选型建议</h3>
+<table>
+<thead><tr><th style="width:130px">层</th><th style="width:230px">建议</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td>后端</td><td>Java 17 + Spring Boot 3</td><td>企业内易招人、审计友好、生态成熟</td></tr>
+<tr><td>数据库</td><td>PostgreSQL 15+ 或 MySQL 8</td><td>倾向 PG：窗口函数、范围类型对双时态查询更友好</td></tr>
+<tr><td>消息</td><td>RabbitMQ 或 RocketMQ</td><td>量级不大，可靠性优先于吞吐</td></tr>
+<tr><td>对象存储</td><td>MinIO（私有化）/ OSS</td><td>存附件、原始文件、快照归档</td></tr>
+<tr><td>前端</td><td>Vue 3 + Element Plus</td><td>管理端表格与表单密集，组件生态成熟</td></tr>
+<tr><td>员工端</td><td>H5，企业微信内嵌</td><td>覆盖率高，不必另做 App</td></tr>
+<tr><td>密钥与加密</td><td>KMS（云托管或私有 Vault）</td><td>字段级加密的密钥不得与数据同库</td></tr>
+<tr><td>可观测</td><td>结构化日志 + 指标 + 链路追踪</td><td>审计日志与运行日志分开存储，前者不可删</td></tr>
+</tbody>
+</table>
+
+<h3>9.4 部署形态</h3>
+<ul class="clean">
+<li>应用双实例起步，Worker 按法人分片消费，可独立扩容</li>
+<li>审计库独立实例，与业务库物理隔离，只接受追加写</li>
+<li>发薪窗口前 3 天进入"冻结发布期"，仅允许紧急补丁，且需双人复核</li>
+<li>不依赖公有云专属能力，保留私有化部署可能性（合规审查的常见要求）</li>
+</ul>
+
+<h2><span class="num">10</span>分期路线</h2>
+
+<table>
+<thead><tr><th style="width:70px">阶段</th><th style="width:150px">主题</th><th>范围</th><th style="width:180px">验收标准</th></tr></thead>
+<tbody>
+<tr><td><b>P0</b><br><span class="chip gray">必做</span></td><td>单法人跑通闭环</td><td>变更单（管理员代录）· 配置化规则 R1–R5 · 异步核对 · 差异分级处置 · 快照 · 审计基础 · 文件导入导出 · <b>双时态建模</b></td><td>一个法人、一个薪酬周期全流程跑通；3 万人核对 &lt; 10 分钟；无一条数据绕过核对进入下游文件</td></tr>
+<tr><td><b>P1</b></td><td>员工端与多法人</td><td>员工自助发起 · 工资条查看 · 多法人隔离 · 政策参数库 · KMS 加密与动态脱敏 · 导出管控</td><td>多法人数据隔离通过渗透测试；员工端变更全链路可审计；脱敏覆盖率 100%</td></tr>
+<tr><td><b>P2</b></td><td>治理与效率</td><td>规则版本灰度 · 时点回溯查询界面 · 申诉工单 · 银行/税务接口对接 · 质量看板 · R6–R8 规则</td><td>任一时点结论可在 2 秒内复现；规则上线可试运行出影响面报告</td></tr>
+</tbody>
+</table>
+
+<div class="note"><b>关于分期的一条硬约束：</b>P0 的建设范围可以窄，但数据模型必须完整——双时态字段、审计链、法人维度、规则版本号这四项在 P0 就要落表。它们不是功能，是地基；后补的成本远高于一开始就做对。</div>
+
+<h2><span class="num">11</span>假设与风险登记</h2>
+
+<h3>11.1 关键假设（若不成立需重新评估）</h3>
+<table>
+<thead><tr><th style="width:56px" class="c">编号</th><th style="width:300px">假设</th><th>不成立时的后果</th></tr></thead>
+<tbody>
+<tr><td class="c mono">A1</td><td>薪酬计算在既有系统完成，本系统不承担算薪</td><td>若需自建算薪，整体方案升维为 D 类，工期翻数倍</td></tr>
+<tr><td class="c mono">A2</td><td>员工总数不超过 3 万，法人不超过 20</td><td>超出需引入分片与独立对账集群，架构与运维成本显著上升</td></tr>
+<tr><td class="c mono">A3</td><td>HR 系统可提供稳定的月度全量文件</td><td>若只能提供增量或无文件，需先建数据同步基线，P0 延期</td></tr>
+<tr><td class="c mono">A4</td><td>各地社保公积金政策参数可被结构化维护</td><td>若政策以人工裁量为主，R4 类规则只能降级为提示，核对价值打折</td></tr>
+<tr><td class="c mono">A5</td><td>存在明确且唯一的规则口径责任人</td><td>无 Owner 时规则将反复变更，核对结论失去公信力，这是最高概率的项目失败原因</td></tr>
+</tbody>
+</table>
+
+<h3>11.2 风险登记</h3>
+<table>
+<thead><tr><th style="width:56px" class="c">编号</th><th style="width:240px">风险</th><th style="width:70px" class="c">等级</th><th>缓解措施</th></tr></thead>
+<tbody>
+<tr><td class="c mono">K1</td><td>上游数据质量差，差异噪声淹没业务</td><td class="c"><span class="chip l3">高</span></td><td>P0 先做数据质量基线报告，把"系统性脏数据"与"真实业务差异"分开；噪声规则先降级为 L1</td></tr>
+<tr><td class="c mono">K2</td><td>业务为赶发薪绕过系统，走线下通道</td><td class="c"><span class="chip l3">高</span></td><td>系统必须比线下更快（单证提交 &#8594; 结论 &lt; 1 分钟）；同时把"绕过"本身做成需高管审批的例外</td></tr>
+<tr><td class="c mono">K3</td><td>员工换卡被用于诈骗（社工改卡）</td><td class="c"><span class="chip l3">高</span></td><td>冻结期 + 发薪窗口禁改 + 大额首笔人工复核 + 变更短信双通知（旧号与新号同时告警）</td></tr>
+<tr><td class="c mono">K4</td><td>等保三级要求带来额外改造，工期被低估</td><td class="c"><span class="chip l2">中</span></td><td>加密与审计在 P0 就进地基；安全评审前置到设计阶段，不留到上线前</td></tr>
+<tr><td class="c mono">K5</td><td>集团内跨法人调岗导致社保转移与工龄衔接复杂</td><td class="c"><span class="chip l2">中</span></td><td>员工主体变更设计为"一人多任职"模型，而非简单改法人字段</td></tr>
+<tr><td class="c mono">K6</td><td>规则越配越多，最终无人敢改</td><td class="c"><span class="chip l2">中</span></td><td>规则总量设上限并定期清理；每条规则必须有 Owner 与最近一次复核日期</td></tr>
+</tbody>
+</table>
+
+<h2><span class="num">12</span>待确认的开放问题</h2>
+<table>
+<thead><tr><th style="width:56px" class="c">编号</th><th style="width:280px">问题</th><th>影响</th></tr></thead>
+<tbody>
+<tr><td class="c mono">Q1</td><td>算薪是否确实在外部系统？若在本系统内，整体架构需重做</td><td>决定 A1 假设与全部工期估算</td></tr>
+<tr><td class="c mono">Q2</td><td>集团内是否存在跨法人调岗？频率如何？</td><td>决定员工模型是否需要"一人多任职"，影响 P1 范围</td></tr>
+<tr><td class="c mono">Q3</td><td>银行代发涉及几家银行？是否已有回盘解析能力？</td><td>决定文件适配器数量与 P2 工作量</td></tr>
+<tr><td class="c mono">Q4</td><td>是否已有可复用的统一身份认证与企业微信对接？</td><td>影响 P1 员工端工期</td></tr>
+<tr><td class="c mono">Q5</td><td>规则口径的最终拍板人是谁？可否书面指定？</td><td>对应风险 K1 / A5，是项目成败关键</td></tr>
+<tr><td class="c mono">Q6</td><td>是否需要与集团审计/内控系统对接审计链？</td><td>影响审计服务的对外接口设计</td></tr>
+</tbody>
+</table>
+
+<div class="foot">
+薪酬服务变更核对系统 · 需求清单 v0.1 草案 · 2026-10-30<br>
+本文档为基线方案，章节 00 的十项决策变更时，需同步复核章节 03、04、07、09。
+</div>
+
+</div>
+</body>
+</html>

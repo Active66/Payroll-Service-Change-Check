@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block title %}{{ doc.title }} v{{ doc.version_label or doc.version }}{% endblock %}
+{% block crumb %}<a href="/admin/kb">知识库</a> / <b>{{ doc.title }}</b>{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{{ doc.title }}</h1>
+    <div class="sub">
+      {{ doc.doc_id }} · v{{ doc.version_label or doc.version }}
+      {% if doc.effective_from %} · 生效 {{ doc.effective_from }}{% endif %}
+      {% if doc.effective_to %} 至 {{ doc.effective_to }}{% endif %}
+    </div>
+  </div>
+  <div class="spacer"></div>
+  <a class="btn" href="/admin/kb">返回列表</a>
+</div>
+
+{% if is_pending %}
+  <div class="alert alert-warn">
+    这一版的生效日期是 {{ doc.effective_from }}，<b>还没到生效日，所以不在索引里</b>，
+    问答暂时检索不到它。这是设计行为，不是故障。
+  </div>
+{% endif %}
+{% if doc.status == 'superseded' %}
+  <div class="alert alert-warn">
+    这一版已被新版本替代（{{ doc.superseded_at | dt('%Y-%m-%d %H:%M') }} 起），
+    索引里用的是新版。要退回这一版，用下面版本列表里的「回滚到本版」。
+  </div>
+{% elif doc.status == 'deleted' %}
+  <div class="alert alert-err">这一版已删除，问答不会引用它。</div>
+{% endif %}
+
+<div class="card">
+  <div class="card-head">
+    <h2>切片预览</h2>
+    <div class="spacer"></div>
+    <span class="hint">共 {{ chunks | length }} 条（来自当前线上索引）</span>
+  </div>
+  <div class="card-body tight">
+    {% if chunks %}
+      <table class="table">
+        <thead>
+          <tr><th class="num">#</th><th>条款范围</th><th class="num">字数</th><th>正文</th></tr>
+        </thead>
+        <tbody>
+        {% for c in chunks %}
+          <tr>
+            <td class="num">{{ loop.index }}</td>
+            <td class="small">{{ c.clause_range or c.clause_no or '—' }}</td>
+            <td class="num small">{{ c.char_len }}</td>
+            <td><div class="pre" style="max-height:132px;padding:8px 10px;font-size:12.5px">{{ c.content }}</div></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="empty">
+        <b>这一版没有切片</b>
+        只有「现行且已到生效日」的版本会进索引。要对照历史版本的切片，
+        可以回滚到该版本后重建索引
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <h2>版本历史</h2>
+    <div class="spacer"></div>
+    <span class="hint">共 {{ versions | length }} 版</span>
+  </div>
+  <div class="card-body tight">
+    <table class="table">
+      <thead>
+        <tr><th class="num">版本</th><th>状态</th><th>生效期</th><th>文件</th>
+            <th class="num">切片</th><th>时间</th><th class="actions">操作</th></tr>
+      </thead>
+      <tbody>
+      {% for v in versions %}
+        <tr {% if v.id == doc.id %}style="background:#fafbfc"{% endif %}>
+          <td class="num">v{{ v.version_label or v.version }}</td>
+          <td>
+            {% if v.status == 'active' %}<span class="badge badge-ok">现行</span>
+            {% elif v.status == 'superseded' %}<span class="badge badge-muted">已被替代</span>
+            {% else %}<span class="badge badge-danger">已删除</span>{% endif %}
+          </td>
+          <td class="num small">
+            {{ v.effective_from or '—' }}{% if v.effective_to %} ~ {{ v.effective_to }}{% endif %}
+          </td>
+          <td class="small muted">{{ v.source_file }}</td>
+          <td class="num">{{ v.chunk_count }}</td>
+          <td class="num small">{{ v.created_at | dt('%Y-%m-%d %H:%M') }}</td>
+          <td class="actions">
+            <a class="btn-link" href="/admin/kb/{{ v.doc_id }}?version={{ v.version }}">查看</a>
+            {% if v.status != 'active' %}
+              <form class="inline-form" method="post" action="/admin/kb/{{ v.doc_id }}/rollback"
+                    onsubmit="return confirm('把 v{{ v.version_label or v.version }} 恢复为现行版本？当前版本会被置为已替代，并重建索引。');">
+                <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                <input type="hidden" name="version" value="{{ v.version }}">
+                <button class="btn-link" type="submit">回滚到本版</button>
+              </form>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head"><h2>文档信息</h2></div>
+  <div class="card-body tight">
+    <table class="table">
+      <tbody>
+        <tr><td class="dim" style="width:160px">原始文件</td><td>{{ doc.source_file }}</td></tr>
+        <tr><td class="dim">存储路径</td><td class="mono small">{{ doc.storage_path }}</td></tr>
+        <tr><td class="dim">内容摘要</td><td class="mono small">{{ doc.checksum[:32] }}…</td></tr>
+        <tr><td class="dim">切片数 / 字数</td><td class="num">{{ doc.chunk_count }} / {{ doc.char_count }}</td></tr>
+        <tr><td class="dim">状态</td>
+            <td>{% if doc.status == 'active' %}<span class="badge badge-ok">现行</span>
+                {% elif doc.status == 'superseded' %}<span class="badge badge-muted">已被替代</span>
+                {% else %}<span class="badge badge-danger">已删除</span>{% endif %}</td></tr>
+        <tr><td class="dim">发布人</td><td class="small">{{ doc.published_by or doc.uploaded_by or '—' }}</td></tr>
+        <tr><td class="dim">上传时间</td><td class="num">{{ doc.created_at | dt('%Y-%m-%d %H:%M:%S') }}</td></tr>
+        <tr><td class="dim">索引时间</td><td class="num">{{ doc.indexed_at | dt('%Y-%m-%d %H:%M:%S') }}</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

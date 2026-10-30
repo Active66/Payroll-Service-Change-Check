@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>薪酬变更核对系统 · 技术架构设计 v0.1</title>
+<style>
+:root{
+  --ink:#1f2328; --ink2:#57606a; --ink3:#8b949e;
+  --line:#e3e6ea; --line2:#d0d7de; --soft:#f6f7f9;
+  --accent:#1f4e79; --accent-soft:#eef4fa;
+  --warn:#8a5d00; --warn-soft:#fdf6e3; --warn-line:#e6c86e;
+  --bad:#a4232b; --bad-soft:#fdeeee;
+  --ok:#1a6b4d; --ok-soft:#eaf7f1;
+  --code:#f7f8fa;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; padding:0 24px 96px;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  color:var(--ink); background:#fff;
+  font-size:14.5px; line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1000px;margin:0 auto}
+.mono,code,pre{font-family:ui-monospace,"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+
+.doc-head{padding:56px 0 28px;border-bottom:1px solid var(--line2)}
+.eyebrow{font-size:12px;letter-spacing:.14em;color:var(--ink3);text-transform:uppercase;margin-bottom:14px}
+h1{font-size:29px;line-height:1.35;margin:0 0 10px;font-weight:600;letter-spacing:-.01em}
+.sub{color:var(--ink2);font-size:15px;margin:0 0 26px}
+.meta{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.meta div{padding:12px 16px 12px 0;border-right:1px solid var(--line)}
+.meta div:last-child{border-right:none}
+.meta .k{font-size:11.5px;color:var(--ink3);letter-spacing:.06em;margin-bottom:3px}
+.meta .v{font-size:13.5px;font-weight:500}
+
+h2{font-size:19px;margin:52px 0 6px;font-weight:600;padding-top:8px;letter-spacing:-.01em}
+h2 .num{color:var(--accent);margin-right:10px;font-weight:600;font-variant-numeric:tabular-nums}
+h3{font-size:15px;margin:32px 0 8px;font-weight:600}
+h3::before{content:"";display:inline-block;width:3px;height:13px;background:var(--accent);margin-right:9px;vertical-align:-1px;border-radius:1px}
+h4{font-size:13.5px;margin:22px 0 6px;font-weight:600;color:var(--ink2)}
+p{margin:10px 0}
+.lead{color:var(--ink2);font-size:14px;margin:8px 0 20px;max-width:80ch}
+
+table{width:100%;border-collapse:collapse;margin:12px 0 8px;font-size:13px}
+th{background:var(--soft);text-align:left;font-weight:600;padding:8px 11px;border:1px solid var(--line);white-space:nowrap;font-size:12.5px}
+td{padding:8px 11px;border:1px solid var(--line);vertical-align:top;line-height:1.62}
+tbody tr:nth-child(even) td{background:#fcfcfd}
+td.c,th.c{text-align:center}
+td.f{font-family:ui-monospace,Consolas,monospace;font-size:12px;white-space:nowrap;color:#0d4a72}
+
+.chip{display:inline-block;padding:1px 7px;border-radius:4px;font-size:11.5px;font-weight:500;line-height:1.7;white-space:nowrap}
+.chip.ok{background:var(--ok-soft);color:var(--ok)}
+.chip.no{background:var(--bad-soft);color:var(--bad)}
+.chip.mid{background:var(--warn-soft);color:var(--warn)}
+.chip.gray{background:var(--soft);color:var(--ink2)}
+.chip.acc{background:var(--accent-soft);color:var(--accent)}
+
+.note{border-left:3px solid var(--accent);background:var(--accent-soft);padding:13px 18px;margin:18px 0;font-size:13.5px;color:#173d5e;border-radius:0 4px 4px 0}
+.note b{color:#0f2f4a}
+.note.warn{border-left-color:var(--warn-line);background:var(--warn-soft);color:#5e4200}
+.note.warn b{color:#3d2b00}
+.note.bad{border-left-color:#e0a0a3;background:var(--bad-soft);color:#6e1a1f}
+.note.bad b{color:#4a0f13}
+
+ul.clean{margin:10px 0;padding-left:0;list-style:none}
+ul.clean li{position:relative;padding-left:20px;margin:7px 0;font-size:14px}
+ul.clean li::before{content:"";position:absolute;left:4px;top:.72em;width:5px;height:5px;border-radius:50%;background:var(--ink3)}
+
+pre{background:var(--code);border:1px solid var(--line);border-radius:8px;padding:16px 18px;overflow-x:auto;margin:14px 0;font-size:12.5px;line-height:1.65;color:#24292f}
+pre.small{font-size:12px;line-height:1.6}
+
+.flow{display:flex;align-items:stretch;margin:18px 0 6px;flex-wrap:wrap}
+.flow .node{flex:1;min-width:118px;border:1px solid var(--line2);border-radius:8px;padding:10px 12px;background:#fff}
+.flow .node.self{background:var(--accent-soft);border-color:#b6cfe4}
+.flow .node .t{font-size:12.5px;font-weight:600;margin-bottom:3px}
+.flow .node .d{font-size:11.5px;color:var(--ink2);line-height:1.55}
+.flow .arw{display:flex;align-items:center;justify-content:center;width:26px;color:var(--ink3);font-size:14px;flex:0 0 26px}
+
+.layers{margin:20px 0 6px}
+.layer{display:flex;align-items:stretch;border:1px solid var(--line2);border-radius:8px;overflow:hidden;margin-bottom:10px;background:#fff}
+.layer .tag{flex:0 0 104px;background:var(--soft);padding:14px 12px;font-size:12.5px;font-weight:600;color:var(--ink2);display:flex;align-items:center;border-right:1px solid var(--line);letter-spacing:.04em;line-height:1.4}
+.layer .body{padding:12px 16px 14px;flex:1}
+.layer.hi .tag{background:var(--accent-soft);color:var(--accent)}
+.layer.hi{border-color:#b6cfe4}
+.lrow{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0}
+.pill{border:1px solid var(--line);background:#fff;border-radius:6px;padding:4px 9px;font-size:12px;line-height:1.5;color:var(--ink)}
+.pill b{font-weight:600;color:#0d4a72}
+.pill.grp{background:var(--soft);border-color:var(--line2);font-weight:600;color:var(--ink2)}
+
+hr.sep{border:none;border-top:1px solid var(--line);margin:44px 0 0}
+.foot{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink3)}
+
+@media print{
+  body{font-size:10.5pt;padding:0}
+  h2{page-break-after:avoid}
+  table,.flow,.layers,pre{page-break-inside:avoid}
+  .doc-head{padding-top:0}
+}
+@media (max-width:760px){
+  .meta{grid-template-columns:repeat(2,1fr)}
+  .flow .arw{width:100%;height:16px;flex:0 0 100%}
+  .layer{flex-direction:column}
+  .layer .tag{flex:none;border-right:none;border-bottom:1px solid var(--line)}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="doc-head">
+  <div class="eyebrow">Technical Architecture · Draft</div>
+  <h1>薪酬变更核对系统<br>技术架构设计</h1>
+  <p class="sub">FastAPI 异步后端 + 可替换 LLM + 图谱化薪酬制度知识库，含 RAG 与 LLM Wiki 的选型判断。</p>
+  <div class="meta">
+    <div><div class="k">版本</div><div class="v">v0.1</div></div>
+    <div><div class="k">日期</div><div class="v">2026-10-30</div></div>
+    <div><div class="k">技术栈</div><div class="v">Python 3.11 / FastAPI</div></div>
+    <div><div class="k">状态</div><div class="v">待评审</div></div>
+  </div>
+</div>
+
+<h2><span class="num">00</span>先回答你的判断题：RAG 还是 LLM Wiki</h2>
+
+<h3>0.1 三个概念先对齐</h3>
+<p class="lead">你说的"LLM wiki"我理解为：让模型把原始资料<b>预先编译</b>成一套实体/主题页面并持续维护，查询时直接读页面，而不是临时检索原文切片。它和 RAG、GraphRAG 不是同一层的东西，放一起比较容易比错。</p>
+
+<table>
+<thead><tr><th style="width:120px">范式</th><th style="width:210px">工作方式</th><th style="width:150px">强项</th><th>致命短板（在薪酬合规场景）</th></tr></thead>
+<tbody>
+<tr><td><b>朴素 RAG</b></td><td>查询时向量召回 Top-K 切片，拼进上下文</td><td>实现快、原文可引用</td><td>单跳召回，覆盖不了"变更类型→制度→条款→参数→例外"的多跳链路</td></tr>
+<tr><td><b>LLM Wiki</b></td><td>模型预先把资料编译成结构化页面（二手转述），查询直接读页</td><td>答案连贯、省 token、上下文密度高</td><td><b>不可举证</b>。页面是模型写的总结，和原文不一致时无法自证；制度一改，页面全面漂移</td></tr>
+<tr><td><b>GraphRAG</b></td><td>向量/全文召回 + 知识图谱扩展 1–2 跳 + 重排</td><td>多跳、可溯源、结构化参数走精确查询</td><td>需要实体关系抽取，构建成本高于朴素 RAG</td></tr>
+</tbody>
+</table>
+
+<h3>0.2 判断结论</h3>
+<div class="note"><b>结论：主用 GraphRAG（向量 + 全文 + 图谱混合），LLM Wiki 只做"人读摘要层"，绝不做事实源。</b><br>
+薪酬核对的答案会被拿去当劳动争议证据、内审核查依据。凡是"模型转述的二手总结"都不能作为判定依据——这是这个域的硬约束，不是技术偏好。</div>
+
+<p>三条支撑理由：</p>
+<ul class="clean">
+<li><b>可举证性</b>——每条结论必须能指回"某份制度的第几条第几款、第几页"。LLM Wiki 的页面只有结论没有原文指针，一旦被质疑就要人去翻文件，等于没做。</li>
+<li><b>时效与地域</b>——"2026 年上海社保基数上限"是精确查询，向量相似度天然不擅长；而制度有生效区间、地区维度、年度版本，这些是结构化字段与图边，不是语义。</li>
+<li><b>多跳性</b>——判断一条变更是否合规，链路是：变更类型 → 适用制度 → 条款 → 引用参数 → 例外规定。单跳向量召回必然漏中间环节。</li>
+</ul>
+
+<h3>0.3 三层知识结构（这是本方案的核心设计）</h3>
+<table>
+<thead><tr><th style="width:70px">层</th><th style="width:170px">内容</th><th style="width:130px">存储</th><th>定位与铁律</th></tr></thead>
+<tbody>
+<tr><td class="c"><b>L0</b></td><td>原始制度文件（PDF / Word / 通知）</td><td>对象存储 + <span class="mono">policy_documents</span></td><td><b>唯一真相源</b>，不可变，带生效区间与版本</td></tr>
+<tr><td class="c"><b>L1</b></td><td>切片 + 向量 + 实体关系图</td><td>pgvector + <span class="mono">kg_entities / kg_relations</span></td><td>检索与推理层；每个节点必须挂 <span class="mono">doc_id + chunk_id</span> 回溯到 L0</td></tr>
+<tr><td class="c"><b>L2</b></td><td>LLM 编译的人读页面（制度综述、变更类型说明）</td><td><span class="mono">wiki_pages</span>（P2 引入）</td><td><b>仅供阅读与校对</b>，答题时不得作为唯一依据，页面必须展示生成时间与来源清单</td></tr>
+</tbody>
+</table>
+
+<h3>0.4 检索路由：不同问题走不同通道</h3>
+<p class="lead">这是把"看起来能用"和"真的准"区分开的地方。路由错了，再好的模型也救不回来。</p>
+<table>
+<thead><tr><th style="width:110px">问题类型</th><th style="width:220px">示例</th><th style="width:170px">主通道</th><th>兜底与增强</th></tr></thead>
+<tbody>
+<tr><td>精确参数</td><td>2026 年上海社保基数上限是多少</td><td>结构化参数表 SQL</td><td>附上参数来源条款，禁止由模型口算</td></tr>
+<tr><td>条款解释</td><td>调薪超过薪酬带宽怎么处理</td><td>向量 + BM25 混合召回</td><td>图谱扩展 1 跳，带出例外规定</td></tr>
+<tr><td>多跳归因</td><td>这条变更为什么被阻断</td><td>图谱查询（变更类型→条款链）</td><td>回填条款原文片段</td></tr>
+<tr><td>流程操作</td><td>银行卡变更怎么提交</td><td>FAQ / 操作手册向量召回</td><td>—</td></tr>
+<tr><td>统计分析</td><td>本月阻断差异分布</td><td>分析服务聚合查询</td><td>不经过 LLM 生成数字，只让模型组织语言</td></tr>
+</tbody>
+</table>
+
+<div class="note warn"><b>一条硬规矩：数字不由模型产出。</b>金额、基数、比例、条号，一律来自查询结果，模型只负责组织语言和解释。这是把幻觉率压到零的唯一可靠办法——靠 prompt 约束不可靠。</div>
+
+<h2><span class="num">01</span>四层架构</h2>
+
+<h3>1.1 入口层</h3>
+<div class="layers">
+  <div class="layer">
+    <div class="tag">入口层</div>
+    <div class="body">
+      <div class="lrow"><span class="pill grp">员工端</span><span class="pill">智能问答（流式）</span><span class="pill">我的变更</span><span class="pill">工资条</span><span class="pill">企微 H5 内嵌</span></div>
+      <div class="lrow"><span class="pill grp">管理端</span><span class="pill">知识库维护</span><span class="pill">图谱浏览与校对</span><span class="pill">核对记录与审计</span><span class="pill">图表看板</span></div>
+      <div class="lrow"><span class="pill grp">网关</span><span class="pill">JWT 鉴权</span><span class="pill">限流</span><span class="pill">SSE 流式</span><span class="pill">审计埋点</span><span class="pill">法人路由</span></div>
+      <div class="lrow"><span class="pill grp">异步入口</span><span class="pill">文档摄入队列</span><span class="pill">核对任务队列</span></div>
+    </div>
+  </div>
+  <div class="layer">
+    <div class="tag">服务层</div>
+    <div class="body">
+      <div class="lrow"><span class="pill">身份与权限<br><small>RBAC + ABAC · 法人隔离</small></span><span class="pill">会话服务<br><small>会话 / 消息 / 上下文裁剪</small></span><span class="pill">知识库服务<br><small>版本 · 生效区间 · 切片编排</small></span></div>
+      <div class="lrow"><span class="pill">图谱服务<br><small>实体关系 CRUD · 子图检索</small></span><span class="pill">核对服务<br><small>规则判定 · 差异 · 草稿状态机</small></span><span class="pill">分析服务<br><small>聚合 · 图表数据</small></span><span class="pill">审计服务<br><small>append-only</small></span></div>
+    </div>
+  </div>
+  <div class="layer hi">
+    <div class="tag">智能体<br>编排层</div>
+    <div class="body">
+      <div class="lrow"><span class="pill"><b>Router</b><br><small>意图分类</small></span><span class="pill"><b>Retrieval Orchestrator</b><br><small>向量 + BM25 + 图扩展 + 重排 + 去重</small></span><span class="pill"><b>Generator</b><br><small>引用约束 · 拒答策略</small></span></div>
+      <div class="lrow"><span class="pill grp">Tool Registry</span><span class="pill">policy_lookup</span><span class="pill">graph_query</span><span class="pill">rule_check</span><span class="pill">draft_tool</span><span class="pill">analytics_tool</span></div>
+      <div class="lrow"><span class="pill grp">LLM Adapter</span><span class="pill">Provider 可替换</span><span class="pill">超时 / 重试 / 降级</span><span class="pill">token 与成本记账</span><span class="pill">Prompt 版本化</span></div>
+    </div>
+  </div>
+  <div class="layer">
+    <div class="tag">数据<br>模型层</div>
+    <div class="body">
+      <div class="lrow"><span class="pill grp">PostgreSQL 16</span><span class="pill">业务表</span><span class="pill">pgvector HNSW</span><span class="pill">tsvector + zhparser</span><span class="pill">图谱邻接表</span></div>
+      <div class="lrow"><span class="pill grp">其他</span><span class="pill">Redis · 缓存 / 队列 / 限流</span><span class="pill">MinIO · 原始文件</span><span class="pill">审计库 · 独立实例</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="note"><b>为什么智能体层要单独成层：</b>它必须能在不碰业务代码的前提下被替换。Router 换策略、检索换重排模型、LLM 换供应商，都不应该改到 <span class="mono">services/</span>。这条边界如果一开始不划，三个月后整条链路会长进 Controller 里。</div>
+
+<h3>1.2 一次问答的链路</h3>
+<div class="flow">
+  <div class="node"><div class="t">① 鉴权</div><div class="d">JWT + 法人上下文</div></div>
+  <div class="arw">&#8594;</div>
+  <div class="node"><div class="t">② 取上下文</div><div class="d">近 N 轮 + 滚动摘要</div></div>
+  <div class="arw">&#8594;</div>
+  <div class="node self"><div class="t">③ 意图路由</div><div class="d">制度 / 数据 / 业务 / 闲聊</div></div>
+  <div class="arw">&#8594;</div>
+  <div class="node self"><div class="t">④ 并行召回</div><div class="d">向量 + BM25 + 图</div></div>
+  <div class="arw">&#8594;</div>
+  <div class="node"><div class="t">⑤ 重排裁剪</div><div class="d">Rerank &#8594; Top-N</div></div>
+  <div class="arw">&#8594;</div>
+  <div class="node"><div class="t">⑥ 生成</div><div class="d">强制引用 · 无依据则拒答</div></div>
+  <div class="arw">&#8594;</div>
+  <div class="node"><div class="t">⑦ 落库</div><div class="d">消息 + 引用 + 审计</div></div>
+</div>
+<p class="lead">第 ③ 步是分水岭：闲聊走轻量模型直接答，业务查询走工具调用，只有制度类问题才进 RAG。全部走 RAG 会让延迟和成本都失控。</p>
+
+<h2><span class="num">02</span>目录结构</h2>
+
+<pre class="small">payroll-recon/
+├── pyproject.toml                  # uv / poetry 管理依赖
+├── docker-compose.yml              # pg(pgvector+zhparser) / redis / minio / app
+├── alembic.ini
+├── alembic/versions/               # 迁移脚本，与模型严格同步
+├── .env.example
+│
+├── app/
+│   ├── main.py                     # create_app()，路由装配，lifespan
+│   │
+│   ├── core/                       # 与框架无关的基础设施
+│   │   ├── config.py               # pydantic-settings，分层配置
+│   │   ├── security.py             # JWT、密码、字段加密入口
+│   │   ├── logging.py              # 结构化日志（业务日志/审计日志分流）
+│   │   ├── exceptions.py           # 领域异常与全局错误映射
+│   │   └── lifespan.py             # 连接池、队列、HTTP 客户端初始化
+│   │
+│   ├── api/                        # 只做协议转换，不放业务逻辑
+│   │   ├── deps.py                 # 依赖注入：当前用户、法人、分页
+│   │   ├── v1/
+│   │   │   ├── router.py
+│   │   │   ├── auth.py
+│   │   │   ├── chat.py             # SSE 流式问答
+│   │   │   ├── kb.py               # 文档上传/发布/版本
+│   │   │   ├── graph.py            # 子图查询、节点详情
+│   │   │   ├── draft.py            # 薪酬变更草稿
+│   │   │   ├── analytics.py
+│   │   │   └── admin.py
+│   │   └── schemas/                # Pydantic v2 请求/响应模型
+│   │
+│   ├── domain/                     # 纯领域模型，零外部依赖，可单测
+│   │   ├── entities/               # User / Session / Message / PolicyDoc / Draft
+│   │   ├── value_objects/          # EffectivePeriod / LegalEntityId / RiskLevel
+│   │   ├── policies/               # 规则判定：差异分级、草稿状态机
+│   │   └── events/                 # DocumentIndexed / DraftSubmitted
+│   │
+│   ├── services/                   # 应用服务：用例编排 + 事务边界
+│   │   ├── auth_service.py
+│   │   ├── chat_service.py
+│   │   ├── kb_service.py
+│   │   ├── graph_service.py
+│   │   ├── recon_service.py
+│   │   ├── analytics_service.py
+│   │   └── audit_service.py
+│   │
+│   ├── agents/                     # ★ 智能体编排层
+│   │   ├── orchestrator.py         # 一次问答的总调度
+│   │   ├── router.py               # 意图分类（小模型 / 规则优先）
+│   │   ├── tools/
+│   │   │   ├── registry.py         # 工具注册与 JSON Schema 描述
+│   │   │   ├── policy_lookup.py    # 参数精确查询
+│   │   │   ├── graph_query.py      # 图谱多跳
+│   │   │   ├── rule_check.py       # 调用核对服务
+│   │   │   ├── draft_tool.py       # 草稿读写（含权限校验）
+│   │   │   └── analytics_tool.py
+│   │   ├── retrieval/
+│   │   │   ├── hybrid.py           # 多路召回融合（RRF）
+│   │   │   ├── vector_store.py     # pgvector 封装
+│   │   │   ├── bm25.py             # tsvector 全文
+│   │   │   ├── graph_expand.py     # 图扩展 1-2 跳
+│   │   │   └── reranker.py         # 重排（可本地模型/API）
+│   │   ├── prompts/                # 版本化的 prompt 模板（jinja2）
+│   │   └── memory.py               # 滚动摘要 + 用户偏好
+│   │
+│   ├── llm/                        # ★ 供应商抽象，唯一出网口
+│   │   ├── base.py                 # ChatModel / EmbeddingModel / Reranker 协议
+│   │   ├── providers/
+│   │   │   ├── openai_compat.py    # 兼容 OpenAI 协议的各家（含国内云）
+│   │   │   ├── azure.py
+│   │   │   └── local.py            # vLLM / Ollama
+│   │   ├── router.py               # 按任务选模型（便宜模型做路由，强模型做生成）
+│   │   └── budget.py               # token 预算与成本记账
+│   │
+│   ├── ingestion/                  # 文档摄入流水线
+│   │   ├── parser/                 # pdf / docx / markdown → 结构化块
+│   │   ├── chunker.py              # 按条款层级切，保留 heading_path
+│   │   ├── extractor/              # 实体与关系抽取（LLM + 规则校验）
+│   │   ├── pipeline.py             # 解析→切片→向量→抽取→入库
+│   │   └── tasks.py
+│   │
+│   ├── infra/
+│   │   ├── db/
+│   │   │   ├── session.py          # async session，含 RLS 变量注入
+│   │   │   ├── models/             # SQLAlchemy 2.0 声明式模型
+│   │   │   └── repositories/       # 每聚合一个仓储，SQL 只写在这里
+│   │   ├── cache/
+│   │   ├── storage/                # MinIO 客户端
+│   │   └── queue/                  # ARQ 封装
+│   │
+│   ├── workers/
+│   │   ├── ingestion_worker.py     # 文档索引、实体抽取
+│   │   └── recon_worker.py         # 核对跑批
+│   │
+│   └── observability/
+│       ├── tracing.py              # OpenTelemetry
+│       └── metrics.py
+│
+├── tests/
+│   ├── unit/                       # domain 层，快、无 IO
+│   ├── integration/                # 真实 PG（testcontainers）
+│   └── evals/                      # ★ LLM 评测集：问题→期望条款→期望要点
+│       ├── cases/*.yaml
+│       └── runner.py
+└── scripts/
+    ├── seed.py
+    └── reindex.py
+</pre>
+
+<div class="note"><b>三条分层铁律：</b>① <span class="mono">api/</span> 里不许出现 SQL 与 LLM 调用；② <span class="mono">domain/</span> 不许 import <span class="mono">infra/</span> 与 <span class="mono">agents/</span>；③ 所有出网请求只从 <span class="mono">llm/</span> 发出，方便做统一限流、降级和成本核算。</div>
+
+<h2><span class="num">03</span>数据模型设计</h2>
+
+<h3>3.1 全局约定</h3>
+<ul class="clean">
+<li>主键统一 <span class="mono">uuid v7</span>（时间有序，索引友好）；高频追加表（<span class="mono">chat_messages</span>、<span class="mono">audit_events</span>）用 <span class="mono">bigserial</span></li>
+<li>所有表默认含 <span class="mono">created_at / updated_at</span>，下文不重复列出</li>
+<li>敏感字段（手机、邮箱、证件、银行卡）以 <span class="mono">bytea</span> 存密文，后缀 <span class="mono">_enc</span>，不存明文</li>
+<li>制度类表采用<b>双时态</b>：<span class="mono">effective_from/to</span>（业务生效）+ <span class="mono">valid_from/to</span>（系统记录）</li>
+<li>多法人隔离：所有业务表带 <span class="mono">legal_entity_id</span>，并启用 <b>PostgreSQL 行级安全（RLS）</b>兜底，防止应用层漏加条件</li>
+</ul>
+
+<h3>3.2 users · 用户</h3>
+<table>
+<thead><tr><th style="width:170px">字段</th><th style="width:140px">类型</th><th style="width:150px">约束</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td class="f">id</td><td class="f">uuid</td><td>PK</td><td>主键</td></tr>
+<tr><td class="f">legal_entity_id</td><td class="f">uuid</td><td>NOT NULL, IDX</td><td>法人主体，全表贯穿</td></tr>
+<tr><td class="f">employee_no</td><td class="f">varchar(32)</td><td>UNIQUE(legal_entity_id, employee_no)</td><td>工号，法人内唯一</td></tr>
+<tr><td class="f">name</td><td class="f">varchar(64)</td><td>NOT NULL</td><td>姓名</td></tr>
+<tr><td class="f">role</td><td class="f">varchar(24)</td><td>NOT NULL, CHECK</td><td>employee / ssc / coe / admin / auditor</td></tr>
+<tr><td class="f">phone_enc</td><td class="f">bytea</td><td>—</td><td>手机号密文，登录与告警用</td></tr>
+<tr><td class="f">email_enc</td><td class="f">bytea</td><td>—</td><td>邮箱密文</td></tr>
+<tr><td class="f">id_card_enc</td><td class="f">bytea</td><td>—</td><td>证件号密文，仅核验用</td></tr>
+<tr><td class="f">login_hash</td><td class="f">varchar(128)</td><td>NULL</td><td>密码哈希；企微用户可为空</td></tr>
+<tr><td class="f">mfa_secret_enc</td><td class="f">bytea</td><td>NULL</td><td>管理员强制双因子</td></tr>
+<tr><td class="f">status</td><td class="f">smallint</td><td>NOT NULL DEFAULT 1</td><td>1 在职 / 0 停用 / 2 锁定</td></tr>
+<tr><td class="f">last_login_at</td><td class="f">timestamptz</td><td>NULL</td><td>用于异常登录识别</td></tr>
+</tbody>
+</table>
+
+<h3>3.3 chat_sessions · 会话</h3>
+<table>
+<thead><tr><th style="width:170px">字段</th><th style="width:140px">类型</th><th style="width:150px">约束</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td class="f">id</td><td class="f">uuid</td><td>PK</td><td>主键</td></tr>
+<tr><td class="f">user_id</td><td class="f">uuid</td><td>FK users, IDX</td><td>归属用户</td></tr>
+<tr><td class="f">legal_entity_id</td><td class="f">uuid</td><td>NOT NULL</td><td>冗余法人，供 RLS 使用</td></tr>
+<tr><td class="f">scene</td><td class="f">varchar(16)</td><td>NOT NULL</td><td>employee / admin，决定可用工具集</td></tr>
+<tr><td class="f">title</td><td class="f">varchar(128)</td><td>—</td><td>首轮自动生成</td></tr>
+<tr><td class="f">summary</td><td class="f">text</td><td>—</td><td>滚动摘要，控制上下文长度</td></tr>
+<tr><td class="f">summarized_until_seq</td><td class="f">int</td><td>DEFAULT 0</td><td>摘要已覆盖到第几条消息</td></tr>
+<tr><td class="f">model</td><td class="f">varchar(48)</td><td>—</td><td>本会话使用的模型标识</td></tr>
+<tr><td class="f">token_used</td><td class="f">int</td><td>DEFAULT 0</td><td>累计消耗，用于配额</td></tr>
+<tr><td class="f">message_count</td><td class="f">int</td><td>DEFAULT 0</td><td>冗余计数，避免 count 扫表</td></tr>
+<tr><td class="f">last_message_at</td><td class="f">timestamptz</td><td>IDX</td><td>会话列表排序</td></tr>
+<tr><td class="f">deleted_at</td><td class="f">timestamptz</td><td>NULL</td><td>软删除，审计仍需可查</td></tr>
+</tbody>
+</table>
+
+<h3>3.4 chat_messages · 消息</h3>
+<table>
+<thead><tr><th style="width:170px">字段</th><th style="width:140px">类型</th><th style="width:150px">约束</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td class="f">id</td><td class="f">bigserial</td><td>PK</td><td>追加型，天然有序</td></tr>
+<tr><td class="f">session_id</td><td class="f">uuid</td><td>FK, IDX(session_id, seq)</td><td>归属会话</td></tr>
+<tr><td class="f">seq</td><td class="f">int</td><td>NOT NULL, UNIQUE(session_id, seq)</td><td>会话内序号，保证顺序可重放</td></tr>
+<tr><td class="f">role</td><td class="f">varchar(12)</td><td>NOT NULL</td><td>user / assistant / tool / system</td></tr>
+<tr><td class="f">content</td><td class="f">text</td><td>NOT NULL</td><td>正文（Markdown）</td></tr>
+<tr><td class="f">citations</td><td class="f">jsonb</td><td>DEFAULT '[]'</td><td><span class="mono">[{doc_id, chunk_id, clause_no, page, snippet, score}]</span>；<b>无引用即视为可疑答案</b></td></tr>
+<tr><td class="f">tool_calls</td><td class="f">jsonb</td><td>NULL</td><td>调用的工具与参数，便于复盘</td></tr>
+<tr><td class="f">tool_result</td><td class="f">jsonb</td><td>NULL</td><td>工具返回摘要</td></tr>
+<tr><td class="f">answer_status</td><td class="f">varchar(16)</td><td>NOT NULL</td><td>answered / refused / partial / error</td></tr>
+<tr><td class="f">token_in / token_out</td><td class="f">int</td><td>DEFAULT 0</td><td>成本核算与配额</td></tr>
+<tr><td class="f">latency_ms</td><td class="f">int</td><td>—</td><td>端到端耗时</td></tr>
+<tr><td class="f">model</td><td class="f">varchar(48)</td><td>—</td><td>实际使用的模型</td></tr>
+<tr><td class="f">trace_id</td><td class="f">varchar(64)</td><td>IDX</td><td>串联检索、生成、审计</td></tr>
+<tr><td class="f">feedback</td><td class="f">smallint</td><td>NULL</td><td>1 有用 / -1 无用，喂给评测集</td></tr>
+</tbody>
+</table>
+
+<h3>3.5 policy_documents · 核对制度文档</h3>
+<table>
+<thead><tr><th style="width:170px">字段</th><th style="width:140px">类型</th><th style="width:170px">约束</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td class="f">id</td><td class="f">uuid</td><td>PK</td><td>主键</td></tr>
+<tr><td class="f">legal_entity_id</td><td class="f">uuid</td><td>NOT NULL, IDX</td><td>归属法人；集团通用制度可指向集团法人</td></tr>
+<tr><td class="f">title</td><td class="f">varchar(200)</td><td>NOT NULL</td><td>制度名称</td></tr>
+<tr><td class="f">doc_type</td><td class="f">varchar(24)</td><td>NOT NULL</td><td>policy 制度 / notice 通知 / faq / manual 操作手册</td></tr>
+<tr><td class="f">region_code</td><td class="f">varchar(12)</td><td>NULL, IDX</td><td>行政区划码；NULL 表示全国适用</td></tr>
+<tr><td class="f">effective_from</td><td class="f">date</td><td>NOT NULL</td><td><b>业务生效日</b></td></tr>
+<tr><td class="f">effective_to</td><td class="f">date</td><td>NULL, CHECK &gt; effective_from</td><td>NULL 表示长期有效</td></tr>
+<tr><td class="f">valid_from</td><td class="f">timestamptz</td><td>NOT NULL</td><td><b>系统记录时间起点</b>（双时态第二轴）</td></tr>
+<tr><td class="f">valid_to</td><td class="f">timestamptz</td><td>NULL</td><td>被新版本替代的时刻</td></tr>
+<tr><td class="f">version</td><td class="f">int</td><td>NOT NULL, UNIQUE(legal_entity_id, title, version)</td><td>同制度多版本共存</td></tr>
+<tr><td class="f">status</td><td class="f">varchar(16)</td><td>NOT NULL</td><td>draft / published / superseded / archived</td></tr>
+<tr><td class="f">supersedes_id</td><td class="f">uuid</td><td>NULL, FK self</td><td>替代关系，构成版本链</td></tr>
+<tr><td class="f">source_file_id</td><td class="f">uuid</td><td>NOT NULL</td><td>对象存储文件标识，L0 真相源</td></tr>
+<tr><td class="f">checksum</td><td class="f">varchar(64)</td><td>NOT NULL</td><td>文件哈希，防重复索引与篡改</td></tr>
+<tr><td class="f">chunk_count</td><td class="f">int</td><td>DEFAULT 0</td><td>切片数，检索覆盖率参考</td></tr>
+<tr><td class="f">index_status</td><td class="f">varchar(16)</td><td>NOT NULL</td><td>pending / indexing / ready / failed；<b>非 ready 不参与检索</b></td></tr>
+<tr><td class="f">published_by</td><td class="f">uuid</td><td>NULL</td><td>发布人</td></tr>
+<tr><td class="f">published_at</td><td class="f">timestamptz</td><td>NULL</td><td>发布时间</td></tr>
+</tbody>
+</table>
+
+<div class="note warn"><b>两个容易设计错的点：</b>① 制度不能"覆盖更新"，必须新增 version 并把旧版本 <span class="mono">valid_to</span> 置为切换时刻——否则历史答案无法复现；② 检索时必须带 <span class="mono">effective_from &lt;= 业务日期 &lt;= coalesce(effective_to, ∞)</span> 条件，否则会把已废止的制度答给用户，这是这类系统最常见的线上事故。</div>
+
+<h3>3.6 payroll_change_drafts · 薪酬变更草稿</h3>
+<table>
+<thead><tr><th style="width:180px">字段</th><th style="width:140px">类型</th><th style="width:170px">约束</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td class="f">id</td><td class="f">uuid</td><td>PK</td><td>主键</td></tr>
+<tr><td class="f">draft_no</td><td class="f">varchar(32)</td><td>UNIQUE</td><td>业务单号，人可读</td></tr>
+<tr><td class="f">employee_id</td><td class="f">uuid</td><td>NOT NULL, IDX</td><td>被变更员工</td></tr>
+<tr><td class="f">legal_entity_id</td><td class="f">uuid</td><td>NOT NULL, IDX</td><td>法人</td></tr>
+<tr><td class="f">change_type</td><td class="f">varchar(32)</td><td>NOT NULL</td><td>bank_account / address / si_base / salary_adjust / allowance …</td></tr>
+<tr><td class="f">effective_date</td><td class="f">date</td><td>NOT NULL, IDX</td><td>业务生效日，与提交日期分开</td></tr>
+<tr><td class="f">source</td><td class="f">varchar(16)</td><td>NOT NULL</td><td>employee 自助 / ssc 代录 / api 导入</td></tr>
+<tr><td class="f">status</td><td class="f">varchar(16)</td><td>NOT NULL, IDX</td><td>draft / submitted / reconciling / blocked / approved / effective / rejected / voided</td></tr>
+<tr><td class="f">draft_version</td><td class="f">int</td><td>NOT NULL DEFAULT 1</td><td>草稿每次修改递增，旧版本留痕</td></tr>
+<tr><td class="f">risk_level</td><td class="f">varchar(4)</td><td>NULL</td><td>L1–L4，核对后回填</td></tr>
+<tr><td class="f">delta_amount</td><td class="f">numeric(14,2)</td><td>DEFAULT 0</td><td>金额变动，阈值判定依据</td></tr>
+<tr><td class="f">recon_batch_id</td><td class="f">uuid</td><td>NULL</td><td>关联核对批次</td></tr>
+<tr><td class="f">snapshot_id</td><td class="f">uuid</td><td>NULL</td><td>生效时的时点快照</td></tr>
+<tr><td class="f">evidence_file_ids</td><td class="f">jsonb</td><td>DEFAULT '[]'</td><td>证明材料（附件）标识列表</td></tr>
+<tr><td class="f">created_by</td><td class="f">uuid</td><td>NOT NULL</td><td>发起人；员工自助时等于 employee_id</td></tr>
+<tr><td class="f">submitted_at</td><td class="f">timestamptz</td><td>NULL</td><td>提交时刻，冻结期判定基准</td></tr>
+<tr><td class="f">decided_at</td><td class="f">timestamptz</td><td>NULL</td><td>审批结论时刻</td></tr>
+<tr><td class="f">valid_from / valid_to</td><td class="f">timestamptz</td><td>NOT NULL / NULL</td><td>记录历史，状态迁移即新版本</td></tr>
+</tbody>
+</table>
+<p class="lead">草稿不在本表存明细，字段级新旧值放 <span class="mono">draft_items</span>（见 3.7）。理由：一条变更可能同时改银行卡和账户名，明细行粒度才是核对的判定单位，也是审计要看的粒度。</p>
+
+<h3>3.7 支撑表</h3>
+<table>
+<thead><tr><th style="width:190px">表</th><th style="width:120px">用途</th><th>关键字段</th></tr></thead>
+<tbody>
+<tr><td class="f">policy_document_chunks</td><td>切片与向量</td><td><span class="mono">id, doc_id, chunk_no, heading_path, content, page_no, token_count, embedding vector(1024), tsv tsvector</span></td></tr>
+<tr><td class="f">kg_entities</td><td>图谱节点</td><td><span class="mono">id, entity_type, name, canonical_key, props jsonb, doc_id, chunk_id, valid_from, valid_to</span></td></tr>
+<tr><td class="f">kg_relations</td><td>图谱边</td><td><span class="mono">id, src_id, dst_id, rel_type, weight, props jsonb, doc_id, chunk_id</span><br>rel_type：<span class="mono">依据 / 覆盖 / 替代 / 上下位 / 适用于 / 生效于</span></td></tr>
+<tr><td class="f">draft_items</td><td>变更明细</td><td><span class="mono">id, draft_id, field_code, old_value, new_value, value_type, item_version</span></td></tr>
+<tr><td class="f">audit_events</td><td>审计链</td><td><span class="mono">id bigserial, actor_id, action, object_type, object_id, before jsonb, after jsonb, trace_id, prev_hash, hash, created_at</span></td></tr>
+</tbody>
+</table>
+
+<h3>3.8 索引与约束要点</h3>
+<table>
+<thead><tr><th style="width:230px">对象</th><th>索引 / 约束</th><th style="width:230px">为什么</th></tr></thead>
+<tbody>
+<tr><td class="f">chunks.embedding</td><td>HNSW (m=16, ef_construction=64)，cosine</td><td>召回质量与建索引速度的平衡点</td></tr>
+<tr><td class="f">chunks.tsv</td><td>GIN</td><td>中文全文；<b>需装 zhparser，默认 parser 不切中文</b></td></tr>
+<tr><td class="f">chunks(doc_id, chunk_no)</td><td>btree</td><td>按文档重排、重建索引</td></tr>
+<tr><td class="f">policy_documents</td><td>btree(legal_entity_id, region_code, effective_from)</td><td>检索时按生效区间过滤，是最热的条件</td></tr>
+<tr><td class="f">kg_relations</td><td>btree(src_id) / btree(dst_id) / btree(rel_type)</td><td>图扩展两个方向都要走</td></tr>
+<tr><td class="f">payroll_change_drafts</td><td>btree(legal_entity_id, status, effective_date)</td><td>管理员按周期筛待办列表</td></tr>
+<tr><td class="f">全部业务表</td><td><b>RLS</b> + <span class="mono">app.current_legal_entity</span> 会话变量</td><td>应用层漏加条件时，数据库兜底挡住跨法人越权</td></tr>
+</tbody>
+</table>
+
+<div class="note"><b>为什么不上 Neo4j：</b>本域实体规模在 10⁴–10⁵ 量级（制度条款、地区、参数、变更类型），PG 邻接表 + 递归 CTE 两三跳完全够用，可视化在前端用 Cytoscape / AntV G6 渲染，后端不需要图数据库。多引入一套存储意味着多一套备份、监控、权限和故障域——除非实体超过百万级且需要复杂图算法，否则这是负收益。</div>
+
+<h2><span class="num">04</span>第一周最小验证目标</h2>
+
+<p class="lead">第一周的目的不是"把框架搭起来"，而是<b>用一份真实制度，验证这条路走不走得通</b>。CRUD 谁都会写，风险全部集中在切片质量和引用可靠性上。</p>
+
+<h3>4.1 一句话目标</h3>
+<div class="note"><b>一份真实制度文件 → 一个能多轮追问的员工问答 → 每条结论都挂着条款引用 → 前端能在图谱上点开这条引用对应的节点。</b><br>这条纵向切片打通，剩下的都是工程量的堆叠。</div>
+
+<h3>4.2 五天节奏</h3>
+<table>
+<thead><tr><th style="width:60px" class="c">天</th><th style="width:200px">产出</th><th>验收判据</th></tr></thead>
+<tbody>
+<tr><td class="c"><b>D1</b></td><td>骨架跑起来</td><td><span class="mono">docker-compose up</span> 一键起 pg(pgvector+zhparser) + redis + app；<span class="mono">/health</span> 200；JWT 登录签发成功；alembic 首版迁移可升降</td></tr>
+<tr><td class="c"><b>D2</b></td><td>摄入一份真实制度</td><td>《员工薪酬管理制度》+ 一份地区社保基数通知导入完成；切片保留 <span class="mono">heading_path</span> 与页码；<span class="mono">index_status=ready</span></td></tr>
+<tr><td class="c"><b>D3</b></td><td>最小 RAG 问答</td><td>支持三轮上下文；答案中每条结论带 <span class="mono">chunk_id</span>；前端可点击跳转原文并高亮</td></tr>
+<tr><td class="c"><b>D4</b></td><td>图谱 v0（半自动）</td><td>从同一份文档抽出 30–50 个实体与关系（允许人工修正 JSON）；Cytoscape 渲染子图；点节点能看到关联条款</td></tr>
+<tr><td class="c"><b>D5</b></td><td>评测跑分</td><td>20 条真实问题（HR 同事出题）配上期望条款，跑 <span class="mono">tests/evals</span>，出准确率报告</td></tr>
+</tbody>
+</table>
+
+<h3>4.3 四个可量化验收指标</h3>
+<table>
+<thead><tr><th style="width:190px">指标</th><th style="width:130px">目标</th><th>判定方式</th></tr></thead>
+<tbody>
+<tr><td>引用正确率</td><td><b>≥ 90%</b></td><td>答案引用的条款，是否真的是该结论的依据（人工判 20 题）</td></tr>
+<tr><td>要点完整率</td><td><b>≥ 16 / 20</b></td><td>答案覆盖期望要点，不遗漏关键例外</td></tr>
+<tr><td>幻觉率</td><td><b>0</b></td><td>不出现原文中不存在的条款号、金额、比例、地区</td></tr>
+<tr><td>端到端延迟</td><td><b>P95 &lt; 6s</b></td><td>含检索、重排、生成（流式首字 &lt; 1.5s）</td></tr>
+</tbody>
+</table>
+
+<h3>4.4 明确不在第一周做</h3>
+<ul class="clean">
+<li>管理员后台 UI（用 Swagger / 临时页面够用）</li>
+<li>图谱可视化编辑器（先手工修正 JSON，验证价值再投入）</li>
+<li>草稿状态机全流程、核对规则引擎、权限矩阵细化</li>
+<li>多法人隔离、KMS 密钥轮换、审计链哈希（P0 落表，P1 启用）</li>
+<li>LLM Wiki 摘要页——它是知识运营层，等 L1 稳定后再做，顺序不能反</li>
+</ul>
+
+<h3>4.5 第一周真正的风险</h3>
+<div class="note bad"><b>不是"能不能跑通"，而是"这份制度能不能被干净地切片和引用"。</b><br>
+薪酬制度文件普遍存在：条款编号不连续、表格混排在正文、附件另发、修订说明与正文混在一起。如果第一周发现切片必须按人工标注的条款边界来做，那整个摄入流水线的设计要改——<b>这才是第一周要暴露的问题</b>，越早暴露越好。所以 D2 一定要用真实文件，不要用人造的干净样例。</div>
+
+<h2><span class="num">05</span>后续演进提示</h2>
+<table>
+<thead><tr><th style="width:90px">阶段</th><th>重点</th></tr></thead>
+<tbody>
+<tr><td><b>W2–W3</b></td><td>管理员后台、文档版本管理与生效区间、图谱校对界面、检索路由落地</td></tr>
+<tr><td><b>W4–W5</b></td><td>草稿全流程、核对规则接入、差异分级、SSE 流式优化</td></tr>
+<tr><td><b>W6+</b></td><td>多法人 RLS、审计链、LLM Wiki 摘要层、评测集扩容到 200 题并纳入 CI</td></tr>
+</tbody>
+</table>
+
+<div class="foot">
+薪酬变更核对系统 · 技术架构设计 v0.1 · 2026-10-30<br>
+本文档与《需求清单 v0.1》配套；第 00 节的知识库选型结论若变更，需同步复核 01、03、04 三节。
+</div>
+
+</div>
+</body>
+</html>

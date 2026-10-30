@@ -1,0 +1,87 @@
+# ---------------------------------------------------------------------------
+# 薪酬变更核对系统 · 非机密默认配置
+# ---------------------------------------------------------------------------
+# 优先级：环境变量 > 本文件 > 代码默认值。
+#
+# 这里只放"团队共享的基线参数"（切片大小、top-k、检索权重这类大家应该一致的）。
+# 凡是机密或与机器绑定的东西（API Key、内网地址）一律走环境变量，
+# 见仓库根目录的 .env.example。
+#
+# 分区名固定为 ingestion / retrieval / llm / embedding / chat 五个；
+# 键名必须与 src/my_tool/core/config.py 的 Settings 字段一致，写错的键会被忽略。
+# ---------------------------------------------------------------------------
+
+ingestion:
+  # 制度原文。相对路径一律相对仓库根解析，不依赖当前工作目录。
+  doc_path: data/policy/员工薪酬变更核对制度_v1.0.md
+  # 索引产物目录（已被 .gitignore 排除，属于可重建的派生物）
+  index_dir: data/index
+
+  # —— 切片 ——
+  # 架构文档要求 500 字切片。注意：这里的 500 是"装箱容量"而不是"硬切长度"，
+  # 实际切片会按条款边界对齐，所以长度会在 300~500 之间浮动。
+  chunk_size: 500
+  # 同一条款被迫续切时的重叠字数，对齐到句首，避免答案正好跨在切口上
+  chunk_overlap: 80
+  # 小于该长度的碎片并入上一块，避免生成"只有一句话"的低信息切片
+  min_chunk_size: 60
+  # size = 按 500 字装箱（默认）；clause = 一条一款，绝不合并（核对场景可切）
+  chunk_mode: size
+
+retrieval:
+  top_k: 3          # 送入 prompt 的条数
+  recall_k: 12      # 每一路先召回多少条，再融合
+  rrf_k: 60         # RRF 平滑常数，原论文取 60，基本不用调
+  w_vector: 1.0     # 向量通道权重
+  w_bm25: 1.0       # 全文通道权重
+
+  # —— 拒答闸门 ——
+  # 两路的最高原始分都低于阈值 → 判定"库里没有依据"，直接拒答、不调用模型。
+  # ★ 这两个值与向量模型强绑定 ★
+  #   当前 0.25 / 4.0 是按 hash 占位向量标定的；换成 bge-m3 这类真实模型后
+  #   相关分会整体抬高，必须重新标定，否则会"该答的不答"。
+  min_vector_score: 0.25
+  min_bm25_score: 4.0
+
+  # 检索基准日期（模拟"业务日期"）。留空 = 2026-06-01，便于复现。
+  as_of: ""
+
+llm:
+  # mock = 离线抽取式假模型，零成本、确定性，用于验证检索与引用链路
+  # 其他可选项：openai / deepseek / qwen / moonshot / zhipu / ollama / vllm
+  llm_provider: mock
+  llm_model: ""          # 留空则用该厂商的默认模型
+  llm_base_url: ""       # 留空则用该厂商的官方端点
+  llm_temperature: 0.2
+  llm_max_tokens: 900
+  llm_timeout: 60.0
+  llm_max_retries: 3
+
+embedding:
+  # hash = 离线哈希向量（★仅供跑通链路，无任何语义能力，禁止上生产★）
+  # 生产请换 openai / qwen / siliconflow / ollama，并同步重建索引
+  embedding_provider: hash
+  embedding_model: ""
+  embedding_base_url: ""
+  embedding_dim: 512
+  embedding_batch: 16
+
+chat:
+  # 会话库（SQLite）。表结构沿用架构文档 3.3 / 3.4，迁 PG 时只换 DDL。
+  chat_db_path: data/chat.db
+
+  # —— 历史窗口：两个预算同时生效，超出时从最旧开始丢 ——
+  # 轮数是产品语义（"最近 6 轮"），字符数是成本与上下文窗口约束。
+  history_max_turns: 6        # 6 轮 = 最多 12 条消息
+  history_max_chars: 2400     # 中文约 1800 token
+  history_msg_max_chars: 400  # 单条超长截断，避免一条顶掉整个窗口
+
+  # —— 追问合并（指代消解）——
+  # 短问题含指代词时，把上一轮问题拼进"检索用的 query"（不影响生成用的提问）。
+  # 关掉它，"那超过 30 天呢"这类追问会召回不到东西。
+  followup_merge_enabled: true
+  followup_max_chars: 12
+
+  # 流式与护栏的取舍：after = 边流边判 + 事后告警（默认，首字快）；
+  # buffer = 缓冲到句末再发（能拦住未溯源数字，但首字慢 1~3 秒，暂未实现）
+  stream_guard_mode: after

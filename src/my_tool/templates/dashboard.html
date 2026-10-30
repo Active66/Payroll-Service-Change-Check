@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% block title %}概览{% endblock %}
+{% block crumb %}<b>概览</b>{% endblock %}
+
+{% block content %}
+<div class="stat-grid">
+  <div class="stat">
+    <div class="k">制度文档</div>
+    <div class="v">{{ doc_count }}<small>份</small></div>
+  </div>
+  <div class="stat">
+    <div class="k">切片总数</div>
+    <div class="v">{{ index.chunk_count }}<small>条</small></div>
+  </div>
+  <div class="stat">
+    <div class="k">今日提问</div>
+    <div class="v">{{ counts.questions }}<small>次</small></div>
+  </div>
+  <div class="stat">
+    <div class="k">今日拒答率</div>
+    <div class="v">{{ refusal_pct }}<small>%</small></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <h2>索引状态</h2>
+    <div class="spacer"></div>
+    {% if index.state == 'ready' %}
+      <span class="badge badge-ok">就绪</span>
+    {% elif index.state == 'building' %}
+      <span class="badge badge-warn">重建中</span>
+    {% else %}
+      <span class="badge badge-danger">未就绪</span>
+    {% endif %}
+  </div>
+  <div class="card-body">
+    {% if index.state == 'error' %}
+      <div class="alert alert-err">
+        索引没有加载成功，问答会返回「制度索引尚未就绪」。<br>
+        <span class="small">原因：{{ index.error }}</span>
+      </div>
+      <p class="small muted mt8">到「知识库」页点一次「重建索引」通常就能恢复。</p>
+    {% elif index.state == 'building' %}
+      <div class="alert alert-warn">
+        正在重建索引。**当前问答仍按上一版索引回答**，重建完成后自动切换到新索引。
+      </div>
+    {% endif %}
+
+    <table class="table">
+      <tbody>
+        <tr><td class="dim" style="width:180px">当前索引文档</td>
+            <td>{% if index.doc_title %}{{ index.doc_title }} <span class="muted">v{{ index.doc_version }}</span>{% else %}—{% endif %}</td></tr>
+        <tr><td class="dim">切片数</td><td class="num">{{ index.chunk_count }}</td></tr>
+        <tr><td class="dim">向量模型</td><td class="mono">{{ index.embedding_model or '—' }}</td></tr>
+        <tr><td class="dim">构建时间</td><td class="num">{{ index.built_at | dt('%Y-%m-%d %H:%M') }}</td></tr>
+      </tbody>
+    </table>
+
+    {% if index.rebuild and index.rebuild.status == 'failed' %}
+      <div class="alert alert-err mt16">
+        上次重建失败，已保留原索引：<span class="small">{{ index.rebuild.error }}</span>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <h2>待办</h2>
+    <div class="spacer"></div>
+    <a class="btn btn-sm" href="/admin/audit?flag=suspect">去看看</a>
+  </div>
+  <div class="card-body">
+    <div class="row wrap" style="gap:28px">
+      <div>
+        <div class="k muted small">待处理疑似违规</div>
+        <div class="v" style="font-size:22px;font-weight:600">{{ pending_audits }}</div>
+      </div>
+      <div>
+        <div class="k muted small">系统用户</div>
+        <div class="v" style="font-size:22px;font-weight:600">{{ users_total }}</div>
+      </div>
+      <div>
+        <div class="k muted small">今日生成失败</div>
+        <div class="v" style="font-size:22px;font-weight:600">{{ counts.errors }}</div>
+      </div>
+    </div>
+    {% if not auth_enabled %}
+      <div class="alert alert-warn mt16">
+        当前处于演示模式（AUTH_REQUIRED=0）：所有访问都按管理员处理，不校验登录。
+        正式部署前请打开鉴权。
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <h2>按部门看问答（近 30 天）</h2>
+    <div class="spacer"></div>
+    <span class="hint">
+      统计 {{ dept_sum }} 条 / 全库 {{ dept_total }} 条
+      {% if dept_sum != dept_total %}
+        <span class="badge badge-warn" title="统计口径：只算已判定状态（不含流式中）、近 30 天；全库含更早数据">口径差异见说明</span>
+      {% endif %}
+    </span>
+  </div>
+  <div class="card-body tight">
+    {% if by_dept %}
+      <table class="table">
+        <thead>
+          <tr><th>部门</th><th class="num">提问数</th><th class="num">参与人数</th>
+              <th class="num">正常作答</th><th class="num">需复核</th><th class="num">拒答</th>
+              <th class="num">拒答率</th></tr>
+        </thead>
+        <tbody>
+        {% for d in by_dept %}
+          <tr>
+            <td>{{ d.dept_name }}</td>
+            <td class="num">{{ d.questions }}</td>
+            <td class="num">{{ d.askers }}</td>
+            <td class="num">{{ d.answered }}</td>
+            <td class="num">{{ d.partial }}</td>
+            <td class="num">{{ d.refused }}</td>
+            <td class="num">
+              {{ (d.refuse_rate * 100) | round(0) | int }}%
+              {% if d.refuse_rate >= 0.3 %}<span class="badge badge-warn">偏高</span>{% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <div class="tip" style="padding:10px 14px">
+        分母是提问次数不是人数；「拒答率偏高」只说明这一组问到了制度没覆盖的地方，
+        不等于答错了 —— 先看拒答的问题实际问的是什么，再决定补制度还是补话术。
+        部门归属在 <code>payroll-check dept assign</code> 里维护。
+      </div>
+    {% else %}
+      <div class="empty">
+        <b>近 30 天没有可统计的问答</b>
+        先把员工挂到部门：<code>payroll-check dept assign --username 张三 --dept 华东区域</code>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <h2>最近对话</h2>
+  </div>
+  <div class="card-body tight">
+    {% if recent %}
+      <table class="table">
+        <thead><tr><th>员工</th><th>首问</th><th>消息数</th><th>最后活跃</th><th></th></tr></thead>
+        <tbody>
+        {% for s in recent %}
+          <tr>
+            <td>{{ s.display_name or s.user_id }}</td>
+            <td>{{ s.title or '—' }}</td>
+            <td class="num">{{ s.message_count }}</td>
+            <td class="num">{{ s.last_message_at | dt }}</td>
+            <td class="actions"><a class="btn-link" href="/admin/audit/{{ s.id }}">查看</a></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="empty"><b>还没有对话记录</b>员工在问答入口提问后会出现在这里</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

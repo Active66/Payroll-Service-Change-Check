@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% block title %}提示词模板{% endblock %}
+{% block crumb %}<b>提示词</b>{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>提示词模板</h1>
+    <div class="sub">保存即新建版本，历史版本可随时回滚；下一个问题起生效</div>
+  </div>
+  <div class="spacer"></div>
+  <span class="badge badge-accent">当前生效 {{ tpl.label }}</span>
+</div>
+
+{% if preview %}
+  <div class="card">
+    <div class="card-head">
+      <h2>预览结果</h2>
+      <div class="spacer"></div>
+      <span class="hint">用草稿跑一次真实检索 + 生成，未保存、未落库</span>
+    </div>
+    <div class="card-body">
+      {% if preview.error %}
+        <div class="alert alert-err">{{ preview.error }}</div>
+      {% elif preview.refused %}
+        <div class="alert alert-warn">这个问题在当前索引里没有召回任何条款，会走拒答分支。</div>
+      {% else %}
+        <div class="small muted" style="margin-bottom:8px">问：{{ preview.question }}</div>
+        <div class="pre">{{ preview.answer }}</div>
+        {% if preview.guard %}
+          <div class="row wrap mt8">
+            <span class="badge {% if preview.guard.status == 'answered' %}badge-ok{% else %}badge-warn{% endif %}">
+              护栏状态 {{ preview.guard.status }}
+            </span>
+            {% if preview.guard.unverified %}
+              <span class="badge badge-danger">未溯源数字 {{ preview.guard.unverified | join('、') }}</span>
+            {% endif %}
+            {% if preview.usage %}
+              <span class="muted small">tokens {{ preview.usage.tokens_in }}/{{ preview.usage.tokens_out }}
+                · {{ preview.usage.latency_ms }}ms</span>
+            {% endif %}
+          </div>
+          {% for w in preview.guard.warnings %}
+            <div class="alert alert-warn mt8 small">{{ w }}</div>
+          {% endfor %}
+        {% endif %}
+        {% if preview.citations %}
+          <div class="small muted mt16" style="margin-bottom:6px">引用来源</div>
+          {% for c in preview.citations %}
+            <div class="row" style="align-items:flex-start;gap:8px;margin-bottom:6px">
+              <span class="badge badge-muted">[{{ c.index }}]</span>
+              <span class="small">{{ c.clause }} — {{ c.snippet }}…</span>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+{% endif %}
+
+<div class="card">
+  <div class="card-head">
+    <h2>编辑模板</h2>
+    <div class="spacer"></div>
+    <button class="btn btn-sm" type="button" onclick="resetDefaults()">填入默认值</button>
+  </div>
+  <div class="card-body">
+    <form method="post" action="/admin/prompts">
+      <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+
+      <div class="field">
+        <label for="system_prompt">系统提示词（system）</label>
+        <textarea class="textarea mono" id="system_prompt" name="system_prompt" rows="6"
+                  required>{{ system_prompt }}</textarea>
+        <div class="tip">定义助手的角色与口径。这里改的是"话术"，不改变检索与引用机制。</div>
+      </div>
+
+      <div class="field">
+        <label for="user_template">用户模板（user）</label>
+        <textarea class="textarea mono" id="user_template" name="user_template" rows="8"
+                  required>{{ user_template }}</textarea>
+        <div class="tip">
+          必须保留 <code>{context}</code> 与 <code>{question}</code> 两个占位符，否则保存会被拒绝。
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="note">修改说明（可选）</label>
+        <input class="input" id="note" name="note" placeholder="例：加强金额不得换算的约束">
+      </div>
+
+      <button class="btn btn-primary" type="submit">保存为新版本并生效</button>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <h2>系统强制追加（不可编辑）</h2>
+  </div>
+  <div class="card-body">
+    <div class="pre" style="max-height:200px">{{ citation_rules }}</div>
+    <p class="small muted mt8">
+      这段是系统契约而不是话术：护栏按 <code>[1] [2]</code> 角标核对引用，
+      模型不标角标时答案会被判为「引用缺失」。所以它固定追加在 system prompt 之后，不随模板变动。
+    </p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <h2>预览草稿</h2>
+    <div class="spacer"></div>
+    <span class="hint">不保存也能看效果</span>
+  </div>
+  <div class="card-body">
+    <form method="post" action="/admin/prompts/preview" class="row" style="gap:8px">
+      <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+      <input type="hidden" name="system_prompt" id="pv_system">
+      <input type="hidden" name="user_template" id="pv_user">
+      <input class="input" name="question" style="flex:1"
+             value="{{ preview.question if preview else '冻结期内可以改银行账户吗？' }}">
+      <button class="btn" type="submit" onclick="copyDraft()">用草稿预览</button>
+    </form>
+    <div class="tip">预览会真的调一次模型（mock 模式不产生费用）。</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <h2>历史版本</h2>
+    <div class="spacer"></div>
+    <span class="hint">共 {{ versions | length }} 个版本</span>
+  </div>
+  <div class="card-body tight">
+    {% if versions %}
+      <table class="table">
+        <thead>
+          <tr><th class="num">版本</th><th>说明</th><th class="num">system / user 字数</th>
+              <th>创建时间</th><th class="actions">操作</th></tr>
+        </thead>
+        <tbody>
+        {% for v in versions %}
+          <tr>
+            <td class="num">v{{ v.version }}
+              {% if v.is_active %}<span class="badge badge-ok">生效中</span>{% endif %}
+            </td>
+            <td class="small">{{ v.note or '—' }}</td>
+            <td class="num small">{{ v.system_len }} / {{ v.user_len }}</td>
+            <td class="num small">{{ v.created_at | dt }}</td>
+            <td class="actions">
+              {% if not v.is_active %}
+                <form class="inline-form" method="post"
+                      action="/admin/prompts/{{ v.version }}/activate">
+                  <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                  <button class="btn-link" type="submit">回滚到此版</button>
+                </form>
+              {% else %}
+                <span class="muted small">—</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="empty"><b>还没有自定义模板</b>当前用的是系统内置默认</div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+const DEFAULTS = {
+  system: {{ defaults.system | tojson }},
+  user: {{ defaults.user | tojson }}
+};
+function resetDefaults() {
+  document.getElementById("system_prompt").value = DEFAULTS.system;
+  document.getElementById("user_template").value = DEFAULTS.user;
+}
+function copyDraft() {
+  document.getElementById("pv_system").value = document.getElementById("system_prompt").value;
+  document.getElementById("pv_user").value = document.getElementById("user_template").value;
+}
+</script>
+{% endblock %}

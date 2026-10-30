@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% block title %}知识库{% endblock %}
+{% block crumb %}<b>知识库</b>{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>知识库</h1>
+    <div class="sub">上传的制度会被切片并向量化，问答只依据这里的现行文档</div>
+  </div>
+  <div class="spacer"></div>
+  <form method="post" action="/admin/kb/rebuild">
+    <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+    <button class="btn" type="submit" {% if rebuild.status == 'building' %}disabled{% endif %}>
+      重建索引
+    </button>
+  </form>
+</div>
+
+{% if rebuild.status == 'building' %}
+  <div class="alert alert-warn">
+    正在重建索引。**当前问答仍按上一版索引回答**，完成后自动切换到新索引。刷新页面查看进度。
+  </div>
+{% elif rebuild.status == 'failed' %}
+  <div class="alert alert-err">
+    上次重建失败，已保留原索引：<span class="small">{{ rebuild.error }}</span>
+  </div>
+{% elif rebuild.status == 'succeeded' %}
+  <div class="alert alert-ok">
+    索引已更新：{{ rebuild.docs }} 份文档 / {{ rebuild.chunks }} 条切片
+    <span class="muted small">（{{ rebuild.finished_at }}）</span>
+  </div>
+{% endif %}
+
+<div class="card">
+  <div class="card-head">
+    <h2>上传制度文件</h2>
+    <div class="spacer"></div>
+    <span class="hint">支持 .md / .txt / .pdf，单文件 ≤ {{ max_mb }} MB</span>
+  </div>
+  <div class="card-body">
+    <form method="post" action="/admin/kb/upload" enctype="multipart/form-data">
+      <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+      <div class="grid-2">
+        <div class="field">
+          <label for="file">文件</label>
+          <input class="input" id="file" type="file" name="file" accept=".md,.markdown,.txt,.pdf" required>
+          <div class="tip">PDF 只支持有文本层的文件；扫描件需要先做 OCR。</div>
+        </div>
+        <div class="field">
+          <label for="doc_id">文档编号（留空自动生成）</label>
+          <input class="input" id="doc_id" name="doc_id" placeholder="POL-CMP-2026-002">
+          <div class="tip">同一编号已存在时会拒绝上传，避免制度被静默覆盖。</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label for="title">标题（留空取文件名）</label>
+          <input class="input" id="title" name="title" placeholder="员工薪酬变更核对制度">
+        </div>
+        <div class="field">
+          <label for="version">版本号（数字，用于判定"哪一版更新"）</label>
+          <input class="input" id="version" name="version" value="1" inputmode="numeric">
+          <div class="tip">同一编号传新版本会自动把旧版置为"已被替代"，不需要先删旧版。</div>
+        </div>
+      </div>
+      <div class="field">
+        <label for="version_label">版本标识（可选，展示用）</label>
+        <input class="input" id="version_label" name="version_label" placeholder="v1.0 / 2026-A">
+        <div class="tip">制度封面上的原始版本串，方便与纸质文件对照；留空则显示数字版本号。</div>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label for="effective_from">生效日期</label>
+          <input class="input" id="effective_from" name="effective_from" type="date">
+        </div>
+        <div class="field">
+          <label for="effective_to">失效日期（留空=长期）</label>
+          <input class="input" id="effective_to" name="effective_to" type="date">
+        </div>
+      </div>
+      <button class="btn btn-primary" type="submit">上传并入库</button>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <h2>制度文档</h2>
+    <div class="spacer"></div>
+    <a class="btn btn-sm {% if status == 'active' %}btn-primary{% endif %}" href="/admin/kb?status=active">现行</a>
+    <a class="btn btn-sm {% if status == 'superseded' %}btn-primary{% endif %}" href="/admin/kb?status=superseded">历史版本</a>
+    <a class="btn btn-sm {% if status == 'deleted' %}btn-primary{% endif %}" href="/admin/kb?status=deleted">已删除</a>
+  </div>
+  <div class="card-body tight">
+    {% if docs %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>标题</th><th>编号</th><th class="num">版本</th><th class="num">切片</th>
+            <th>生效期</th><th>文件</th><th>上传</th><th class="actions">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for d in docs %}
+          <tr>
+            <td>
+              <a href="/admin/kb/{{ d.doc_id }}?version={{ d.version }}">{{ d.title }}</a>
+              {% if d.status == 'deleted' %}<span class="badge badge-muted">已删除</span>{% endif %}
+              {% if d.status == 'superseded' %}<span class="badge badge-muted">已被替代</span>{% endif %}
+              {% if d.id in pending_ids %}<span class="badge badge-warn" title="生效日期未到，暂不进入索引">待生效</span>{% endif %}
+              {% if version_counts.get(d.doc_id, 0) > 1 %}
+                <a class="badge badge-link" href="/admin/kb/{{ d.doc_id }}"
+                   title="覆盖 {{ version_counts[d.doc_id] }} 个历史版本">共 {{ version_counts[d.doc_id] }} 版</a>
+              {% endif %}
+            </td>
+            <td class="mono">{{ d.doc_id }}</td>
+            <td class="num">v{{ d.version_label or d.version }}</td>
+            <td class="num">{{ d.chunk_count }}</td>
+            <td class="num small">
+              {{ d.effective_from or '—' }}
+              {% if d.effective_to %} ~ {{ d.effective_to }}{% endif %}
+            </td>
+            <td class="small muted">{{ d.source_file }}</td>
+            <td class="num small">{{ d.created_at | dt('%m-%d %H:%M') }}</td>
+            <td class="actions">
+              <a class="btn-link" href="/admin/kb/{{ d.doc_id }}?version={{ d.version }}">切片</a>
+              {% if d.status == 'active' %}
+                <form class="inline-form" method="post" action="/admin/kb/{{ d.doc_id }}/delete"
+                      onsubmit="return confirm('确认删除《{{ d.title }}》？删除后会重建索引，问答将不再引用它。');">
+                  <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+                  <input type="hidden" name="confirm" value="1">
+                  <button class="btn-link" type="submit" style="color:var(--danger)">删除</button>
+                </form>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="empty">
+        <b>还没有制度文档</b>
+        上传一份 markdown 或 PDF 开始，问答才有依据
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

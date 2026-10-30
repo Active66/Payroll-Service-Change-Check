@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>薪酬变更核对系统 · 页面预览</title>
+<style>
+  :root{
+    --bg:#f5f6f8; --panel:#fff; --line:#e4e7ec; --ink:#1f2733;
+    --brand:#2563eb; --brand-soft:#eef3ff; --warn:#a16207;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{
+    font:14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",
+         "Microsoft YaHei",sans-serif;
+    background:var(--bg); color:var(--ink);
+    display:flex; overflow:hidden;
+  }
+
+  /* —— 左侧：页面清单 —— */
+  aside{
+    width:236px; flex:none; height:100vh; overflow-y:auto;
+    background:#141a24; color:#c7cfdb; display:flex; flex-direction:column;
+  }
+  .brand{padding:20px 18px 14px;border-bottom:1px solid #222c3a}
+  .brand b{display:block;color:#fff;font-size:14.5px;letter-spacing:.2px}
+  .brand span{display:block;margin-top:4px;font-size:11.5px;color:#7d8798}
+  nav{padding:10px 10px 18px}
+  .group{margin:12px 0 4px;padding:0 8px;font-size:11px;color:#6b7688;letter-spacing:.8px}
+  button.nav{
+    display:flex;align-items:center;gap:9px;width:100%;text-align:left;
+    padding:8px 10px;margin:1px 0;border:0;border-radius:8px;
+    background:transparent;color:#c7cfdb;font:inherit;font-size:13.2px;cursor:pointer;
+  }
+  button.nav:hover{background:#1d2532;color:#fff}
+  button.nav.on{background:var(--brand);color:#fff;font-weight:500}
+  button.nav i{
+    flex:none;width:18px;height:18px;border-radius:5px;background:#28323f;
+    display:grid;place-items:center;font-size:10px;font-style:normal;color:#8b97a8;
+  }
+  button.nav.on i{background:rgba(255,255,255,.22);color:#fff}
+  .foot{margin-top:auto;padding:14px 16px;border-top:1px solid #222c3a;
+        font-size:11.5px;color:#6b7688;line-height:1.7}
+
+  /* —— 右侧：内容 —— */
+  main{flex:1;display:flex;flex-direction:column;height:100vh;min-width:0}
+  .topbar{
+    flex:none;display:flex;align-items:center;gap:12px;
+    padding:11px 18px;background:var(--panel);border-bottom:1px solid var(--line);
+  }
+  .topbar h1{margin:0;font-size:14px;font-weight:600}
+  .topbar .sub{font-size:12px;color:#8a94a3}
+  .spacer{flex:1}
+  .tag{
+    font-size:11.5px;padding:3px 9px;border-radius:20px;border:1px solid #fde68a;
+    background:#fffbeb;color:var(--warn);white-space:nowrap;
+  }
+  .open{
+    font-size:12px;color:var(--brand);text-decoration:none;padding:5px 10px;
+    border:1px solid #dbe4f7;border-radius:7px;background:var(--brand-soft);
+    white-space:nowrap;
+  }
+  .open:hover{border-color:var(--brand)}
+  .viewport{flex:1;position:relative;background:#f0f2f5;min-height:0}
+  iframe{width:100%;height:100%;border:0;display:block;background:#fff}
+</style>
+</head>
+<body>
+
+<aside>
+  <div class="brand">
+    <b>薪酬变更核对系统</b>
+    <span>页面预览 · 静态快照</span>
+  </div>
+
+  <nav id="nav">
+    <div class="group">员工侧</div>
+    <button class="nav" data-src="login.html"><i>1</i>登录</button>
+    <button class="nav" data-src="chat.html"><i>2</i>员工问答</button>
+
+    <div class="group">管理后台</div>
+    <button class="nav" data-src="overview.html"><i>3</i>概览 + 部门统计</button>
+    <button class="nav" data-src="kb_list.html"><i>4</i>知识库</button>
+    <button class="nav" data-src="kb_detail.html"><i>5</i>文档详情 / 版本台账</button>
+    <button class="nav" data-src="kb_list_history.html"><i>6</i>历史版本</button>
+    <button class="nav" data-src="prompts.html"><i>7</i>提示词模板</button>
+    <button class="nav" data-src="audit_list.html"><i>8</i>对话审计</button>
+    <button class="nav" data-src="audit_detail.html"><i>9</i>会话回放</button>
+  </nav>
+
+  <div class="foot">
+    真实模板渲染导出<br>
+    数据来自本地演示库<br>
+    <span style="color:#8b97a8">admin / Demo12345</span>
+  </div>
+</aside>
+
+<main>
+  <div class="topbar">
+    <div>
+      <h1 id="title">概览 + 部门统计</h1>
+      <div class="sub" id="hint">真实渲染的服务端页面</div>
+    </div>
+    <div class="spacer"></div>
+    <span class="tag">静态快照：表单提交、实时问答、语音均不可用</span>
+    <a class="open" id="direct" href="overview.html" target="_blank">单独打开 ↗</a>
+  </div>
+  <div class="viewport">
+    <iframe id="frame" src="overview.html" title="页面预览"></iframe>
+  </div>
+</main>
+
+<script>
+  const frame  = document.getElementById("frame");
+  const title  = document.getElementById("title");
+  const hint   = document.getElementById("hint");
+  const direct = document.getElementById("direct");
+  const btns   = [...document.querySelectorAll("button.nav")];
+
+  const META = {
+    "login.html":          ["登录", "员工与管理员共用入口，按角色跳转"],
+    "chat.html":           ["员工问答", "SSE 流式 + 引用卡片 + 语音输入按钮"],
+    "overview.html":       ["概览 + 部门统计", "索引状态、今日问答、按部门看拒答率（阶段 4 新增）"],
+    "kb_list.html":        ["知识库", "版本号 + 版本标识输入；同一编号传新版自动替代旧版"],
+    "kb_detail.html":      ["文档详情 / 版本台账", "切片逐条预览 + 版本历史与回滚"],
+    "kb_list_history.html":["历史版本", "被新版替代的版本留档，可回滚"],
+    "prompts.html":        ["提示词模板", "存库、版本不可变、草稿预览"],
+    "audit_list.html":     ["对话审计", "按员工/时间/关键词筛选，规则预筛"],
+    "audit_detail.html":   ["会话回放", "多轮对话 + 引用原文 + prompt 版本"],
+  };
+
+  function show(file, btn) {
+    frame.src = file;
+    direct.href = file;
+    const [t, h] = META[file] || ["预览", ""];
+    title.textContent = t;
+    hint.textContent = h;
+    btns.forEach(b => b.classList.toggle("on", b === btn));
+    try { sessionStorage.setItem("demo-page", file); } catch (e) {}
+  }
+
+  btns.forEach(b => b.addEventListener("click", () => show(b.dataset.src, b)));
+
+  const saved = (() => {
+    try { return sessionStorage.getItem("demo-page"); } catch (e) { return null; }
+  })();
+  const start = btns.find(b => b.dataset.src === saved) || btns[2];
+  show(start.dataset.src, start);
+</script>
+</body>
+</html>

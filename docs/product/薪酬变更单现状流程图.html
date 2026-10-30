@@ -1,0 +1,74 @@
+<svg viewBox="0 0 680 800" width="100%" role="img" xmlns="http://www.w3.org/2000/svg" font-family="var(--font-sans), system-ui, sans-serif">
+<title>薪酬变更单现状流程图</title>
+<desc>从客户提出变更、登记草稿、双人核对到正式确认与出具结果的流程，两个判断点分别校验版本可确认性与金额差异来源，不通过则进入人工核对队列并被阻断出结果。</desc>
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</marker>
+</defs>
+
+<text x="40" y="26" font-size="15" font-weight="500" fill="#2C2C2A">薪酬变更单：现状流程与人工拦截点</text>
+<text x="40" y="46" font-size="12" fill="#5F5E5A">依据 f01 / f20 / f24 / f44 ｜ 两个判断点决定能否出具结果</text>
+
+<rect x="115" y="60" width="250" height="48" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+<text x="240" y="79" font-size="14" font-weight="500" fill="#0C447C" text-anchor="middle" dominant-baseline="central">客户提出变更</text>
+<text x="240" y="96" font-size="12" fill="#185FA5" text-anchor="middle" dominant-baseline="central">邮件或群消息先行，表格后补</text>
+
+<line x1="240" y1="108" x2="240" y2="142" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<rect x="115" y="146" width="250" height="48" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+<text x="240" y="165" font-size="14" font-weight="500" fill="#0C447C" text-anchor="middle" dominant-baseline="central">变更登记（草稿）</text>
+<text x="240" y="181" font-size="12" fill="#185FA5" text-anchor="middle" dominant-baseline="central">一线专员提交，模型无审批权</text>
+
+<line x1="240" y1="194" x2="240" y2="232" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<polygon points="240,236 345,272 240,308 135,272" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.5"/>
+<text x="240" y="263" font-size="14" font-weight="500" fill="#633806" text-anchor="middle" dominant-baseline="central">版本可确认？</text>
+<text x="240" y="282" font-size="12" fill="#854F0B" text-anchor="middle" dominant-baseline="central">有效期 + 确认状态</text>
+
+<line x1="240" y1="308" x2="240" y2="342" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="252" y="330" font-size="12" fill="#5F5E5A" dominant-baseline="central">是</text>
+
+<polyline points="345,272 380,272 380,320 426,320" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="352" y="262" font-size="12" fill="#5F5E5A">否</text>
+
+<rect x="115" y="346" width="250" height="48" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+<text x="240" y="365" font-size="14" font-weight="500" fill="#0C447C" text-anchor="middle" dominant-baseline="central">双人核对</text>
+<text x="240" y="381" font-size="12" fill="#185FA5" text-anchor="middle" dominant-baseline="central">当班人员 + 复核，逐字段比对</text>
+
+<line x1="240" y1="394" x2="240" y2="428" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<polygon points="240,432 345,468 240,504 135,468" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.5"/>
+<text x="240" y="459" font-size="14" font-weight="500" fill="#633806" text-anchor="middle" dominant-baseline="central">差异有来源？</text>
+<text x="240" y="478" font-size="12" fill="#854F0B" text-anchor="middle" dominant-baseline="central">金额可回溯到原行</text>
+
+<line x1="240" y1="504" x2="240" y2="538" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="252" y="526" font-size="12" fill="#5F5E5A" dominant-baseline="central">是</text>
+
+<polyline points="345,468 400,468 400,376 426,376" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="352" y="458" font-size="12" fill="#5F5E5A">否</text>
+
+<rect x="430" y="300" width="195" height="96" rx="8" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.5"/>
+<text x="527" y="324" font-size="14" font-weight="500" fill="#633806" text-anchor="middle" dominant-baseline="central">人工核对队列</text>
+<text x="527" y="348" font-size="12" fill="#854F0B" text-anchor="middle" dominant-baseline="central">被阻断，禁止出具结果</text>
+<text x="527" y="368" font-size="12" fill="#854F0B" text-anchor="middle" dominant-baseline="central">断链 / 缺字段 / 截止后补发</text>
+<text x="430" y="414" font-size="12" fill="#854F0B">人工决策通过后才可回到主流程</text>
+
+<rect x="115" y="542" width="250" height="48" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+<text x="240" y="561" font-size="14" font-weight="500" fill="#0C447C" text-anchor="middle" dominant-baseline="central">正式确认</text>
+<text x="240" y="577" font-size="12" fill="#185FA5" text-anchor="middle" dominant-baseline="central">授权业务负责人签字</text>
+
+<line x1="240" y1="590" x2="240" y2="620" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<rect x="115" y="624" width="250" height="48" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+<text x="240" y="643" font-size="14" font-weight="500" fill="#0C447C" text-anchor="middle" dominant-baseline="central">出具结果</text>
+<text x="240" y="659" font-size="12" fill="#185FA5" text-anchor="middle" dominant-baseline="central">每条结果关联来源与复核记录</text>
+
+<line x1="240" y1="672" x2="240" y2="702" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<rect x="115" y="706" width="250" height="48" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+<text x="240" y="725" font-size="14" font-weight="500" fill="#0C447C" text-anchor="middle" dominant-baseline="central">归档与审计</text>
+<text x="240" y="741" font-size="12" fill="#185FA5" text-anchor="middle" dominant-baseline="central">查询 / 版本 / 建议 / 确认全链留痕</text>
+
+<text x="340" y="776" font-size="12" fill="#5F5E5A" text-anchor="middle">贯穿全链：业务发生时间与系统接收时间并记，系统建议不得覆盖原值</text>
+</svg>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}管理后台{% endblock %} · 薪酬核对</title>
+<link rel="stylesheet" href="/static/admin.css">
+</head>
+<body>
+<div class="shell">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">薪</div>
+      <div>
+        <b>薪酬核对 · 管理后台</b>
+        <span>Payroll Change Check</span>
+      </div>
+    </div>
+
+    <nav class="nav">
+      {# 变量名必须带 nav_ 前缀：Jinja2 的 {% set %} 是模板级作用域，
+         子模板的 content block 在 base 的上下文里执行，一旦这里用 items /
+         rows 这类通用名，就会静默覆盖子模板 render 传进来的同名变量 ——
+         表现为"列表页有数据但每行都是空的"，且不报任何错。 #}
+      {% set nav_items = [
+        ('/admin',          '概览',      '◱'),
+        ('/admin/kb',       '知识库',    '▤'),
+        ('/admin/prompts',  '提示词',    '✎'),
+        ('/admin/audit',    '对话审计',  '◎')
+      ] %}
+      <div class="nav-group">运营</div>
+      {% for href, label, ico in nav_items %}
+        {% set active = (path == href) or (href != '/admin' and path.startswith(href)) %}
+        <a class="nav-item {% if active %}active{% endif %}" href="{{ href }}">
+          <span class="ico">{{ ico }}</span>{{ label }}
+        </a>
+      {% endfor %}
+
+      <div class="nav-group">员工侧</div>
+      <a class="nav-item" href="/" target="_blank" rel="noopener">
+        <span class="ico">↗</span>问答入口
+      </a>
+    </nav>
+
+    <div class="foot">
+      <div class="who">
+        <b>{{ user.display_name if user else '未登录' }}</b>
+        {{ user.username if user else '' }}{% if user %} · {{ '管理员' if user.role == 'admin' else '员工' }}{% endif %}
+      </div>
+      <form method="post" action="/logout">
+        <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+        <button class="btn btn-sm" type="submit">退出登录</button>
+      </form>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb">{% block crumb %}<b>概览</b>{% endblock %}</div>
+      <div class="spacer"></div>
+      <span class="env">内部系统</span>
+    </header>
+
+    <div class="content">
+      {% if err %}<div class="alert alert-err">{{ err }}</div>{% endif %}
+      {% if ok %}<div class="alert alert-ok">{{ ok }}</div>{% endif %}
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

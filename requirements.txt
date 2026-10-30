@@ -1,0 +1,25 @@
+# 运行期依赖（与 pyproject.toml 的 dependencies 保持一致）
+#
+# 安装：pip install -r requirements.txt
+#
+# 为什么不用 openai SDK：所有出网请求都收敛在 src/my_tool/core/llm/http.py，
+# 只用标准库 urllib 走 OpenAI 兼容协议。少一层 SDK 就少一层版本耦合，
+# 而兼容协议本身足够简单，不值得为它引入一个会变脸的依赖。
+
+numpy>=1.24
+faiss-cpu>=1.7
+jieba>=0.42
+PyYAML>=6.0
+# —— 阶段 2：HTTP 服务（SSE 流式问答）——
+fastapi>=0.110
+uvicorn>=0.27
+
+# —— 阶段 3：管理后台 ——
+# jinja2            服务端渲染模板
+# python-multipart  文件上传表单解析（FastAPI 强依赖）
+# PyJWT             JWT 签发校验（HS256 的 alg 混淆与 exp 边界不值得自造）
+# pypdf             PDF 文本层抽取（扫描件需 OCR，本期不支持）
+jinja2>=3.1
+python-multipart>=0.0.9
+PyJWT>=2.8
+pypdf>=4.0

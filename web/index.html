@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>薪酬变更核对 · 制度问答</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">薪</div>
+      <div>
+        <h1>薪酬变更核对 · 制度问答</h1>
+        <p>答案逐句标注制度来源；查不到依据会直接告诉你</p>
+      </div>
+    </div>
+    <div class="actions">
+      <span class="health" id="health" title="服务状态检查中"><i></i><span id="healthText">检查中…</span></span>
+      <button class="ghost" id="newChat" type="button">新建对话</button>
+    </div>
+  </header>
+
+  <main class="thread" id="thread" aria-live="polite">
+    <section class="welcome" id="welcome">
+      <h2>问点什么？</h2>
+      <p>只会依据《员工薪酬变更核对制度 v1.0》回答，每条结论都带条款出处。</p>
+      <div class="samples">
+        <button type="button">冻结期内能改银行账户吗？</button>
+        <button type="button">2026 年上海社保缴费基数上限是多少？</button>
+        <button type="button">单次补发最多覆盖几个月？</button>
+        <button type="button">降薪需要员工书面确认吗？</button>
+      </div>
+    </section>
+  </main>
+
+  <button class="jump" id="jump" type="button" hidden>↓ 回到最新</button>
+
+  <footer class="composer">
+    <div class="statusbar" id="statusbar" hidden>
+      <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span id="statusText">正在检索制度…</span>
+    </div>
+    <form id="form" autocomplete="off">
+      <textarea id="input" rows="1" placeholder="输入问题，Enter 发送，Shift + Enter 换行"></textarea>
+      <button id="mic" type="button" class="mic" hidden
+              title="语音输入（识别后先填进输入框，确认再发送）"
+              aria-label="语音输入">🎙</button>
+      <button id="send" type="submit">发送</button>
+    </form>
+    <p class="hint">回答由检索到的制度条款生成，涉及个人薪酬请以人事系统记录为准。</p>
+  </footer>
+
+</div>
+<script src="/static/app.js"></script>
+</body>
+</html>

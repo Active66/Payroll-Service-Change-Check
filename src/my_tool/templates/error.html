@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ status }} · 薪酬核对管理后台</title>
+<link rel="stylesheet" href="/static/admin.css">
+</head>
+<body>
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="brand">
+      <div class="logo">薪</div>
+      <div>
+        <b>薪酬核对 · 管理后台</b>
+        <span>Payroll Change Check</span>
+      </div>
+    </div>
+
+    <div style="font-size:34px;font-weight:600;letter-spacing:-.02em;line-height:1.1">{{ status }}</div>
+    <p class="dim" style="margin:6px 0 18px">{{ message }}</p>
+
+    {% if code %}<p class="small muted mono" style="margin:0 0 18px">错误码 {{ code }}{% if trace_id %} · 编号 {{ trace_id }}{% endif %}</p>{% endif %}
+
+    <div class="row">
+      <a class="btn btn-primary" href="/admin">回到概览</a>
+      <a class="btn" href="/login">重新登录</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

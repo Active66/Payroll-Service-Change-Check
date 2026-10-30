@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "payroll-change-check"
+version = "0.3.0"
+description = "薪酬变更核对系统 · 制度 RAG 内核 + 员工问答入口 + 管理后台"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Payroll Service Change Check Contributors" }]
+keywords = ["rag", "retrieval", "bm25", "faiss", "payroll", "compliance"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Text Processing :: Indexing",
+]
+
+# 运行期依赖：numpy / faiss 是硬依赖，jieba 与 PyYAML 缺失时会降级（见 utils/env.py）
+dependencies = [
+    "numpy>=1.24",
+    "faiss-cpu>=1.7",
+    "jieba>=0.42",
+    "PyYAML>=6.0",
+    # 阶段 2：SSE 流式问答服务
+    "fastapi>=0.110",
+    "uvicorn>=0.27",
+    # 阶段 3：管理后台（服务端渲染 + 上传 + 鉴权 + PDF）
+    "jinja2>=3.1",
+    "python-multipart>=0.0.9",
+    "PyJWT>=2.8",
+    "pypdf>=4.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4", "pyflakes>=3.0", "httpx>=0.27"]
+
+[project.scripts]
+# 装好之后即可用 `payroll-check build / ask / chat / serve / eval / info / user`
+payroll-check = "my_tool.main:main"
+
+[project.urls]
+Documentation = "https://github.com/your-org/payroll-change-check/blob/main/docs/design.md"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+# 模板必须跟着包走：pip install 之后 PROJECT_ROOT 指向的是仓库/安装目录，
+# 少了这一行，装成包运行时会报 TemplateNotFound。
+my_tool = ["templates/*.html"]
+
+[tool.pytest.ini_options]
+# src 布局下测试无需安装包也能跑：把 src 加进 import 路径
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.pyflakes]
+# 仅供编辑器/CI 参考；命令行直接 `python -m pyflakes src scripts tests`
+exclude = ["docs/reference/*"]

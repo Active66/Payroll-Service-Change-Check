@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>登录 · 薪酬核对管理后台</title>
+<link rel="stylesheet" href="/static/admin.css">
+</head>
+<body>
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="brand">
+      <div class="logo">薪</div>
+      <div>
+        <b>薪酬核对 · 管理后台</b>
+        <span>Payroll Change Check</span>
+      </div>
+    </div>
+
+    {% if err %}<div class="alert alert-err">{{ err }}</div>{% endif %}
+
+    <form method="post" action="/login" autocomplete="on">
+      <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+      <input type="hidden" name="next" value="{{ next }}">
+
+      <div class="field">
+        <label for="username">用户名</label>
+        <input class="input" id="username" name="username" value="{{ username }}"
+               autocomplete="username" autofocus required>
+      </div>
+
+      <div class="field">
+        <label for="password">密码</label>
+        <input class="input" id="password" name="password" type="password"
+               autocomplete="current-password" required>
+      </div>
+
+      <button class="btn btn-primary" type="submit">登录</button>
+    </form>
+
+    <div class="login-foot">
+      管理员可管理知识库、提示词与对话审计<br>
+      员工登录后直接进入问答入口
+    </div>
+  </div>
+</div>
+</body>
+</html>

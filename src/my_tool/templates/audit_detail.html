@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}会话详情{% endblock %}
+{% block crumb %}<a href="/admin/audit">对话审计</a> / <b>{{ sess.title or '未命名会话' }}</b>{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{{ sess.title or '未命名会话' }}</h1>
+    <div class="sub">
+      {{ sess.display_name or sess.user_id }} · {{ sess.message_count }} 条消息
+      · tokens {{ sess.token_used }}
+      · 开始于 {{ sess.created_at | dt('%Y-%m-%d %H:%M') }}
+    </div>
+  </div>
+  <div class="spacer"></div>
+  <a class="btn" href="/admin/audit">返回列表</a>
+</div>
+
+{% for m in items %}
+  {% if m.role == 'user' %}
+    <div class="card">
+      <div class="card-head">
+        <h2>提问</h2>
+        <div class="spacer"></div>
+        <span class="hint">#{{ m.seq }} · {{ m.created_at | dt('%m-%d %H:%M:%S') }}</span>
+      </div>
+      <div class="card-body"><div class="pre">{{ m.content }}</div></div>
+    </div>
+  {% elif m.role == 'assistant' %}
+    <div class="card">
+      <div class="card-head">
+        <h2>回答</h2>
+        <span class="badge {% if m.answer_status == 'answered' %}badge-ok
+          {% elif m.answer_status == 'refused' %}badge-muted
+          {% elif m.answer_status == 'partial' %}badge-warn
+          {% else %}badge-danger{% endif %}">{{ m.status_label }}</span>
+        {% if m.flag %}
+          <span class="badge {% if m.flag.flag == 'confirmed' %}badge-danger
+            {% elif m.flag.flag == 'suspect' %}badge-warn{% else %}badge-muted{% endif %}">
+            {{ {'suspect':'疑似违规','confirmed':'确认违规','cleared':'已清除'}[m.flag.flag] }}
+          </span>
+        {% endif %}
+        <div class="spacer"></div>
+        <span class="hint">
+          #{{ m.seq }} · {{ m.created_at | dt('%m-%d %H:%M:%S') }}
+          · prompt {{ m.prompt_version or '—' }}
+          · {{ m.token_in }}/{{ m.token_out }} tokens
+          {% if m.latency_ms %} · {{ m.latency_ms }}ms{% endif %}
+        </span>
+      </div>
+      <div class="card-body">
+        <div class="pre">{{ m.content }}</div>
+
+        {% if m.risks %}
+          <div class="alert alert-warn mt16" style="margin-bottom:0">
+            <b>系统预筛命中（只是提示，不等于违规）</b>
+            <ul style="margin:6px 0 0;padding-left:18px">
+              {% for r in m.risks %}<li class="small">{{ r.code }} · {{ r.label }}</li>{% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+
+        {% if m.citations_list %}
+          <div class="small muted mt16" style="margin-bottom:6px">引用来源（{{ m.citations_list | length }} 条）</div>
+          {% for c in m.citations_list %}
+            <div class="row" style="align-items:flex-start;gap:8px;margin-bottom:8px">
+              <span class="badge badge-muted">[{{ c.index }}]</span>
+              <div class="small">
+                <div><b>{{ c.doc_title or c.doc_id }}</b> {{ c.clause_no }}</div>
+                <div class="muted">{{ c.snippet }}…</div>
+                <div class="mono muted" style="font-size:11px">{{ c.chunk_id }} · score {{ c.score }}</div>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p class="small muted mt16">这条回答没有引用任何条款。</p>
+        {% endif %}
+
+        <div class="row wrap mt16" style="gap:8px;padding-top:12px;border-top:1px solid var(--line)">
+          {% for flag, label, cls in [('suspect','标记疑似违规','btn'),
+                                      ('confirmed','确认违规','btn-danger'),
+                                      ('cleared','清除标记','btn')] %}
+            <form method="post" action="/admin/audit/messages/{{ m.id }}/flag" class="inline-form">
+              <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+              <input type="hidden" name="flag" value="{{ flag }}">
+              <input type="hidden" name="session_id" value="{{ sess.id }}">
+              <input type="hidden" name="next" value="/admin/audit/{{ sess.id }}">
+              <button class="btn btn-sm {{ cls }}" type="submit">{{ label }}</button>
+            </form>
+          {% endfor %}
+        </div>
+
+        {% if m.flag_history %}
+          <details class="mt8">
+            <summary class="small muted" style="cursor:pointer">标记记录（{{ m.flag_history | length }}）</summary>
+            <table class="table mt8">
+              <thead><tr><th>时间</th><th>动作</th><th>说明</th><th>是否撤销</th></tr></thead>
+              <tbody>
+              {% for h in m.flag_history %}
+                <tr>
+                  <td class="num small">{{ h.created_at | dt('%m-%d %H:%M') }}</td>
+                  <td class="small">{{ {'suspect':'疑似','confirmed':'确认违规','cleared':'清除'}[h.flag] }}</td>
+                  <td class="small muted">{{ h.note or '—' }}</td>
+                  <td class="small">{{ '已撤销' if h.revoked_at else '有效' }}</td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </details>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+{% endfor %}
+{% endblock %}
