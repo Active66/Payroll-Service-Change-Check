@@ -294,6 +294,8 @@ html, body {
 .badge.answered { color: var(--ok); border-color: #cfe8dc; background: #f2faf6; }
 .badge.partial { color: var(--warn); border-color: #f3e2c2; background: var(--warn-soft); }
 .badge.refused { color: var(--ink-2); }
+/* 非制度依据：刻意用警示色而不是中性色 —— 这条回答最容易被误当成规定 */
+.badge.offscope { color: var(--warn); border-color: #f3e2c2; background: var(--warn-soft); }
 .badge.error { color: var(--danger); border-color: #f6cfca; background: var(--danger-soft); }
 
 /* ---------------- 输入区 ---------------- */

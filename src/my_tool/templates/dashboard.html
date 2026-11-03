@@ -20,6 +20,13 @@
     <div class="k">今日拒答率</div>
     <div class="v">{{ refusal_pct }}<small>%</small></div>
   </div>
+  {% if counts.offscope %}
+  <div class="stat">
+    <div class="k">今日通用回答</div>
+    <div class="v">{{ counts.offscope }}<small>条</small></div>
+    <div class="hint">制度外问题，不计入拒答率</div>
+  </div>
+  {% endif %}
 </div>
 
 <div class="card">

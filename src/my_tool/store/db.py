@@ -58,6 +58,9 @@ CREATE TABLE IF NOT EXISTS chat_messages (
     trace_id      TEXT,
     feedback      INTEGER,
     prompt_version TEXT,
+    -- 依据范围：policy=制度原文，offscope=制度里没有、走通用知识（答复已带声明）。
+    -- 与 answer_status 分开：一个是"依据从哪来"，一个是"答案质量好不好"。
+    scope         TEXT NOT NULL DEFAULT 'policy',
     created_at    TEXT NOT NULL,
     UNIQUE (session_id, seq)
 );
@@ -406,6 +409,12 @@ def migrate(conn: sqlite3.Connection) -> list[str]:
     if "prompt_version" not in columns("chat_messages"):
         conn.execute("ALTER TABLE chat_messages ADD COLUMN prompt_version TEXT")
         applied.append("chat_messages.prompt_version")
+
+    # scope：这轮回答依据的是制度还是通用知识。默认 policy —— 老数据全都是制度问答，
+    # 直接给默认值即可，不需要逐行回填（也就没有"迁移期间数据不一致"的窗口）。
+    if "scope" not in columns("chat_messages"):
+        conn.execute("ALTER TABLE chat_messages ADD COLUMN scope TEXT NOT NULL DEFAULT 'policy'")
+        applied.append("chat_messages.scope")
 
     if "department_id" not in columns("users"):
         conn.execute("ALTER TABLE users ADD COLUMN department_id TEXT")

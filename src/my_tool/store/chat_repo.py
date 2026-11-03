@@ -110,7 +110,7 @@ def finish_turn(conn: sqlite3.Connection, message_id: int, *, content: str,
                 citations: Sequence[dict[str, Any]] | None = None,
                 answer_status: str = "answered", token_in: int = 0, token_out: int = 0,
                 latency_ms: int | None = None, model: str = "",
-                prompt_version: str = "") -> None:
+                prompt_version: str = "", scope: str = "policy") -> None:
     """
     一次提问的第二次落库（T2）：把占位行更新成最终结果。
 
@@ -133,11 +133,12 @@ def finish_turn(conn: sqlite3.Connection, message_id: int, *, content: str,
                   SET content = ?, citations = ?, answer_status = ?,
                       token_in = ?, token_out = ?, latency_ms = ?,
                       model = COALESCE(NULLIF(?,''), model),
-                      prompt_version = COALESCE(NULLIF(?,''), prompt_version)
+                      prompt_version = COALESCE(NULLIF(?,''), prompt_version),
+                      scope = ?
                 WHERE id = ?""",
             (content, citations_json,
              answer_status, token_in, token_out, latency_ms, model, prompt_version,
-             message_id),
+             scope, message_id),
         )
         # 会话累计 token（架构 3.3 的 token_used，用于配额）
         conn.execute(

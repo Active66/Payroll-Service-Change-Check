@@ -149,7 +149,11 @@ async def ask(request: Request, key: dict = Depends(require_api_key)) -> JSONRes
                  "content": str(h.get("content", ""))[:2000]} for h in cut] or None
 
     def _run() -> Any:
-        return ctx.orchestrator.answer(question, top_k=top_k, history=hist)
+        # allow_offscope=False：对外接口永远只回制度内的答案。
+        # 调用方是 HR 系统/工单系统，它没有界面向员工解释"这段是通用知识"，
+        # 一旦把通用解释直接推进工单，责任就说不清了。员工端的"聊"不延伸到接口。
+        return ctx.orchestrator.answer(question, top_k=top_k, history=hist,
+                                       allow_offscope=False)
 
     try:
         res = await run_in_threadpool(_run)

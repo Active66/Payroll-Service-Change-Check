@@ -18,6 +18,11 @@ os.environ["LLM_PROVIDER"] = "mock"
 os.environ.pop("LLM_API_KEY", None)
 os.environ.pop("LLM_BASE_URL", None)
 
+# 同理锁住"越界策略"：本机 .env 可能为了演示打开 OFFSCOPE_ANSWER=general，
+# 但测试要断言的是**默认拒答**。不锁的话，改一次 .env 就会让一批用例变红，
+# 而失败原因看起来像"代码坏了"，根因却是开发机的演示配置。
+os.environ["OFFSCOPE_ANSWER"] = "refuse"
+
 import pytest
 
 from my_tool.core.chunker import chunk_blocks

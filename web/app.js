@@ -52,6 +52,7 @@ const STATUS_LABEL = {
   answered: "已核对",
   partial: "待核",
   refused: "未找到依据",
+  offscope: "非制度依据",
   error: "出错",
   streaming: "生成中",
   drafted: "已建草稿",
@@ -529,6 +530,7 @@ async function ask(question) {
       },
       status(d) {
         if (d.stage === "generating") setStatus("正在组织回答…", true);
+        else if (d.stage === "offscope") setStatus(d.text || "制度中无对应条款，改用通用知识回答…", true);
         else if (d.stage === "refused") setStatus(d.text || "没有检索到相关制度条款", true);
         else setStatus(d.text || "正在检索制度…", true);
       },

@@ -12,6 +12,7 @@
 | [`agent.md`](agent.md) | Agent **使用说明**：参数表与条款对照、规则引擎判什么、闸门四层机制、9 个工具、运维要点 | 实施、运维、集成开发 |
 | [`agent-design.md`](agent-design.md) | Agent **设计**：工具 vs skill 的划分依据、顺序约束四层、系统提示词策略、明确不做什么 | 要改 Agent 的人 |
 | [`agent-traces.md`](agent-traces.md) | Agent **轨迹**：两张日志表的分工、3 个典型流程的预期轨迹、决策日志怎么查 | 阶段 5 分析、运维排障 |
+| [`go-live-checklist.md`](go-live-checklist.md) | 上线前检查清单：5 维度 × 5 项，含负责人/验证方法/通过标准，并标注当前实现状态（已具备/部分/缺失） | 上线评审、运维、安全 |
 | `eval/agent_cases.json` + `scripts/eval_agent.py` | Agent **评测**：30 条用例（四类）+ 自动评测 runner，比对实际工具序列 vs 期望，输出 pass/fail 报告 | QA、回归 |
 
 ## 产品与方案（`product/`）

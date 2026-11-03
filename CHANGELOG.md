@@ -2,6 +2,44 @@
 
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [0.7.0] - 2026-10-31
+
+制度外问题可选走通用知识（`OFFSCOPE_ANSWER=general`），默认仍严格拒答。
+
+### 新增
+
+- **越界问答通道**：`OFFSCOPE_ANSWER` 两档 —— `refuse`（默认）/ `general`。
+  打开后，检索闸门判定"完全没有相关条款"的问题改走通用知识，答复最前面由**系统**
+  拼「【非制度依据】」声明（`prompt.OFFSCOPE_NOTICE`），不交给模型生成 ——
+  模型十次里会漏写一次，漏的那次恰好可能被截图当成制度依据。
+- **独立提示词**：`GENERAL_SYSTEM_PROMPT`。**整套替换**而不是在制度 prompt 上加一句
+  "也可以聊别的"：`CITATION_RULES` 是代码固化的"资料没给就说未找到"，
+  两套矛盾约束放同一份 system 里，模型只会执行更保守的那条，表现就是"开关开了还在拒答"。
+  新 prompt 禁止编造公司具体数值、禁止下"可办/不合规"结论、要求指向制度或 HR。
+- **`chat_messages.scope` 列**（policy / offscope）：依据来源与答案质量分开记。
+  落库时 `offscope` 映射为 `answer_status='answered'` —— 直接写 offscope 会撞
+  CHECK 约束，而失败发生在异步落库路径，表现为"页面有答案、刷新就没了"。
+- **统计口径**：`today_counts` 新增 `offscope` 桶，**不计入 `answered`，也不进拒答率分母**。
+  否则只要多聊几句，拒答率就"降下来了"，制度覆盖不足被掩盖。概览页新增"今日通用回答"卡片。
+- **前端**：状态条显示"制度中无对应条款，改用通用知识回答…"，徽标 `非制度依据`（警示色）。
+- **测试**：254 → 265（新增 `test_offscope.py` 11 项：默认拒答且 0 token、非法配置回落、
+  声明强制拼接、无 context/无引用规则、跳过护栏、对外 API 不受开关影响、
+  制度内问题不受影响、流式首帧、落库映射、统计口径）。
+
+### 边界（刻意不做）
+
+- **对外 API 永远 strict**：`/api/v1/ask` 传 `allow_offscope=False`。调用方是系统，
+  没有界面向员工解释"这段不是制度"，一旦推进工单，责任说不清。
+- **Agent 模式永远 strict**：能建单的链路不接通用知识。
+- **"制度里沾边但没规定"仍然拒答**：只有闸门判"完全不在知识域"才允许聊。
+  检索到了相关条款时，缺的那部分是制度内空白，必须明确"未规定" ——
+  用通用知识填，反而更像"公司就是这么办的"。
+
+### 修复
+
+- README 已知限制里"单文档单版本"一条已过时（版本台账在 0.4.0 落地），更新为
+  "历史版本切片不能逐版对照"。
+
 ## [0.6.3] - 2026-10-30
 
 Agent 评测体系：30 条评测用例 + 自动评测 runner。
@@ -352,6 +390,9 @@ Agent 工具链：9 个 Function Calling 工具、制度规则引擎、校验凭
 - 拒答闸门只能拦截明显越界问题；「制度相关但库中无依据」需阶段 2 的 Router 意图分流。
 - 单文档单版本，暂无制度版本表与多地区并存。
 
+[0.7.0]: https://github.com/your-org/payroll-change-check/releases/tag/v0.7.0
+[0.6.3]: https://github.com/your-org/payroll-change-check/releases/tag/v0.6.3
+[0.6.2]: https://github.com/your-org/payroll-change-check/releases/tag/v0.6.2
 [0.6.1]: https://github.com/your-org/payroll-change-check/releases/tag/v0.6.1
 [0.6.0]: https://github.com/your-org/payroll-change-check/releases/tag/v0.6.0
 [0.5.0]: https://github.com/your-org/payroll-change-check/releases/tag/v0.5.0

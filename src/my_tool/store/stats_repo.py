@@ -25,28 +25,32 @@ def today_counts(conn: sqlite3.Connection) -> dict[str, int]:
     """
     今日问答口径：
       questions   用户提问条数（role='user'）
-      answered    正常作答（answered + partial，partial 也算答了，只是有疑点）
+      answered    制度内的正常作答（answered + partial，partial 也算答了，只是有疑点）
       refused     拒答（没有检索到依据）
+      offscope    制度外、走通用知识的回答（单独计数，**不计入 answered/refused**）
       errors      生成失败
-    拒答率 = refused / (answered + refused)，分母不含 error ——
-    把系统故障算进"拒答率"会让这个指标失去意义。
+    拒答率 = refused / (answered + refused)，分母不含 error 与 offscope ——
+    把系统故障算进"拒答率"会让这个指标失去意义；
+    把通用回答算进分母则会掩盖"制度覆盖不足"：那样只要多聊几句，拒答率就"降下来了"。
     """
     start = _today_start()
     rows = conn.execute(
-        """SELECT role, answer_status, COUNT(*) AS n
+        """SELECT role, answer_status, COALESCE(scope, 'policy') AS scope, COUNT(*) AS n
              FROM chat_messages
             WHERE created_at >= ?
-         GROUP BY role, answer_status""",
+         GROUP BY role, answer_status, COALESCE(scope, 'policy')""",
         (start,),
     ).fetchall()
 
-    out = {"questions": 0, "answered": 0, "refused": 0, "errors": 0}
+    out = {"questions": 0, "answered": 0, "refused": 0, "errors": 0, "offscope": 0}
     for r in rows:
-        role, status, n = r["role"], r["answer_status"], int(r["n"])
+        role, status, scope, n = r["role"], r["answer_status"], r["scope"], int(r["n"])
         if role == "user":
             out["questions"] += n
         elif role == "assistant":
-            if status in ("answered", "partial", "streaming"):
+            if scope == "offscope":
+                out["offscope"] += n
+            elif status in ("answered", "partial", "streaming"):
                 out["answered"] += n
             elif status == "refused":
                 out["refused"] += n

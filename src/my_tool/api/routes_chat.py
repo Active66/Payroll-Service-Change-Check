@@ -24,6 +24,12 @@ from .schemas import (ChatRequest, citation_payload, message_payload,
 
 router = APIRouter()
 
+# orchestrator 的 status 与 chat_messages.answer_status 取值域不同：
+# offscope 是"依据来源"，不是"答案质量"，落库仍记 answered（这条回答本身没问题），
+# 由 scope 列区分。不做这层映射会撞 CHECK 约束 —— 而失败发生在写完之后的
+# 异步落库路径里，表现为"页面上有答案，刷新就没了"，非常难查。
+RAG_STATUS_TO_DB = {"offscope": "answered"}
+
 
 # --------------------------------------------------------------------------- #
 # 工具函数
@@ -114,7 +120,7 @@ def _persist_turn(ctx: Any, turn: dict[str, Any], *, content: str,
                   citations: list[dict[str, Any]], status: str,
                   token_in: int = 0, token_out: int = 0,
                   latency_ms: int | None = None, model: str = "",
-                  prompt_version: str = "") -> None:
+                  prompt_version: str = "", scope: str = "policy") -> None:
     """落库（T2）。失败只记日志、不打断流 —— 用户已经看到答案了，不能因为写库失败把气泡弄坏。"""
     conn = db.connect(ctx.settings.chat_db_path)
     try:
@@ -122,6 +128,7 @@ def _persist_turn(ctx: Any, turn: dict[str, Any], *, content: str,
             conn, turn["assistant_message_id"], content=content, citations=citations,
             answer_status=status, token_in=token_in, token_out=token_out,
             latency_ms=latency_ms, model=model, prompt_version=prompt_version,
+            scope=scope,
         )
     except Exception as ex:                       # noqa: BLE001 — 兜底，绝不影响已发出去的流
         log(f"写入助手消息失败（message_id={turn.get('assistant_message_id')}）：{ex}", "err")
@@ -174,6 +181,11 @@ def _stream_turn(ctx: Any, turn: dict[str, Any]) -> Iterator[str]:
                     yield sse.frame("citations", {"citations": citations})
                     yield sse.frame("status", {"stage": "generating",
                                               "text": "正在组织回答…"})
+                elif ev.data.get("offscope"):
+                    # 制度里没有、走通用分支：先明确告知"接下来不是我司规定"，
+                    # 不要等正文里的声明 —— 状态条是用户最先看到的地方
+                    yield sse.frame("status", {"stage": "offscope",
+                                              "text": "制度中无对应条款，改用通用知识回答…"})
                 else:
                     # 没有召回：接下来只会收到一段固定拒答话术
                     yield sse.frame("status", {"stage": "refused",
@@ -208,13 +220,15 @@ def _stream_turn(ctx: Any, turn: dict[str, Any]) -> Iterator[str]:
                 ans = ev.data["answer"]
                 # 先落库再发 done：done 是"客户端可以据此收尾"的信号，
                 # 若此时写库失败，刷新页面会看不到这条回答，顺序反了更容易察觉问题
-                persist_once(content=ans.answer, citations=citations, status=ans.status,
+                persist_once(content=ans.answer, citations=citations,
+                             status=RAG_STATUS_TO_DB.get(ans.status, ans.status),
                              token_in=ans.tokens_in, token_out=ans.tokens_out,
                              latency_ms=ans.latency_ms, model=ans.model,
-                             prompt_version=ans.prompt_version)
+                             prompt_version=ans.prompt_version, scope=ans.scope)
                 yield sse.frame("done", {
                     "message_id": turn["assistant_message_id"],
                     "status": ans.status,
+                    "scope": ans.scope,
                     "usage": {"tokens_in": ans.tokens_in, "tokens_out": ans.tokens_out,
                               "latency_ms": ans.latency_ms},
                     "trace_id": turn["trace_id"],

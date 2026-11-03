@@ -9,7 +9,8 @@ from ..utils.console import log
 from .config import Settings
 from .entities import Citation, RetrievalHit
 from .guard import GuardResult, run_guard
-from .prompt import PROMPT_VERSION, build_prompt
+from .prompt import (GENERAL_PROMPT_VERSION, OFFSCOPE_NOTICE, PROMPT_VERSION,
+                     build_general_prompt, build_prompt)
 from .retrieval.bm25 import BM25Index
 from .retrieval.embedding import EmbeddingModel
 from .retrieval.hybrid import HybridRetriever
@@ -23,10 +24,14 @@ from .llm.base import ChatModel, LLMResult
 #
 #   检索 → 组装 prompt → 生成 → 护栏 → 组装引用
 #
-#   设计上的两个"故意"：
-#     ① 无召回时**不进 LLM**，直接拒答。省 token，也让拒答行为可解释；
+#   设计上的三个"故意"：
+#     ① 无召回时**默认不进 LLM**，直接拒答。省 token，也让拒答行为可解释。
+#        OFFSCOPE_ANSWER=general 时才改走通用分支 —— 那时换一整套提示词、
+#        由系统在答复最前面拼"非制度依据"声明，且**不跑护栏**（没有资料可核）。
 #     ② 引用列表由检索结果生成，不由模型输出解析 —— 模型只负责写角标，
 #        角标与 chunk_id 的映射权在系统手里，模型无法伪造出处。
+#     ③ 通用分支的状态是 offscope 而不是 answered：它是"依据来源"变了，
+#        不是"答案质量"变了。混在一起会让拒答率、待核数这些指标失真。
 #
 #   阶段 2 新增 answer_stream()：把"检索完成""增量文本""护栏结论""最终结果"
 #   分成四类事件 yield 出去，供 HTTP 层编码成 SSE。
@@ -80,7 +85,7 @@ class RAGAnswer:
 
     question: str
     answer: str
-    status: str                                     # answered / partial / refused / error
+    status: str                                     # answered / partial / refused / offscope / error
     citations: list[Citation] = field(default_factory=list)
     hits: list[RetrievalHit] = field(default_factory=list)
     guard: GuardResult | None = None
@@ -91,6 +96,10 @@ class RAGAnswer:
     tokens_out: int = 0
     latency_ms: int = 0
     query_used: str = ""                            # 实际用于检索的 query（含追问合并的结果）
+    # 这轮回答的依据范围：policy = 有制度依据，offscope = 制度里没有、走的是通用知识。
+    # 单独一个字段而不是复用一个新 status：status 是"答案质量"，scope 是"依据来源"，
+    # 两者维度不同 —— 通用分支的答案质量可以完全正常（不是 partial，更不是 refused）。
+    scope: str = "policy"
 
 
 @dataclass
@@ -123,6 +132,8 @@ class _Prep:
     context: str
     debug: dict[str, Any]
     prompt_version: str = PROMPT_VERSION
+    # True = 这一轮走的是"制度里没有 → 通用知识"分支（已配 OFFSCOPE_ANSWER=general）
+    offscope: bool = False
 
 
 class Orchestrator:
@@ -145,7 +156,8 @@ class Orchestrator:
     # 公共前缀：检索 + 拒答判定 + prompt + 引用
     # ------------------------------------------------------------------ #
     def _prepare(self, question: str, top_k: int | None,
-                 history: Sequence[dict[str, str]] | None) -> _Prep:
+                 history: Sequence[dict[str, str]] | None,
+                 allow_offscope: bool = True) -> _Prep:
         query_used = build_retrieval_query(question, history, self.s)
 
         # ① 混合检索（top3）
@@ -156,6 +168,7 @@ class Orchestrator:
         messages: list[dict[str, str]] = []
         context = ""
         prompt_version = PROMPT_VERSION
+        offscope = False
         if hits:
             template = self.prompt_provider.active() if self.prompt_provider else None
             messages, context, prompt_version = build_prompt(question, hits, template=template)
@@ -163,6 +176,15 @@ class Orchestrator:
                 # 只在 system 之后插入历史，且不参与检索——检索永远用"当前问题"，
                 # 否则多轮之后 query 会被历史污染（架构文档 1.2 步骤②③的分工）。
                 messages = [messages[0], *history, messages[-1]]
+        elif allow_offscope and self._offscope_enabled():
+            # 制度里没有依据，但开关允许"聊"：换用通用提示词。
+            # 注意这里**整套替换**、不拼 CITATION_RULES —— 见 prompt.py 里
+            # GENERAL_SYSTEM_PROMPT 的注释：两套互相矛盾的约束放同一份 system 里，
+            # 模型只会执行更保守的那条，结果就是"开了开关还在拒答"。
+            messages = build_general_prompt(question, history)
+            prompt_version = GENERAL_PROMPT_VERSION
+            offscope = True
+            rdebug["offscope"] = True
 
         return _Prep(
             question=question,
@@ -173,7 +195,12 @@ class Orchestrator:
             context=context,
             debug=rdebug,
             prompt_version=prompt_version,
+            offscope=offscope,
         )
+
+    def _offscope_enabled(self) -> bool:
+        """越界策略是否放行通用回答。每次现读配置，改环境变量重启即生效，不缓存。"""
+        return (getattr(self.s, "offscope_answer", "refuse") or "refuse").lower() == "general"
 
     @staticmethod
     def _build_citations(hits: Sequence[RetrievalHit]) -> list[Citation]:
@@ -198,31 +225,42 @@ class Orchestrator:
             for i, h in enumerate(hits, start=1)
         ]
 
-    def _finalize(self, prep: _Prep, llm: LLMResult, guard: GuardResult, t0: float) -> RAGAnswer:
+    def _finalize(self, prep: _Prep, llm: LLMResult,
+                  guard: GuardResult | None, t0: float) -> RAGAnswer:
+        # 通用分支没有 context 可核对，护栏在这里没有意义（run_guard 会把每个数字
+        # 都判成"未溯源"，答案全变 partial）。所以它走独立状态，不走护栏。
+        status = guard.status if guard is not None else "offscope"
         return RAGAnswer(
-            question=prep.question, answer=llm.text, status=guard.status,
+            question=prep.question, answer=llm.text, status=status,
             citations=prep.citations, hits=prep.hits, guard=guard,
             debug={**prep.debug, "t_llm_ms": llm.latency_ms, "provider": llm.provider},
             model=llm.model, tokens_in=llm.tokens_in, tokens_out=llm.tokens_out,
             latency_ms=int((time.perf_counter() - t0) * 1000),
             query_used=prep.query_used,
             prompt_version=prep.prompt_version,
+            scope="offscope" if prep.offscope else "policy",
         )
 
     # ------------------------------------------------------------------ #
     # 非流式：CLI / 评测 / 单测走这条，行为与阶段 1 完全一致
     # ------------------------------------------------------------------ #
     def answer(self, question: str, *, top_k: int | None = None,
-               history: Sequence[dict[str, str]] | None = None) -> RAGAnswer:
+               history: Sequence[dict[str, str]] | None = None,
+               allow_offscope: bool = True) -> RAGAnswer:
+        """
+        allow_offscope=False 用于"不该出现通用知识"的调用方（对外 API）。
+        理由：外部系统拿到一段通用解释后没法向员工解释"这不是制度"，
+        而它通常直接进工单或 IM 推送 —— 那句话一旦被当成依据，责任就说不清了。
+        """
         t0 = time.perf_counter()
         question = question.strip()
         if not question:
             return RAGAnswer(question=question, answer="请输入有效问题。", status="error")
 
-        prep = self._prepare(question, top_k, history)
+        prep = self._prepare(question, top_k, history, allow_offscope=allow_offscope)
 
-        # 无召回 → 直接拒答，不浪费一次生成调用
-        if not prep.hits:
+        # 无召回且未开启通用分支 → 直接拒答，不浪费一次生成调用
+        if not prep.hits and not prep.offscope:
             return RAGAnswer(
                 question=question,
                 answer=_REFUSAL_TEXT,
@@ -248,6 +286,12 @@ class Orchestrator:
                 query_used=prep.query_used,
             )
 
+        if prep.offscope:
+            # 声明必须由系统拼在最前，不交给模型 —— 模型十次里会漏写一次，
+            # 漏的那次恰好可能被员工截图当成制度依据。
+            llm.text = OFFSCOPE_NOTICE + (llm.text or "").strip()
+            return self._finalize(prep, llm, None, t0)
+
         guard = run_guard(llm.text, prep.context, len(prep.hits))
         return self._finalize(prep, llm, guard, t0)
 
@@ -255,7 +299,8 @@ class Orchestrator:
     # 流式：HTTP 层把它编码成 SSE
     # ------------------------------------------------------------------ #
     def answer_stream(self, question: str, *, top_k: int | None = None,
-                      history: Sequence[dict[str, str]] | None = None) -> Iterator[StreamEvent]:
+                      history: Sequence[dict[str, str]] | None = None,
+                      allow_offscope: bool = True) -> Iterator[StreamEvent]:
         t0 = time.perf_counter()
         question = question.strip()
         if not question:
@@ -263,18 +308,19 @@ class Orchestrator:
                 question=question, answer="请输入有效问题。", status="error")})
             return
 
-        prep = self._prepare(question, top_k, history)
+        prep = self._prepare(question, top_k, history, allow_offscope=allow_offscope)
         yield StreamEvent("retrieval", {
             "hits": prep.hits,
             "citations": prep.citations,
             "query_used": prep.query_used,
-            "refused": not prep.hits,
+            "refused": not prep.hits and not prep.offscope,
+            "offscope": prep.offscope,
             "debug": prep.debug,
         })
 
         # —— 拒答分支：不进 LLM，0 token ——
         # 用 delta 把固定话术发出去，前端不必为此多写一个渲染分支
-        if not prep.hits:
+        if not prep.hits and not prep.offscope:
             yield StreamEvent("delta", {"text": _REFUSAL_TEXT})
             yield StreamEvent("final", {"answer": RAGAnswer(
                 question=question,
@@ -286,6 +332,12 @@ class Orchestrator:
                 prompt_version=prep.prompt_version,
             )})
             return
+
+        # 通用分支：先单独发一帧声明，再流模型的话。
+        # 单独一帧而不是拼进第一段 delta，是为了让前端能把它渲染成"黄条"而不是正文；
+        # 同时它会被 _stream_turn 计入 partial，落库的正文里也有这句声明。
+        if prep.offscope:
+            yield StreamEvent("delta", {"text": OFFSCOPE_NOTICE})
 
         parts: list[str] = []
         llm: LLMResult | None = None
@@ -316,6 +368,12 @@ class Orchestrator:
                             provider=self.chat_model.provider)
         else:
             llm.text = text                      # 以实际拼出的文本为准，避免首尾空格差异
+
+        if prep.offscope:
+            # 声明在上面已经作为一帧发出去了，这里补进全文，保证落库内容 = 用户看到的
+            llm.text = OFFSCOPE_NOTICE + (text or "").strip()
+            yield StreamEvent("final", {"answer": self._finalize(prep, llm, None, t0)})
+            return
 
         guard = run_guard(text, prep.context, len(prep.hits))
         if guard.warnings:

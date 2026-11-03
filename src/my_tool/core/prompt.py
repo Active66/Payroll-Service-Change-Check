@@ -43,6 +43,42 @@ CITATION_RULES = """
 # 内置模板的版本标签。数据库模板用 "tpl.v{版本号}"，两者不会混淆。
 BUILTIN_VERSION = "builtin.v1"
 
+# =============================================================================
+# 越界问题（制度里查不到答案）用的另一套提示词。
+#
+#   为什么必须换一套，而不是在原来那套上加一句"也可以聊别的"：
+#   原 prompt 里 CITATION_RULES 是**代码固化**的，第 3 条明确要求"资料没有给出的
+#   数字或结论，直接说明制度中未找到"。同一份 system 里既说"可以聊"又说"必须说
+#   未找到"，模型只会选更保守的那句 —— 表现就是"开关开了但还是在拒答"。
+#   所以这里整份替换：不传 context、不附引用规则。
+#
+#   但"放开"是有边界的。第 2、3 条是这一版最重要的两条：
+#   模型可以解释概念，不能替公司承诺数值与办理结论。否则员工会拿着
+#   "大模型说可以"去要求 HR 办，那比直接拒答更糟。
+# =============================================================================
+GENERAL_SYSTEM_PROMPT = """你是公司内部员工的通用助手。本次问题在《员工薪酬变更核对制度》里没有对应条款，
+因此不要引用制度，只从通用知识角度解释。
+
+【必须遵守】
+1. 不要引用任何制度条款、条号或文档编号，也不要写 [1][2] 这类角标——本次没有资料可引。
+2. 不要编造本公司的具体数值（基数、比例、限额、时限、审批层级）。这类信息只能来自制度或 HR；
+   确实需要数值才能回答时，直接说"具体数值需查阅制度或咨询 HR"。
+3. 不要下"可以办 / 不能办 / 合规 / 违规"这类结论。你只能解释一般概念与常见做法。
+4. 答复控制在 5 句话以内，并明确说明这是通用知识、不代表公司规定。
+5. 与薪酬变更完全无关的问题（闲聊、常识）可以简短回答，但仍不得假装知道公司内部信息。
+"""
+
+# 写进 chat_messages.prompt_version，让审计能区分"这轮用的是制度模板还是通用模板"
+GENERAL_PROMPT_VERSION = "builtin.general.v1"
+
+# 声明由**系统拼在答复最前面**，不交给模型生成。
+# 理由：让模型自己写"以下是通用知识"，它十次里会有一次漏写，
+# 而漏写的那一次恰恰可能被员工截图当成制度依据。
+OFFSCOPE_NOTICE = (
+    "【非制度依据】以下内容不属于《员工薪酬变更核对制度》的规定，"
+    "仅为通用知识说明，不能作为办理依据。\n\n"
+)
+
 # 兼容旧引用（manifest / 旧代码里还在用这个名字）
 PROMPT_VERSION = BUILTIN_VERSION
 
@@ -107,6 +143,28 @@ def build_prompt(question: str, hits: Sequence[RetrievalHit],
         {"role": "user", "content": user_text},
     ]
     return messages, context, tpl.label
+
+
+def build_general_prompt(question: str,
+                         history: Sequence[dict[str, str]] | None = None
+                         ) -> list[dict[str, str]]:
+    """
+    组装"通用知识"分支的 messages。
+
+    与 build_prompt 的两个区别：
+      · 没有【资料】段，也没有 CITATION_RULES —— 没有资料可引，硬塞只会让模型拒答；
+      · 不替换模板占位符，直接拼 —— 这条路径不该受后台模板影响。
+        管理员改的是"制度问答的话术"，不能连带把通用分支也改成要求引用条款。
+
+    history 依然是插在 system 之后：多轮追问（"那它呢"）在通用分支同样需要上下文。
+    """
+    messages: list[dict[str, str]] = [
+        {"role": "system", "content": GENERAL_SYSTEM_PROMPT.strip()}
+    ]
+    if history:
+        messages.extend(history)
+    messages.append({"role": "user", "content": question})
+    return messages
 
 
 def validate_template(system_prompt: str, user_template: str) -> str:

@@ -119,6 +119,15 @@ EMBEDDING_PROVIDER_DEFAULTS: dict[str, tuple[str, str, int]] = {
 }
 
 
+def _normalize_offscope(v: str) -> str:
+    """
+    越界策略只认两个词。写错一律回落 refuse —— 配置写错时该"更严格"而不是"更宽松"：
+    把 OFFSCOPE_ANSWER 拼成 generl 却当成 general 处理，等于静默放开了合规边界。
+    """
+    v = (v or "").strip().lower()
+    return v if v in ("refuse", "general") else "refuse"
+
+
 @dataclass
 class Settings:
     """全局配置。所有字段都能被同名（大写）环境变量覆盖。"""
@@ -145,6 +154,16 @@ class Settings:
     #   bge-m3 这类真实模型的相关分会更高），换模型必须重新标定。
     min_vector_score: float = 0.25
     min_bm25_score: float = 4.0
+
+    # —— 越界问题（制度里查不到答案）怎么答 ——
+    #   refuse  = 直接拒答（默认）。检索闸门判无证据后 0 token 返回固定话术；
+    #   general = 改用通用知识回答，但答复开头**强制**加"非制度依据"声明。
+    #
+    # 为什么默认 refuse：薪酬场景里答错一个数字就是发错一笔工资，
+    # 而"接了大模型"不等于"允许它用常识覆盖制度"。要开必须显式配。
+    # 只在 RAG 问答路径生效；Agent 模式（能建单）永远 strict ——
+    # 通用知识混进建单流程是这套系统最不能犯的错。
+    offscope_answer: str = "refuse"
 
     # —— LLM ——
     llm_provider: str = "mock"
@@ -292,6 +311,8 @@ class Settings:
             w_bm25=ef("W_BM25", float(y.get("w_bm25", 1.0))),
             min_vector_score=ef("MIN_VECTOR_SCORE", float(y.get("min_vector_score", 0.25))),
             min_bm25_score=ef("MIN_BM25_SCORE", float(y.get("min_bm25_score", 4.0))),
+            offscope_answer=_normalize_offscope(
+                e("OFFSCOPE_ANSWER") or str(y.get("offscope_answer", "refuse"))),
             llm_provider=provider,
             llm_base_url=base_url,
             llm_api_key=api_key,
