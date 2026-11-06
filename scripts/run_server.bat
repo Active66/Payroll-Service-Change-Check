@@ -23,8 +23,32 @@ REM ---------------------------------------------------------------
 setlocal
 
 set "ROOT=%~dp0.."
-set "PY=C:\Users\ROG\.workbuddy\binaries\python\envs\default\Scripts\python.exe"
-if not exist "%PY%" set "PY=python"
+REM --- pick an interpreter that actually has the deps -----------------
+REM Hard-coding one path means a broken/upgraded Python silently kills the
+REM launcher: the minimised window flashes and closes, user sees nothing.
+REM So probe candidates in order and keep the first that can import the stack.
+set "PY="
+for %%P in (
+    "%ROOT%\.venv\Scripts\python.exe"
+    "C:\Users\ROG\.workbuddy\binaries\python\envs\payroll311\Scripts\python.exe"
+    "C:\Users\ROG\.workbuddy\binaries\python\envs\default\Scripts\python.exe"
+) do (
+    if not defined PY if exist "%%~P" (
+        "%%~P" -c "import fastapi, jieba, numpy; fastapi.FastAPI; jieba.lcut; numpy.zeros(1)" >nul 2>&1 && set "PY=%%~P"
+    )
+)
+if not defined PY (
+    where python >nul 2>&1 && python -c "import fastapi, jieba, numpy; fastapi.FastAPI; jieba.lcut; numpy.zeros(1)" >nul 2>&1 && set "PY=python"
+)
+if not defined PY (
+    echo [ERROR] No Python with project dependencies was found.
+    echo         Install them once with:
+    echo             python -m pip install -r requirements.txt
+    echo         Then run this file again.
+    pause
+    exit /b 1
+)
+echo Using Python: %PY%
 
 set "PYTHONPATH=%ROOT%\src"
 set "PYTHONIOENCODING=utf-8"
