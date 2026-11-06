@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="docx-page-size" content="A4">
+<title>薪酬服务变更核对系统 · 需求分析方案</title>
+<style>
+:root {
+  --typography-fontFamily-heading: "微软雅黑", "Microsoft YaHei", "PingFang SC";
+  --typography-fontFamily-body: "微软雅黑", "Microsoft YaHei", "PingFang SC";
+  --typography-fontFamily-mono: "Consolas", "Courier New", monospace;
+  --typography-fontSize-title: 24pt;
+  --typography-fontSize-subtitle: 15pt;
+  --typography-fontSize-h1: 18pt;
+  --typography-fontSize-h2: 14pt;
+  --typography-fontSize-h3: 11pt;
+  --typography-fontSize-body: 10pt;
+  --typography-fontSize-small: 9pt;
+  --typography-fontSize-tiny: 8pt;
+  --typography-lineHeight-body: 1.55;
+  --typography-lineHeight-heading: 1.3;
+  --typography-fontWeight-heading: 700;
+  --typography-fontWeight-body: 400;
+  --color-primary: #1565C0;
+  --color-secondary: #0288D1;
+  --color-accent: #00897B;
+  --color-text: #212121;
+  --color-muted: #616161;
+  --color-heading: #123A63;
+  --color-border: #D6DCE4;
+  --color-bg: #FFFFFF;
+  --color-highlight: #F4F7FB;
+  --spacing-paragraph: 0.55em;
+  --spacing-section: 1.2em;
+  --spacing-block: 0.6em;
+  --layout-margin: 2.4cm;
+
+  --fs-h1: var(--typography-fontSize-h1);
+  --fs-h2: var(--typography-fontSize-h2);
+  --fs-h3: var(--typography-fontSize-h3);
+  --fs-body: var(--typography-fontSize-body);
+  --fs-small: var(--typography-fontSize-small);
+  --fs-title: var(--typography-fontSize-title);
+  --fs-subtitle: var(--typography-fontSize-subtitle);
+  --ff-heading: var(--typography-fontFamily-heading);
+  --ff-body: var(--typography-fontFamily-body);
+  --ff-mono: var(--typography-fontFamily-mono);
+  --lh-body: var(--typography-lineHeight-body);
+  --lh-heading: var(--typography-lineHeight-heading);
+  --fw-bold: var(--typography-fontWeight-heading);
+  --fw-normal: var(--typography-fontWeight-body);
+  --page-content-width: 15.6cm;
+}
+
+@page { @bottom-center { content: counter(page); } }
+@page cover { @bottom-center { content: none; } }
+section[role="cover"] { page: cover; }
+
+body {
+  max-width: var(--page-content-width);
+  margin-left: auto; margin-right: auto;
+  font-family: var(--ff-body);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+/* ---- cover ---- */
+.cover-category
+  { text-align: center; font-family: var(--ff-body); font-size: var(--fs-small);
+    color: var(--color-primary); letter-spacing: 2pt; font-weight: var(--fw-bold);
+    margin: 5.2em 0 1.4em 0; }
+section[role="cover"] > h1
+  { text-align: center; font-family: var(--ff-heading); font-size: var(--fs-title);
+    color: var(--color-heading); font-weight: var(--fw-bold); line-height: var(--lh-heading);
+    margin: 0 0 0.5em 0; }
+.cover-subtitle
+  { text-align: center; font-family: var(--ff-heading); font-size: var(--fs-subtitle);
+    color: var(--color-primary); font-weight: var(--fw-bold); margin: 0 0 0.5em 0; }
+.cover-subtitle2
+  { text-align: center; font-family: var(--ff-body); font-size: var(--fs-body);
+    color: var(--color-muted); margin: 0 0 4.5em 0; }
+table.cover-info
+  { width: 11.6cm; margin: 0 auto 2.4em auto; border-collapse: collapse; }
+table.cover-info td
+  { font-family: var(--ff-body); font-size: var(--fs-small); padding: 0.42em 0.6em;
+    border-bottom: 0.5pt solid var(--color-border); }
+td.ci-k { color: var(--color-muted); width: 3.1cm; text-align: left; }
+td.ci-v { color: var(--color-text); text-align: left; font-weight: var(--fw-bold); }
+.cover-foot
+  { text-align: center; font-family: var(--ff-body); font-size: var(--fs-tiny);
+    color: var(--color-muted); margin: 2.2em 0 0 0; }
+
+/* ---- headings ---- */
+h2 {
+  font-family: var(--ff-heading); font-size: var(--fs-h2); color: var(--color-heading);
+  font-weight: var(--fw-bold); line-height: var(--lh-heading);
+  border-left: 4pt solid var(--color-primary);
+  padding-left: 0.55em;
+  margin: 1.5em 0 0.6em 0;
+}
+h3 {
+  font-family: var(--ff-heading); font-size: var(--fs-h3); color: var(--color-primary);
+  font-weight: var(--fw-bold); line-height: var(--lh-heading);
+  margin: 1.05em 0 0.4em 0;
+}
+
+/* ---- text ---- */
+p { font-family: var(--ff-body); font-size: var(--fs-body); color: var(--color-text);
+    line-height: var(--lh-body); text-align: justify;
+    margin: 0 0 var(--spacing-paragraph) 0; }
+ol, ul { margin: 0.2em 0 0.7em 0; padding-left: 1.5em; }
+li { font-family: var(--ff-body); font-size: var(--fs-body); color: var(--color-text);
+     line-height: var(--lh-body); margin: 0 0 0.25em 0; }
+strong { font-weight: var(--fw-bold); color: var(--color-heading); }
+code.mono { font-family: var(--ff-mono); font-size: var(--fs-small); color: var(--color-accent); }
+
+/* ---- toc ---- */
+nav.doc-toc { margin: 0.6em 0 1.2em 0; }
+p.toc-title { font-family: var(--ff-heading); font-size: var(--fs-h3); color: var(--color-heading);
+              font-weight: var(--fw-bold); margin: 0 0 0.5em 0; }
+ol.toc-list, ol.toc-list ol, ol.toc-list ul { list-style: none; list-style-type: none;
+              padding-left: 0; margin: 0; }
+ol.toc-list li { font-family: var(--ff-body); font-size: var(--fs-small);
+                 color: var(--color-text); margin: 0 0 0.34em 0; }
+ol.toc-list a { color: var(--color-text); text-decoration: none; }
+
+/* ---- tables ---- */
+table.grid { width: 100%; border-collapse: collapse; margin: 0.5em 0 0.9em 0; }
+table.grid th {
+  font-family: var(--ff-heading); font-size: var(--fs-small); font-weight: var(--fw-bold);
+  color: var(--color-heading); background: var(--color-highlight);
+  border: 0.5pt solid var(--color-border); padding: 0.35em 0.42em; text-align: left;
+  line-height: var(--lh-heading);
+}
+table.grid td {
+  font-family: var(--ff-body); font-size: var(--fs-small); color: var(--color-text);
+  border: 0.5pt solid var(--color-border); padding: 0.32em 0.42em; text-align: left;
+  line-height: 1.42; vertical-align: top;
+}
+
+/* ---- blocks ---- */
+table.abstract-card { width: 100%; border-collapse: collapse; margin: 0 0 1em 0; }
+table.abstract-card td {
+  background: var(--color-highlight); border-left: 3pt solid var(--color-primary);
+  border-top: 0.5pt solid var(--color-border); border-right: 0.5pt solid var(--color-border);
+  border-bottom: 0.5pt solid var(--color-border);
+  padding: 0.7em 0.85em; font-family: var(--ff-body); font-size: var(--fs-small);
+  color: var(--color-text); line-height: 1.5;
+}
+table.abstract-card td p { font-size: var(--fs-small); text-align: justify; margin: 0 0 0.35em 0; }
+
+table.code-card { width: 100%; border-collapse: collapse; margin: 0.4em 0 0.9em 0; }
+table.code-card td {
+  background: var(--color-highlight); border: 0.5pt solid var(--color-border);
+  padding: 0.55em 0.7em;
+}
+p.mono-line { font-family: var(--ff-mono); font-size: var(--fs-tiny);
+              color: var(--color-text); line-height: 1.35; margin: 0; text-align: left; }
+</style>
+</head>
+<body>
+
+<section role="cover">
+  <p class="cover-category">需求规格说明书</p>
+  <h1>薪酬服务变更核对系统</h1>
+  <p class="cover-subtitle">需求分析方案</p>
+  <p class="cover-subtitle2">痛点诊断 · AI 改造与优先级 · 需求边界与规格 · 追溯矩阵 · 验收标准</p>
+  <table class="cover-info"><tr><td class='ci-k'>文档编号</td><td class='ci-v'>REQ-SPEC-2026-11</td></tr><tr><td class='ci-k'>版本</td><td class='ci-v'>v1.0</td></tr><tr><td class='ci-k'>编制日期</td><td class='ci-v'>2026-11-06</td></tr><tr><td class='ci-k'>状态</td><td class='ci-v'>待需求评审</td></tr><tr><td class='ci-k'>适用范围</td><td class='ci-v'>单批次薪酬变更单核对试点</td></tr></table>
+  <p class="cover-foot">上海外服（集团）有限公司 · 薪酬服务变更核对 · 合成演练场景</p>
+</section>
+
+<section role="body" data-page-restart="1">
+<table class="abstract-card"><tr><td><p><strong>编制依据</strong>：工作区内《六人访谈记录》（36 条演练事实，6/6 角色）、《薪酬服务变更核对系统-项目方案 v0.1》、《需求清单 v0.1》、《AI 数智化后目标流程图》（17 节点）、《报价单设计方案》第 6 章，以及配套实现说明（<code class="mono">design.md</code>／<code class="mono">agent.md</code>／<code class="mono">integration.md</code>／<code class="mono">go-live-checklist.md</code>）。</p><p><strong>证据性质声明</strong>：本方案的需求来源为<strong>合成场景访谈</strong>。企业名称与公开业务方向有来源；人物、指标（如&quot;每期 300 条变更、复核 18 小时&quot;）与业务问题均为虚构，不代表集团或成员企业实际情况。调查覆盖率 100% 不等于需求已确认，更不等于验收通过。文中标注【待验证】的条目，在试点前须由业务负责人（顾明岚）决策、审核与质量负责人（傅景）确认质量口径后方可进入开发。</p></td></tr></table>
+<nav class="doc-toc" aria-label="文档目录">
+  <p class="toc-title">目录</p>
+  <ol class="toc-list"><li><a href="#section-1">执行摘要</a></li><li><a href="#section-2">一、项目背景与方案定位</a></li><li><a href="#section-3">二、痛点分析</a></li><li><a href="#section-4">三、AI 改造机会与优先级</a></li><li><a href="#section-5">四、需求规格</a></li><li><a href="#section-6">五、需求边界</a></li><li><a href="#section-7">六、需求追溯矩阵</a></li><li><a href="#section-8">七、验收标准清单</a></li><li><a href="#section-9">八、实施路线与优先级落地</a></li><li><a href="#section-10">九、风险与待验证假设</a></li><li><a href="#section-11">附录 A 术语表</a></li><li><a href="#section-12">附录 B 访谈事实索引</a></li><li><a href="#section-13">附录 C 交付物清单</a></li></ol>
+</nav>
+<h2 id="section-1">执行摘要</h2>
+<p>本方案回答四个问题：痛点是什么、哪些能用 AI 改造、需求的边界在哪里、怎么验收。</p>
+<p><strong>第一，瓶颈不在&quot;自动化不足&quot;，在交接点的版本追溯与确认留痕。</strong> 36 条事实指向同一组失败：同一张变更单在服务台、台账、文件库三类工具间没有统一关联编号（f30），版本判定靠文件名与修改时间（f24），群消息先行导致回填时间不等于发生时间（f13），交接只发一句&quot;已处理&quot;（f23）。这些失败的共同特征是<strong>静默发生、事后才被客户投诉暴露</strong>，因此治理手段必须是&quot;看清楚 + 留得住痕&quot;，而不是&quot;多点几下自动化&quot;。</p>
+<p><strong>第二，AI 能做的是把&quot;比对与定位&quot;从人脑搬到可复算的流水线上，不是替人判断&quot;哪一版才对&quot;。</strong> 本方案登记 12 项痛点、8 项 AI 改造，按&quot;业务价值 × 静默风险拦截 − 实施成本 − 依赖度&quot;排序，得出 P0 四项（归一映射、版本候选排序、四类断言与缺项清单、金额差异溯源）、P1 两项（交接单结构化、制度口径问答）、P2 一项（变更预检 Agent），另有一项非模型地基（审计确认链）必须与 P0 同期落地。明确划出六件不做的事：不自动审批、不自动放行、不推算发生时间、不覆盖原值、不代客户补录、不推测客户意图。</p>
+<p><strong>第三，需求边界由三条硬边界锁死：只读、不代签、不默认通过。</strong> 系统无写回、无外部消息、无执行接口（f32）；模型无审批权（f22）；无法确认版本或关键字段一律进人工队列，0 默认通过（f44）。这三条不是技术保守，而是验收前提——它们直接决定了 M3 指标的成立。</p>
+<p><strong>第四，验收必须可核验，不看&quot;感觉顺畅&quot;。</strong> 40 条脱敏样本、金额差异来源定位率 100%、每条结论关联来源与人工复核记录、确认链可逐条还原。本方案给出 5 道里程碑门禁、28 条功能验收用例、12 项试点终验指标与 6 条停止条件，并明确&quot;演练验收 ≠ 生产验收&quot;。</p>
+<p><strong>一句话结论</strong>：在单批次范围内，建设一个只读接入、双时间戳、版本有效期与确认状态双条件判定、全链路哈希链审计的核对工作台，用一页缺项清单替代泛化摘要；AI 只承担可复算的比对、归一与定位，所有不可逆动作停在&quot;标记 + 建议 + 人工确认&quot;。</p>
+<h2 id="section-2">一、项目背景与方案定位</h2>
+<h3>（一）需求来源与材料基线</h3>
+<p>本方案的材料基线分为四层，每层的证据强度不同，使用时不可混用。</p>
+<table class="grid"><thead><tr><th>层级</th><th>材料</th><th>提供了什么</th><th>证据强度</th><th>使用限制</th></tr></thead><tbody><tr><td>L1 角色陈述</td><td>六人访谈记录（36 条事实）</td><td>6 个角色的现场陈述、失败案例、边界声明</td><td>中（合成访谈）</td><td>只能作为需求假设来源，不能作为验收依据</td></tr><tr><td>L2 业务决策</td><td>项目方案 v0.1 第 8 章</td><td>试点范围、验收指标、停止条件</td><td>中高（有明确拍板人）</td><td>指标阈值仍需业务负责人签字</td></tr><tr><td>L3 目标流程</td><td>AI 数智化流程图（17 节点）</td><td>改造后的环节划分与人机归属</td><td>中（设计推演）</td><td>节点归属需与一线操作观察核对</td></tr><tr><td>L4 技术可行性</td><td>配套实现说明（<code class="mono">design.md</code>／<code class="mono">agent.md</code> 等）</td><td>检索、护栏、工具闸门、审计的可实现性</td><td>高（有代码与测试）</td><td>属原型验证，不等于生产就绪</td></tr></tbody></table>
+<p>四来源收敛状态并不完整：Buyer（顾明岚）已采集角色陈述但目标与预算待确认；Brief（书面需求）仅有场景开场句，原文与版本待补；Industry（行业可行性）仅有组件级调研，未完成本项目接口与数据条件验证；Operator（林亦舟）已采集现场陈述，仍需样本与操作观察核实。<strong>因此本方案整体定性为&quot;待验证需求规格&quot;，而非&quot;已确认需求规格&quot;。</strong></p>
+<h3>（二）业务现状：8 步流程与 3 个交接点</h3>
+<table class="grid"><thead><tr><th>步</th><th>环节</th><th>执行角色</th><th>输入</th><th>输出</th><th>交接点</th><th>已知失败方式</th></tr></thead><tbody><tr><td>1</td><td>客户提出变更</td><td>客户经理（叶书线）</td><td>客户邮件／群消息</td><td>变更诉求</td><td><strong>H1</strong> 客户→服务台</td><td>截止后补发（f11）；群消息先行（f13）</td></tr><tr><td>2</td><td>客户确认</td><td>客户协同</td><td>变更诉求</td><td>客户书面确认</td><td><strong>H1</strong></td><td>时效压力下跳过二次确认（f50）</td></tr><tr><td>3</td><td>变更登记</td><td>一线专员（林亦舟）</td><td>确认件</td><td>变更单初稿</td><td>—</td><td>草稿引用旧金额（f11）</td></tr><tr><td>4</td><td>附资料</td><td>一线专员</td><td>原始版本</td><td>证据附件</td><td>—</td><td>邮件与月度表版本对不上（f10）</td></tr><tr><td>5</td><td>双人核对</td><td>一线 + 复核</td><td>草稿 + 原始版本</td><td>核对结论</td><td><strong>H2</strong> 登记→核对</td><td>版本追溯失败；责任归属扯皮</td></tr><tr><td>6</td><td>异常判定</td><td>复核</td><td>核对结论</td><td>异常标记／正常</td><td>—</td><td>截止后更正未单独标出（f11）</td></tr><tr><td>7</td><td>出具结果</td><td>业务负责人（顾明岚线）</td><td>核对结论</td><td>正式结果</td><td><strong>H3</strong> 核对→出结果</td><td>未确认项被归到对方名下（f25）</td></tr><tr><td>8</td><td>归档与审计</td><td>资料负责人</td><td>全链记录</td><td>确认链</td><td>—</td><td>只留最终摘要（f45）</td></tr></tbody></table>
+<p>三个交接点是方案的重心。H1 的问题是&quot;时间先于手续&quot;——消息先到、确认后补；H2 的问题是&quot;版本对不上&quot;——谁都说自己手里的才是最新版；H3 的问题是&quot;责任转移&quot;——未确认项被顺手挂到接收方名下。<strong>三个交接点都不是效率问题，是证据问题。</strong></p>
+<h3>（三）系统定位：准入控制器，不是薪酬引擎</h3>
+<p>本系统坐在数据流的关键卡口上，负责回答一个问句：<strong>某条变更能否进入本期结果</strong>。它不生产薪酬主数据，不计算工资，不生成工资表，不对外付款或申报。</p>
+<table class="grid"><thead><tr><th>维度</th><th>本系统</th><th>明确不属于本系统</th></tr></thead><tbody><tr><td>数据</td><td>只读接入、脱敏快照、核对结论</td><td>薪酬主数据（权威源在 HR 系统）</td></tr><tr><td>计算</td><td>差异比对、规则判定、分级</td><td>应发实发计算、个税计算、社保核算</td></tr><tr><td>动作</td><td>标记、建议、进队列、留痕</td><td>写回业务系统、发消息、发起付款、提交申报</td></tr><tr><td>结论</td><td>给出&quot;可进入／不可进入 + 原因&quot;</td><td>代替人工确认、代替业务负责人签字</td></tr></tbody></table>
+<p>这个定位直接决定了技术选型：不需要 BPMN 流程引擎，不需要规则中台，一个 PostgreSQL + 应用层状态机 + 策略闸门即可完整覆盖。判断依据是 REQ-1~REQ-6 的技术本质为&quot;字段 + 时间 + 状态 + 留痕&quot;四件事，而非复杂流程编排。</p>
+<h3>（四）本方案的证据纪律</h3>
+<p>为避免&quot;访谈做完了就等于需求确认了&quot;这类误判，本方案在写法上遵守四条纪律。</p>
+<ol><li><strong>每条需求必须能追到事实编号。</strong> 附录 B 列出全部 36 条事实与引用位置，需求矩阵（第六章）逐条给出证据；无证据支撑的条目一律标注为&quot;技术约束&quot;，不冒充业务需求。</li><li><strong>每个指标必须给出判定人与取证方式。</strong> 只写&quot;提升效率&quot;的条目视为无效验收项。</li><li><strong>虚构基线不与真实数据并列。</strong> &quot;每期 300 条、复核 18 小时&quot;（f12）仅用于试点内部前后对比，界面与报告中必须标注&quot;虚构样本&quot;。</li><li><strong>不确定项显式列出，不隐藏。</strong> 第九章列出 12 项待验证假设与闭环时点；未闭环项不得进入开发。</li></ol>
+<h2 id="section-3">二、痛点分析</h2>
+<h3>（一）痛点识别方法与分级口径</h3>
+<p>痛点不是&quot;访谈里提到的困难&quot;的简单汇总，而是&quot;可定位到环节、可判断损害何时被谁看见、可判断能否在损害前拦截&quot;的问题单元。每条痛点按五个字段登记：现象、证据、发生环节、损害可见时间、可拦截性。</p>
+<table class="grid"><thead><tr><th>字段</th><th>取值</th><th>说明</th></tr></thead><tbody><tr><td>损害可见时间</td><td>事前／静默／事后</td><td>&quot;静默&quot;指无人主动发现，直到客户投诉或稽核才暴露</td></tr><tr><td>可拦截性</td><td>事前可拦／事后可查／不可拦</td><td>只对&quot;事前可拦&quot;的问题投入自动化，其余投入留痕</td></tr><tr><td>严重度</td><td>高／中／低</td><td>高 = 影响金额或对外结论；中 = 影响返工与工时；低 = 影响体验</td></tr><tr><td>归并域</td><td>关联／版本／质量／责任</td><td>四个问题域，对应四组需求</td></tr></tbody></table>
+<p>分级的意义在于<strong>决定投入方向</strong>：静默且事前可拦的问题优先做确定性校验；事后才可见的问题优先做审计留痕；不可拦的问题（如客户截止后才补发）只做标记与流程约束，不做自动化承诺。</p>
+<h3>（二）十二项痛点登记</h3>
+<table class="grid"><thead><tr><th>编号</th><th>痛点</th><th>证据</th><th>发生环节</th><th>损害可见时间</th><th>可拦截性</th><th>严重度</th></tr></thead><tbody><tr><td>PP-01</td><td>三类工具无统一关联编号，同一张单跨工具串不起来，拼接靠人工猜</td><td>f30</td><td>3→5</td><td>静默</td><td>事前可拦</td><td>高</td></tr><tr><td>PP-02</td><td>版本判定靠文件名与修改时间，&quot;哪一版才算数&quot;说不清</td><td>f24、f10</td><td>4→5</td><td>事后</td><td>事前可拦</td><td>高</td></tr><tr><td>PP-03</td><td>群消息先行、表格后补，回填时间被当作发生时间</td><td>f13、f34</td><td>1→3</td><td>事后</td><td>事前可拦</td><td>高</td></tr><tr><td>PP-04</td><td>截止后补发奖金更正，草稿仍引用旧金额，责任判定依赖原始版本</td><td>f11、f50</td><td>5→7</td><td>事后（客户投诉）</td><td>部分可拦</td><td>高</td></tr><tr><td>PP-05</td><td>交接只发&quot;已处理&quot;，未结项与截止时间不落纸，责任随交接转移</td><td>f23、f20、f25</td><td>H1／H2／H3</td><td>事后（责任争议）</td><td>事前可拦</td><td>高</td></tr><tr><td>PP-06</td><td>缺项信息以泛化摘要呈现，不给来源位置，一线无法逐项回查</td><td>f15、f10</td><td>5→6</td><td>事后（返工）</td><td>事前可拦</td><td>高</td></tr><tr><td>PP-07</td><td>四类数据质量问题（重复编号、空时间、版本断链、单位差异）无自动检查，人工逐条看</td><td>f33</td><td>3→5</td><td>静默</td><td>事前可拦</td><td>高</td></tr><tr><td>PP-08</td><td>读取失败或数据晚到时旧值被当新值使用，无快照、无时间标记</td><td>f35</td><td>任意</td><td>静默</td><td>事前可拦</td><td>中</td></tr><tr><td>PP-09</td><td>审计只留最终摘要，&quot;谁查过、用哪版、提什么建议、谁确认&quot;无法还原</td><td>f45、f43</td><td>8</td><td>事后（稽核）</td><td>事后可查</td><td>高</td></tr><tr><td>PP-10</td><td>客户经理重时效、复核团队要二次确认窗口，目标未对齐即上工具会固化矛盾</td><td>f50、f53</td><td>跨团队</td><td>—</td><td>不可拦（组织问题）</td><td>中</td></tr><tr><td>PP-11</td><td>跨企业资料按授权范围访问缺少强制闸门；模型/系统可能被当作确认主体</td><td>f41、f22、f44</td><td>2／7</td><td>事后</td><td>事前可拦</td><td>高</td></tr><tr><td>PP-12</td><td>效果评估只看工时，不看返工次数与确认完整率，单项指标解释不了效果</td><td>f51、f55</td><td>复盘</td><td>—</td><td>不可拦（口径问题）</td><td>中</td></tr></tbody></table>
+<h3>（三）痛点归并：四个问题域</h3>
+<table class="grid"><thead><tr><th>问题域</th><th>包含痛点</th><th>本质</th><th>对应需求</th><th>AI 介入程度</th></tr></thead><tbody><tr><td>关联域</td><td>PP-01</td><td>缺关联键，同一实体在三处有三个身份</td><td>BR-01</td><td>高（归一与映射建议）</td></tr><tr><td>版本与时间域</td><td>PP-02、PP-03、PP-04、PP-08</td><td>缺&quot;何时生效&quot;与&quot;何时才知道&quot;两条时间轴</td><td>BR-02</td><td>高（候选排序、差异溯源）</td></tr><tr><td>质量域</td><td>PP-06、PP-07</td><td>缺确定性断言，问题记录被清洗后无法回查</td><td>BR-02、BR-03</td><td>高（断言执行与清单生成）</td></tr><tr><td>责任与留痕域</td><td>PP-05、PP-09、PP-11</td><td>缺交接结构与不可篡改记录</td><td>BR-04、BR-05</td><td>低（主要是结构化与密码学，非模型能力）</td></tr><tr><td>口径域</td><td>PP-10、PP-12</td><td>目标与评估口径未对齐，工具化只会固化矛盾</td><td>BR-06</td><td>无（只呈现指标，不做裁决）</td></tr></tbody></table>
+<p>口径域单独列出，是因为它是本方案唯一明确&quot;不建工具&quot;的部分。f50 指出时效与二次确认窗口的冲突，f53 要求按原始记录核对而非比较两张汇总表。这两条的正确处置是<strong>先开对齐会、后谈工具</strong>；系统只负责把三项指标同时出数，不替业务裁决优先级。把口径冲突做成一个&quot;自动排序功能&quot;，是本项目最容易犯的设计错误。</p>
+<h3>（四）痛点—失败模式—拦截点判定</h3>
+<table class="grid"><thead><tr><th>痛点</th><th>失败模式</th><th>损害是否可撤销</th><th>拦截点设计</th><th>拦截失败时的兜底</th></tr></thead><tbody><tr><td>PP-01</td><td>拼接错行，差异被算到别人名下</td><td>否（已出结果）</td><td>未匹配行 100% 单独挂出，禁止默认合并</td><td>人工队列 + 数字化工程师复核</td></tr><tr><td>PP-02</td><td>用旧版金额出结果</td><td>否</td><td>版本有效期 + 确认状态双条件，断链即阻断</td><td>进人工队列，禁止出结果</td></tr><tr><td>PP-03</td><td>先后顺序判错，责任判错</td><td>部分</td><td>双时间戳 + 回填标记，缺失标&quot;缺失&quot;不推算</td><td>一线补录并签字</td></tr><tr><td>PP-04</td><td>截止后补发被当作正常变更</td><td>否</td><td>received_at 与 due_at 比对，超期单高亮</td><td>复核必审</td></tr><tr><td>PP-05</td><td>未确认项挂到接收方</td><td>部分</td><td>责任字段不可跨主体转移 + 截止时间必填</td><td>流程协调员挂起</td></tr><tr><td>PP-06</td><td>一线反复回查，返工</td><td>是</td><td>每条缺项必须带来源位置</td><td>无来源位置的输出视为无效</td></tr><tr><td>PP-07</td><td>问题被清洗掉，追溯断链</td><td>否</td><td>断言只标记不清洗，保留原行</td><td>原始层不可变表</td></tr><tr><td>PP-08</td><td>旧值当新值</td><td>否</td><td>快照 + 快照时间显式呈现</td><td>页面标注&quot;停留于某时刻&quot;</td></tr><tr><td>PP-09</td><td>无法举证，稽核不通过</td><td>否</td><td>哈希链 + 四问留痕</td><td>链断即触发停止条件</td></tr><tr><td>PP-11</td><td>越权访问、越权确认</td><td>否</td><td>策略闸门 + 无自动化 principal 可写确认</td><td>拒绝并记 deny 事件</td></tr></tbody></table>
+<p><strong>判定结论</strong>：9 项痛点具备&quot;事前可拦&quot;特征，值得投入确定性校验与 AI 辅助；3 项（PP-04 部分、PP-10、PP-12）只能通过流程约束与口径对齐处理，不应包装成自动化能力对外承诺。</p>
+<h2 id="section-4">三、AI 改造机会与优先级</h2>
+<h3>（一）AI 介入的判定原则</h3>
+<p>不是所有环节都该上模型。本方案用三条判据筛选，三条同时成立才进入 AI 改造清单。</p>
+<table class="grid"><thead><tr><th>判据</th><th>含义</th><th>反例（不该上 AI）</th></tr></thead><tbody><tr><td>可复算</td><td>给定同样的输入与同一版规则，结论必须一致</td><td>&quot;这笔差异是否合理&quot;——依赖业务意图解释</td></tr><tr><td>可回放</td><td>事后能按版本重放，解释&quot;当时为什么这么判&quot;</td><td>无版本号的模型自由发挥</td></tr><tr><td>可对照原始行</td><td>每条结论必须落到具体来源行</td><td>泛化摘要、无出处的建议</td></tr></tbody></table>
+<p>不满足三条的动作一律留在人工队列。这条原则的直接来源是流程图底部的五条硬约束：只读边界、建议不覆盖原值、双时间戳留底、缺失值标&quot;缺失&quot;、人工确认不可被替代。</p>
+<h3>（二）八项 AI 改造</h3>
+<table class="grid"><thead><tr><th>编号</th><th>改造点</th><th>替代的人工动作</th><th>AI 能力类型</th><th>确定性保障</th><th>人机边界</th></tr></thead><tbody><tr><td>AI-01</td><td>三源字段归一与映射键生成</td><td>人工比对三个来源的客户编号、周期、类型是否同一单</td><td>字段映射建议 + 规则校验</td><td>映射规则版本化；未命中不猜，直接挂出</td><td>映射规则须由字段口径签字人批准</td></tr><tr><td>AI-02</td><td>版本候选聚合与智能排序</td><td>人工翻文件名与修改时间判断最新版</td><td>候选聚合 + 排序建议</td><td>只按&quot;有效期 + 确认状态&quot;排序，不裁决对错</td><td>排序结果仅供参考，确认由授权人完成</td></tr><tr><td>AI-03</td><td>四类质量断言与一页缺项清单</td><td>人工逐条检查重复编号、空时间、断链、单位差异</td><td>断言执行 + 清单生成</td><td>断言为确定性 SQL/规则，非模型判断</td><td>清单只列缺什么与在哪，不给结论</td></tr><tr><td>AI-04</td><td>金额差异溯源与分级建议</td><td>人工回溯原始版本、比对差额、判断影响范围</td><td>差额计算 + 来源定位 + 分级建议</td><td>差额由程序计算，模型只组织表述</td><td>建议不覆盖原值，分级仅作输入</td></tr><tr><td>AI-05</td><td>交接单结构化与未结项归属</td><td>口头或群消息交接，事后靠记忆补</td><td>信息抽取 + 结构化填充</td><td>三栏必填校验；归属字段不可跨主体写</td><td>接收人必须签字确认</td></tr><tr><td>AI-06</td><td>制度口径问答助手</td><td>反复问人&quot;这算不算超期&quot;&quot;冻结期能不能改&quot;</td><td>检索增强生成 + 引用 + 拒答</td><td>引用由系统生成；数字逐个回查原文</td><td>拒答即转人工，不作为结论</td></tr><tr><td>AI-07</td><td>变更预检 Agent（工具链）</td><td>人工翻制度、查参数、比对材料齐备性</td><td>工具编排 + 规则引擎</td><td>写操作需签名凭证 + 人工点击确认</td><td>模型无审批权，L3/L4 拿不到凭证</td></tr><tr><td>AI-08</td><td>审计确认链还原（非模型能力）</td><td>事后翻聊天记录与邮件拼凑过程</td><td>哈希链 + 只追加存储</td><td>密码学保证不可篡改</td><td>只读展示，无编辑入口</td></tr></tbody></table>
+<p>AI-08 不属于模型能力，但与 P0 同期落地。原因很直接：审计是其它七项的举证基础，缺了它，AI-02 的&quot;排序建议&quot;和 AI-04 的&quot;差额候选&quot;都无法在争议时自证。把它放在 AI 清单里，是为了避免被当作&quot;以后再说&quot;的附件。</p>
+<h3>（三）优先级评分与排序</h3>
+<p>评分公式：<strong>优先级得分 = 业务价值 × 2 + 静默风险拦截 × 2 − 实施成本 − 依赖度</strong>，各项 1–5 分。得分相同者按依赖前置排序。</p>
+<table class="grid"><thead><tr><th>编号</th><th>改造点</th><th>业务价值</th><th>静默风险拦截</th><th>实施成本</th><th>依赖度</th><th>得分</th><th>优先级</th></tr></thead><tbody><tr><td>AI-08</td><td>审计确认链还原</td><td>5</td><td>5</td><td>2</td><td>1</td><td>17</td><td><strong>P0</strong></td></tr><tr><td>AI-02</td><td>版本候选聚合与排序</td><td>5</td><td>5</td><td>2</td><td>1</td><td>17</td><td><strong>P0</strong></td></tr><tr><td>AI-01</td><td>三源字段归一与映射键</td><td>5</td><td>5</td><td>3</td><td>1</td><td>16</td><td><strong>P0</strong></td></tr><tr><td>AI-03</td><td>四类断言与缺项清单</td><td>5</td><td>4</td><td>2</td><td>1</td><td>15</td><td><strong>P0</strong></td></tr><tr><td>AI-04</td><td>金额差异溯源与分级</td><td>5</td><td>5</td><td>3</td><td>2</td><td>15</td><td><strong>P0</strong></td></tr><tr><td>AI-05</td><td>交接单结构化</td><td>4</td><td>4</td><td>2</td><td>2</td><td>12</td><td><strong>P1</strong></td></tr><tr><td>AI-06</td><td>制度口径问答助手</td><td>3</td><td>3</td><td>2</td><td>1</td><td>9</td><td><strong>P1</strong></td></tr><tr><td>AI-07</td><td>变更预检 Agent</td><td>3</td><td>4</td><td>4</td><td>3</td><td>7</td><td><strong>P2</strong></td></tr></tbody></table>
+<p>排序解读：</p>
+<ol><li><strong>P0 五项构成一条不可拆的链。</strong> AI-01 给不出映射键，AI-02 就没有可比对的版本集合；AI-02 判不出版本，AI-04 的差额候选就落不到具体版本；AI-03 的缺项清单同时依赖前两者；AI-08 是四者的举证底座。任何一项缺失，其余四项的结论都无法在争议时站住。</li><li><strong>AI-05 放 P1 不是价值低，而是载体未定。</strong> 责任清单模板、登记载体与签认人尚未核实（f20 待验证），此时做结构化只会把错误的模板固化下来。先出模板草案，在一个批次内试运行，再决定系统承载形态。</li><li><strong>AI-06 放 P1 是&quot;降噪&quot;而非&quot;提效&quot;。</strong> 它解决的是一线反复问同一批口径问题，价值真实但不影响金额正确性；一旦把它当成核对能力往外承诺，就会踩到&quot;答得像制度、其实不在制度里&quot;的坑。</li><li><strong>AI-07 放 P2。</strong> 变更预检需要规则引擎、参数库、凭证闸门三层同时就位，实施成本最高，且其价值在试点批次（40 条）中体现不出来。它是二期规模化的能力，不是本期验收的能力。</li></ol>
+<h3>（四）明确不做 AI 的六件事</h3>
+<table class="grid"><thead><tr><th>不做</th><th>原因</th><th>若被要求做，如何回应</th></tr></thead><tbody><tr><td>自动审批／自动放行</td><td>模型无审批权（f22）；不默认通过是红线（f44）</td><td>系统只给&quot;建议 + 阻断原因&quot;，签字动作永远在人</td></tr><tr><td>自动确认&quot;哪一版是对的&quot;</td><td>需要业务意图解释，不满足可复算判据</td><td>给候选排序与差异定位，裁决由授权人完成</td></tr><tr><td>自动补填或推算业务发生时间</td><td>回填时间不等于发生时间（f13），推算是编造</td><td>标&quot;缺失 + 待补录&quot;，由一线签字补录</td></tr><tr><td>用模型建议覆盖原值</td><td>建议不能覆盖原值或省略确认（f14）</td><td>建议独立存 propose 事件，原值不动</td></tr><tr><td>代客户执行录入与补录</td><td>超出只读边界（f32）</td><td>只出缺项清单，由客户方人员录入</td></tr><tr><td>推测客户投诉意图</td><td>先登记原始问题、版本与恢复需求（f54）</td><td>结构化登记表，不做意图推断</td></tr></tbody></table>
+<p>这六条同时是商务上的&quot;不含项&quot;。它们的价值不是限制能力，而是<strong>在验收争议时提供拒收依据</strong>：当需求方在试点中期提出&quot;能不能自动通过一下&quot;，答案不是&quot;我们评估一下&quot;，而是&quot;这属于方案第五章的 Out of Scope 第 2 条&quot;。</p>
+<h3>（五）人机分工：17 个节点的归属</h3>
+<p>目标流程共 17 个节点，按执行主体分为四类：8 个确定性执行、5 个 AI 辅助、3 个人工、3 个人工干预点。</p>
+<table class="grid"><thead><tr><th>节点</th><th>环节</th><th>执行主体</th><th>归属</th><th>关键约束</th></tr></thead><tbody><tr><td>01</td><td>采集与归一化</td><td>系统</td><td>确定性</td><td>三源只读、脱敏、时间戳对齐</td></tr><tr><td>02</td><td>三元组归一（客户编号＋周期＋类型）</td><td>系统</td><td>确定性</td><td>唯一映射；未命中不猜</td></tr><tr><td>03</td><td>三源候选版本聚合</td><td>系统</td><td>确定性</td><td>并集呈现，不选最终版</td></tr><tr><td>04</td><td>是否在客户截止前</td><td>系统</td><td>AI 辅助</td><td>只判时间，不判责任</td></tr><tr><td>05</td><td>锁定快照 + 登记交接</td><td>系统 + 人</td><td>AI 辅助</td><td>交接三要素 + 接收人签收</td></tr><tr><td>06</td><td>四类断言自动执行</td><td>系统</td><td>确定性</td><td>只标记，不清洗</td></tr><tr><td>07</td><td>校验报告单留痕</td><td>系统</td><td>确定性</td><td>完整清单，不省略问题</td></tr><tr><td>08</td><td>版本候选智能排序</td><td>系统 + 人</td><td>AI 辅助</td><td>有效期 + 状态双条件</td></tr><tr><td>09</td><td>版本是否可确认</td><td>系统</td><td>确定性</td><td>否则进人工队列</td></tr><tr><td>10</td><td>金额差异溯源</td><td>系统 + 人</td><td>AI 辅助</td><td>生成差额候选，不替换原值</td></tr><tr><td>11</td><td>差异是否可解释</td><td>系统</td><td>确定性</td><td>否则进人工队列</td></tr><tr><td>12</td><td>授权规则自动校验</td><td>系统</td><td>确定性</td><td>越权即拒绝并留痕</td></tr><tr><td>13</td><td>双人核对</td><td>人</td><td>人工</td><td>两人独立，不共享结论，不代签</td></tr><tr><td>14</td><td>正式确认</td><td>人</td><td>人工</td><td>授权范围内签字</td></tr><tr><td>15</td><td>对外口径确认</td><td>人</td><td>人工干预</td><td>统一口径，不暗示客户</td></tr><tr><td>16</td><td>出具结果</td><td>系统</td><td>确定性</td><td>只读输出，不写回</td></tr><tr><td>17</td><td>哈希链审计归档</td><td>系统</td><td>确定性</td><td>可离线校验是否被改</td></tr></tbody></table>
+<p><strong>13、14、15 三个节点永不自动化。</strong> 这不是技术限制，而是本项目的合法性基础：双人核对的意义在于&quot;两个人分别看&quot;，一旦由系统代看，核对就退化成一次点击；正式确认的意义在于&quot;有人负责&quot;，系统不能成为责任主体；对外口径的意义在于&quot;不对客户做未授权的暗示&quot;，模型无法承担这个后果。</p>
+<h2 id="section-5">四、需求规格</h2>
+<h3>（一）需求编号体系与分层</h3>
+<p>需求分四层，编号即契约：一旦发布，编号不重用、语义不变更。</p>
+<table class="grid"><thead><tr><th>层级</th><th>前缀</th><th>含义</th><th>数量</th><th>谁确认</th></tr></thead><tbody><tr><td>业务需求</td><td>BR</td><td>业务上要达成的结果</td><td>6</td><td>业务负责人（顾明岚）</td></tr><tr><td>功能需求</td><td>FR</td><td>系统必须提供的能力</td><td>37</td><td>数字化工程师（秦芮）+ 业务</td></tr><tr><td>非功能需求</td><td>NFR</td><td>质量属性与运行约束</td><td>12</td><td>审核与质量（傅景）+ 运维</td></tr><tr><td>全局不变量</td><td>INV</td><td>不可妥协的硬约束</td><td>8</td><td>业务负责人 + 审核</td></tr></tbody></table>
+<p>功能需求按六个模块组织，编号规则为 <code class="mono">FR-{模块号}{序号}</code>：M1 只读接入与归一（1xx）、M2 版本与时间（2xx）、M3 质量断言与缺项清单（3xx）、M4 交接与人工队列（4xx）、M5 权限与审计（5xx）、M6 AI 助手与 Agent（6xx）。</p>
+<h3>（二）业务需求 BR-01 ~ BR-06</h3>
+<table class="grid"><thead><tr><th>编号</th><th>业务需求</th><th>成功判据</th><th>来源痛点</th><th>优先级</th></tr></thead><tbody><tr><td>BR-01</td><td>同一张变更单在三类工具间可被唯一识别与串联，未匹配项不被默认合并</td><td>40 条样本拼接成功率可统计；未匹配行 100% 单独挂出</td><td>PP-01</td><td>P0</td></tr><tr><td>BR-02</td><td>任何时刻能回答&quot;这一版何时生效、我们何时才知道它&quot;</td><td>版本断链数、过期单数可统计并可追溯到单号</td><td>PP-02、PP-03、PP-04、PP-07、PP-08</td><td>P0</td></tr><tr><td>BR-03</td><td>一线拿到的是&quot;缺什么 + 在哪&quot;，不是一段泛化摘要</td><td>每条缺项均带来源位置；返工次数可对比</td><td>PP-06</td><td>P0</td></tr><tr><td>BR-04</td><td>每次交接可追到接收人、版本与未结项，未确认项不转移到对方名下</td><td>交接记录完整率 100%；责任争议次数可统计</td><td>PP-05</td><td>P1</td></tr><tr><td>BR-05</td><td>一次确认链可按时间轴还原：谁查过、用哪版、提什么建议、谁确认</td><td>抽查 5 条可完整还原；哈希链校验通过</td><td>PP-09、PP-11</td><td>P0</td></tr><tr><td>BR-06</td><td>效果评估以工时、返工次数、确认完整率三项同时呈现，不做单一指标裁决</td><td>三项指标同时出数，取数口径书面确认</td><td>PP-10、PP-12</td><td>P2</td></tr></tbody></table>
+<h3>（三）M1 只读接入与归一</h3>
+<table class="grid"><thead><tr><th>编号</th><th>需求描述</th><th>处理规则与约束</th><th>优先级</th></tr></thead><tbody><tr><td>FR-101</td><td>接入内部服务台、业务台账、文件库三类来源，仅只读、仅脱敏</td><td>无写回接口、无外部消息、无执行接口；接入凭证最小权限</td><td>P0</td></tr><tr><td>FR-102</td><td>建立不可变原始层，保留来源原行与原始批次号</td><td>原始层只插入不更新；任何加工结果不得回写原始层</td><td>P0</td></tr><tr><td>FR-103</td><td>维护字段字典，至少覆盖客户编号、薪资周期、变更类型、版本、确认人五项</td><td>每项须有唯一口径签字人；未签字段不得作为关联键</td><td>P0</td></tr><tr><td>FR-104</td><td>生成映射键 <code class="mono">PCK-{客户编号}-{薪资周期}-{变更类型}-{序号}</code></td><td>生成规则版本化；规则变更须重跑并留版本号</td><td>P0</td></tr><tr><td>FR-105</td><td>未能匹配的行走&quot;单独挂出&quot;路径，禁止默认合并</td><td>挂出行必须保留来源标识与原行定位；合并必须人工确认</td><td>P0</td></tr><tr><td>FR-106</td><td>区分&quot;值缺失&quot;与&quot;值未确认&quot;两种状态</td><td>缺失记 <code class="mono">missing</code>，未确认记 <code class="mono">pending_confirm</code>，二者不得合并为&quot;空&quot;</td><td>P0</td></tr></tbody></table>
+<h3>（四）M2 版本与时间</h3>
+<table class="grid"><thead><tr><th>编号</th><th>需求描述</th><th>处理规则与约束</th><th>优先级</th></tr></thead><tbody><tr><td>FR-201</td><td>版本以有效期 <code class="mono">valid_from</code> / <code class="mono">valid_to</code> 表达，末版 <code class="mono">valid_to</code> 为空</td><td>有效期必填；缺失即视为不可判定，按阻断处理</td><td>P0</td></tr><tr><td>FR-202</td><td>版本确认状态三态：草稿、已确认、已作废</td><td>作废必须填写原因与操作人；作废不得物理删除</td><td>P0</td></tr><tr><td>FR-203</td><td>同一变更单在同一时刻只允许一个有效版本</td><td>数据库层唯一约束保证；冲突时阻断并挂出</td><td>P0</td></tr><tr><td>FR-204</td><td>每条记录同时保留业务发生时间与系统接收时间</td><td>发生时间允许为空但必须显式标记缺失；接收时间不可为空</td><td>P0</td></tr><tr><td>FR-205</td><td>标记回填记录（接收时间显著晚于发生时间的补录）</td><td>只标记不推算；页面并列呈现两条时间轴</td><td>P1</td></tr><tr><td>FR-206</td><td>接收时间晚于客户截止时间的单据高亮挂出</td><td>不自动判定责任；责任判定进人工队列</td><td>P0</td></tr><tr><td>FR-207</td><td>跨版本金额比对，输出差额候选与来源定位</td><td>差额由程序计算；不得替换原值；不得推断合理区间</td><td>P0</td></tr><tr><td>FR-208</td><td>读取失败时保留上次快照并记录快照时间</td><td>页面必须显式提示&quot;数据停留于某时刻&quot;；禁止静默沿用</td><td>P1</td></tr><tr><td>FR-209</td><td>读取失败不自动重试业务动作，不编造最新状态</td><td>重试仅限读操作；连续失败转人工核查</td><td>P1</td></tr></tbody></table>
+<h3>（五）M3 质量断言与缺项清单</h3>
+<table class="grid"><thead><tr><th>编号</th><th>需求描述</th><th>处理规则与约束</th><th>优先级</th></tr></thead><tbody><tr><td>FR-301</td><td>执行四类断言：重复编号、空时间、版本断链、单位差异</td><td>断言为确定性规则，结论可复算；同一输入必须同结论</td><td>P0</td></tr><tr><td>FR-302</td><td>断言结果只标记、不清洗，问题记录保留原行</td><td>重复行全部标记不自动去重；单位差异挂出待人工确认</td><td>P0</td></tr><tr><td>FR-303</td><td>生成一页缺项清单，固定四列：缺什么、来源位置、版本状态、下一步</td><td>一页内呈现；不做长摘要；按严重度排序</td><td>P0</td></tr><tr><td>FR-304</td><td>每条缺项必须给出可定位的来源位置</td><td>无来源位置的输出视为无效输出，不得提交</td><td>P0</td></tr><tr><td>FR-305</td><td>清单支持只读导出，带水印（操作人与时间）并记录导出行数</td><td>导出必须写审计事件；导出范围限脱敏数据</td><td>P1</td></tr></tbody></table>
+<h3>（六）M4 交接与人工队列</h3>
+<table class="grid"><thead><tr><th>编号</th><th>需求描述</th><th>处理规则与约束</th><th>优先级</th></tr></thead><tbody><tr><td>FR-401</td><td>交接单固定三栏：最新版本、未确认事项、截止时间</td><td>三栏均不可为空；缺项时不允许提交交接</td><td>P1</td></tr><tr><td>FR-402</td><td>未结项归属原责任人，不得随交接转移至接收方</td><td>归属字段写入受策略约束；跨主体写入直接拒绝</td><td>P1</td></tr><tr><td>FR-403</td><td>维护人工核对队列，队列内单据 <code class="mono">blocked=true</code></td><td>处于 blocked 的单据禁止进入出结果环节</td><td>P0</td></tr><tr><td>FR-404</td><td>必审操作、授权角色、越权场景三类清单以配置表维护</td><td>可导出签字版；清单变更需版本号与批准人</td><td>P0</td></tr><tr><td>FR-405</td><td>人工决策留痕：确认、拒绝、升级三种动作及证据</td><td>决策只能由人工写入；系统 principal 无写权限</td><td>P0</td></tr></tbody></table>
+<h3>（七）M5 权限与审计</h3>
+<table class="grid"><thead><tr><th>编号</th><th>需求描述</th><th>处理规则与约束</th><th>优先级</th></tr></thead><tbody><tr><td>FR-501</td><td>记录审计四问：谁查过、用哪个版本、提了什么建议、谁确认</td><td>每次查看与导出都写事件；含角色、时间、查询条件</td><td>P0</td></tr><tr><td>FR-502</td><td>审计事件只追加，采用哈希链</td><td>数据库层撤销更新与删除权限；每日校验链完整性</td><td>P0</td></tr><tr><td>FR-503</td><td>导出事件包含行数、用途声明、操作人</td><td>未声明用途的导出请求直接拒绝</td><td>P1</td></tr><tr><td>FR-504</td><td>越权拦截：跨企业访问、非授权确认、自动化主体确认</td><td>策略层拒绝并记 <code class="mono">deny</code> 事件；拒绝理由可读</td><td>P0</td></tr><tr><td>FR-505</td><td>确认链还原视图，按时间轴串联全链动作</td><td>只读展示；支持按单号、按人、按版本三种检索</td><td>P0</td></tr></tbody></table>
+<h3>（八）M6 AI 助手与 Agent</h3>
+<table class="grid"><thead><tr><th>编号</th><th>需求描述</th><th>处理规则与约束</th><th>优先级</th></tr></thead><tbody><tr><td>FR-601</td><td>制度与口径问答，答案必须带引用（文档、条款、切片编号）</td><td>引用由系统生成，模型无权编造；无引用不得输出</td><td>P1</td></tr><tr><td>FR-602</td><td>无检索依据时拒答，不调用模型组织答案</td><td>以两路检索最高原始分判定；拒答即转人工</td><td>P1</td></tr><tr><td>FR-603</td><td>答案中的数字逐个回查原文，查不到即降级为&quot;部分可核&quot;</td><td>降级需在界面与接口同时标识；不得静默通过</td><td>P1</td></tr><tr><td>FR-604</td><td>变更预检工具链：查制度、查参数、查档案、算规则、建草稿</td><td>参数缺失返回 <code class="mono">missing</code>，不给默认值</td><td>P2</td></tr><tr><td>FR-605</td><td>写操作凭证：判定凭证绑定明细内容、一次性、有时效</td><td>五道校验：签名、时效、结论、内容一致、未使用</td><td>P2</td></tr><tr><td>FR-606</td><td>Agent 循环刹车：单轮工具调用、生成轮数、token、总超时</td><td>触顶降级到固定检索，不返回错误页</td><td>P2</td></tr><tr><td>FR-607</td><td>检测&quot;模型声称已完成写操作但系统无对应记录&quot;</td><td>状态标为不一致，答复开头显式纠正</td><td>P2</td></tr></tbody></table>
+<h3>（九）非功能需求 NFR-01 ~ NFR-12</h3>
+<table class="grid"><thead><tr><th>编号</th><th>类别</th><th>要求</th><th>验收时怎么量</th></tr></thead><tbody><tr><td>NFR-01</td><td>性能</td><td>40 条样本全量断言 ≤ 2 分钟；单条结论页 ≤ 2 秒</td><td>计时脚本，3 次取中位数</td></tr><tr><td>NFR-02</td><td>性能</td><td>缺项清单首屏 ≤ 3 秒（样本量 ≤ 300 条）</td><td>前端埋点 P95</td></tr><tr><td>NFR-03</td><td>可用性</td><td>试点期工作日可用率 ≥ 99.5%；任务失败可重跑</td><td>运行日志统计</td></tr><tr><td>NFR-04</td><td>只读</td><td>技术层不存在写回业务系统的接口与凭证</td><td>接口清单与代码审查</td></tr><tr><td>NFR-05</td><td>脱敏</td><td>证件号、银行账号、手机号默认掩码；明文需二次授权</td><td>页面抽样 + 日志扫描</td></tr><tr><td>NFR-06</td><td>审计</td><td>审计表无更新删除权限；哈希链每日校验</td><td>数据库权限核查 + 校验报告</td></tr><tr><td>NFR-07</td><td>可解释</td><td>每条结论绑定规则版本号与参数版本号</td><td>抽 10 条核对字段非空</td></tr><tr><td>NFR-08</td><td>可复算</td><td>支持按业务时间与系统时间双维度重放</td><td>指定时点复现结果一致</td></tr><tr><td>NFR-09</td><td>幂等</td><td>同一文件重复导入不重复入库</td><td>重复上传同批次，计数不变</td></tr><tr><td>NFR-10</td><td>降级</td><td>模型不可用降级到固定检索，禁止降级为&quot;默认通过&quot;</td><td>断网演练</td></tr><tr><td>NFR-11</td><td>留存</td><td>原始版本、修订原因、确认人全程留存；虚构个人字段按约定删除</td><td>留存清单与删除记录</td></tr><tr><td>NFR-12</td><td>可移植</td><td>内网单机可部署，不依赖公有云专属能力</td><td>离线环境部署验证</td></tr></tbody></table>
+<h3>（十）全局不变量 INV-01 ~ INV-08</h3>
+<p>不变量是系统的&quot;物理定律&quot;。实现可以妥协交互，不能妥协它们；每一条都应有自动化测试守住。</p>
+<table class="grid"><thead><tr><th>编号</th><th>不变量</th><th>违反时的系统行为</th></tr></thead><tbody><tr><td>INV-01</td><td>无核对则不出结果：任何进入结果的数据必须有核对通过记录或有效豁免</td><td>拒绝出结果，提示补核对</td></tr><tr><td>INV-02</td><td>已确认版本不得被旧版本覆盖</td><td>拒绝写入，记 deny 事件</td></tr><tr><td>INV-03</td><td>同一变更单同一时刻仅一个有效版本</td><td>阻断并要求作废其中一版（留原因）</td></tr><tr><td>INV-04</td><td>缺失不等于未确认，不得由系统推算或补填</td><td>标&quot;缺失&quot;，等人工补录</td></tr><tr><td>INV-05</td><td>建议不覆盖原值，建议以独立事件记录</td><td>建议写入 propose 事件，原值不变</td></tr><tr><td>INV-06</td><td>审计只追加，不接受&quot;清理日志&quot;需求</td><td>只能归档冷存储，不物理删除</td></tr><tr><td>INV-07</td><td>快照不可变，重建须生成新版本号</td><td>覆盖请求直接拒绝</td></tr><tr><td>INV-08</td><td>人工确认不可被模型或系统 principal 替代</td><td>无人工签字的确认一律无效</td></tr></tbody></table>
+<h2 id="section-6">五、需求边界</h2>
+<h3>（一）范围内</h3>
+<table class="grid"><thead><tr><th>域</th><th>本期包含</th><th>边界说明</th></tr></thead><tbody><tr><td>接入</td><td>三类来源的脱敏只读导出接入</td><td>接口由客户方提供；本方案不含客户侧改造</td></tr><tr><td>归一</td><td>五字段映射、映射键生成、未匹配挂出</td><td>映射规则须签字</td></tr><tr><td>版本与时间</td><td>有效期判定、双时间戳、快照、过期挂出</td><td>不做&quot;哪版正确&quot;的裁决</td></tr><tr><td>质量</td><td>四类断言、一页缺项清单、只读导出</td><td>只标记不清洗</td></tr><tr><td>交接</td><td>三栏交接单、未结项归属、人工队列</td><td>模板需先试运行</td></tr><tr><td>权限与审计</td><td>三类清单、越权拦截、哈希链、确认链还原</td><td>不含等保测评本身</td></tr><tr><td>AI</td><td>问答助手、Agent 预检（P1／P2）</td><td>全部止于建议与草稿</td></tr></tbody></table>
+<h3>（二）范围外（Out of Scope，12 条）</h3>
+<p>以下 12 条同时是验收阶段拒绝需求的依据，逐条可执行。</p>
+<table class="grid"><thead><tr><th>#</th><th>不含项</th><th>拒绝依据</th></tr></thead><tbody><tr><td>1</td><td>不回写客户任何业务系统（只读边界）</td><td>f32</td></tr><tr><td>2</td><td>不做自动审批、自动放行、不设默认通过</td><td>f22、f44、INV-08</td></tr><tr><td>3</td><td>不推算业务发生时间，只记录系统接收时间</td><td>f13、INV-04</td></tr><tr><td>4</td><td>AI 建议不覆盖原值，仅作候选</td><td>f14、INV-05</td></tr><tr><td>5</td><td>不代客户执行数据录入与补录（只出缺项清单）</td><td>f32、FR-303</td></tr><tr><td>6</td><td>不含客户侧系统改造（三类工具的接口开发由客户方负责）</td><td>f30 待验证</td></tr><tr><td>7</td><td>不含等保测评、密评的第三方费用</td><td>商务边界</td></tr><tr><td>8</td><td>不含客户方终端、网络、账号权限改造</td><td>商务边界</td></tr><tr><td>9</td><td>不含客户决策延迟造成的等待成本与工期顺延</td><td>商务边界</td></tr><tr><td>10</td><td>不含超出约定单据类型与源系统范围的新增对接</td><td>范围锁定</td></tr><tr><td>11</td><td>不含模型微调训练（如需另立变更单）</td><td>技术边界</td></tr><tr><td>12</td><td>不含现场驻场差旅</td><td>商务边界</td></tr></tbody></table>
+<h3>（三）三条硬边界</h3>
+<p><strong>边界一：只读。</strong> 系统没有任何写回路径、消息外发路径、执行接口路径。这不是&quot;暂时不做&quot;，而是架构约束：只读接入层不持有写凭证，应用层不实现写方法，网关不开放写路由。任何&quot;顺手帮客户改一下&quot;的需求，答案是不行。</p>
+<p><strong>边界二：不代签。</strong> 正式确认只能由授权人员在授权范围内完成，模型与系统主体无确认写权限。凭证机制的设计目标是&quot;让模型拿不到确认能力&quot;，而不是&quot;让模型自觉不用&quot;。</p>
+<p><strong>边界三：不默认通过。</strong> 无法确认版本、关键字段缺失、规则版本缺失，一律进人工队列并阻断出结果。系统不提供&quot;跳过核对&quot;的开关，也不在服务不可用时降级为通过。</p>
+<h3>（四）假设与依赖</h3>
+<table class="grid"><thead><tr><th>编号</th><th>假设</th><th>不成立时的后果</th><th>责任人</th></tr></thead><tbody><tr><td>A-01</td><td>三类工具均可提供脱敏只读导出，字段可映射</td><td>需先建数据同步基线，P1 延期</td><td>秦芮</td></tr><tr><td>A-02</td><td>存在唯一且可书面的字段口径签字人</td><td>验收无依据，不得进入开发</td><td>顾明岚</td></tr><tr><td>A-03</td><td>双人核对的具体字段清单可被明确</td><td>核对无法程序化辅助，只做留痕</td><td>顾明岚 + 一线</td></tr><tr><td>A-04</td><td>40 条样本可在试点前完成脱敏并提供</td><td>验收指标无法计量</td><td>顾明岚 + 傅景</td></tr><tr><td>A-05</td><td>审批权归属由业务负责人决策，审核侧仅定质量口径</td><td>三类清单无法定稿</td><td>顾明岚</td></tr><tr><td>A-06</td><td>试点投入不超过 4 周 × 2 人 × 每周 4 小时</td><td>超出即触发停止条件</td><td>顾明岚</td></tr></tbody></table>
+<h3>（五）范围变更控制</h3>
+<p>范围变更不靠口头协商，靠三条规则。</p>
+<ol><li><strong>新增功能需求必须有痛点编号。</strong> 提不出对应 PP 编号的需求，先进入下一轮访谈，不进入本期。</li><li><strong>变更影响必须走追溯矩阵。</strong> 任一 FR 变更，须更新第六章的矩阵并列出受影响的验收用例；未列出即视为未完成变更评估。</li><li><strong>口径类变更需双签。</strong> 涉及字段口径、分级阈值、留存期限的变更，由业务负责人与审核与质量负责人共同批准。</li></ol>
+<h2 id="section-7">六、需求追溯矩阵</h2>
+<h3>（一）主追溯矩阵</h3>
+<p>矩阵读法：从痛点出发，向右逐列验证&quot;是否有需求承接、是否有 AI 改造支撑、是否有验收用例覆盖、是否有终验指标计量&quot;。任一列出现空值，即为需求缺口。</p>
+<table class="grid"><thead><tr><th>痛点</th><th>业务需求</th><th>功能需求</th><th>AI 改造</th><th>验收用例</th><th>终验指标</th></tr></thead><tbody><tr><td>PP-01</td><td>BR-01</td><td>FR-101、FR-102、FR-103、FR-104、FR-105</td><td>AI-01</td><td>AC-01、AC-02、AC-03</td><td>M5</td></tr><tr><td>PP-02</td><td>BR-01、BR-02</td><td>FR-201、FR-202、FR-203、FR-207</td><td>AI-02</td><td>AC-05、AC-06</td><td>M4、M6</td></tr><tr><td>PP-03</td><td>BR-02</td><td>FR-204、FR-205</td><td>AI-02</td><td>AC-07</td><td>M6</td></tr><tr><td>PP-04</td><td>BR-02</td><td>FR-206、FR-207、FR-301</td><td>AI-02、AI-04</td><td>AC-08、AC-13</td><td>M1</td></tr><tr><td>PP-05</td><td>BR-04</td><td>FR-401、FR-402、FR-405</td><td>AI-05</td><td>AC-15、AC-16</td><td>M4</td></tr><tr><td>PP-06</td><td>BR-03</td><td>FR-303、FR-304、FR-305</td><td>AI-03</td><td>AC-11、AC-12</td><td>M1、M2</td></tr><tr><td>PP-07</td><td>BR-02、BR-03</td><td>FR-301、FR-302</td><td>AI-03</td><td>AC-09、AC-10</td><td>M5</td></tr><tr><td>PP-08</td><td>BR-02</td><td>FR-208、FR-209</td><td>AI-02</td><td>AC-14</td><td>M6</td></tr><tr><td>PP-09</td><td>BR-05</td><td>FR-501、FR-502、FR-503、FR-505</td><td>AI-08</td><td>AC-20、AC-21、AC-22、AC-23</td><td>M7、M8</td></tr><tr><td>PP-10</td><td>BR-06</td><td>FR-404、FR-505</td><td>—（不建工具）</td><td>AC-27</td><td>M9</td></tr><tr><td>PP-11</td><td>BR-05</td><td>FR-401、FR-404、FR-504</td><td>AI-08</td><td>AC-18、AC-19</td><td>M3</td></tr><tr><td>PP-12</td><td>BR-06</td><td>FR-501、FR-505</td><td>—（不建工具）</td><td>AC-28</td><td>M9、M10</td></tr></tbody></table>
+<h3>（二）需求—证据矩阵</h3>
+<table class="grid"><thead><tr><th>需求</th><th>引用事实</th><th>事实要点</th><th>证据强度</th></tr></thead><tbody><tr><td>BR-01</td><td>f30、f31、f32、f33</td><td>三工具无统一编号；五项关键字段；只读导出；四类质量检查并保留原行</td><td>强（多角色一致）</td></tr><tr><td>BR-02</td><td>f24、f34、f35、f13、f11</td><td>有效期 + 状态双条件；双时间戳；快照与不编造；回填时间；旧金额草稿</td><td>强</td></tr><tr><td>BR-03</td><td>f15、f10、f14、f33</td><td>一页缺项清单 + 来源位置；版本难追溯；建议不覆盖原值；保留原行</td><td>强（一线明确表述）</td></tr><tr><td>BR-04</td><td>f23、f20、f25</td><td>交接列明版本与未结项与截止；记录接收人；责任不转移</td><td>中强（模板待定）</td></tr><tr><td>BR-05</td><td>f45、f43、f41</td><td>审计四问；原始版本与确认人留存；授权范围访问</td><td>强</td></tr><tr><td>BR-06</td><td>f50、f51、f53、f55</td><td>时效与二次确认冲突；三项指标；按原始记录核对；周复盘</td><td>中（口径未定稿）</td></tr></tbody></table>
+<h3>（三）覆盖率与缺口分析</h3>
+<table class="grid"><thead><tr><th>分析项</th><th>结果</th><th>结论与处置</th></tr></thead><tbody><tr><td>痛点覆盖率</td><td>12／12 有需求承接</td><td>无遗漏</td></tr><tr><td>痛点—AI 覆盖率</td><td>10／12 有 AI 改造；PP-10、PP-12 明确无 AI</td><td>口径域不建工具，见第三章（四）</td></tr><tr><td>功能需求—验收覆盖率</td><td>37 项中 36 项有直接对应用例；FR-604 属 P2 能力，不在本期验收范围</td><td>无&quot;本期写了本期不验&quot;的需求</td></tr><tr><td>验收用例—指标覆盖率</td><td>28 条用例全部映射到 M1–M12 或门禁</td><td>无孤立用例</td></tr><tr><td>需求—证据缺口</td><td>BR-06 的证据强度为中，且 f50 的两种&quot;过期&quot;定义未定</td><td>列入 Q3、Q7，试点前闭环</td></tr><tr><td>无证据支撑的需求</td><td>FR-101 至 FR-106 部分实现细节来自技术约束而非访谈</td><td>已在证据矩阵标注，不冒充业务需求</td></tr><tr><td>反向缺口</td><td>无&quot;验收指标无需求支撑&quot;的情况</td><td>M11、M12 为本方案新增，需业务确认阈值</td></tr></tbody></table>
+<h3>（四）变更影响矩阵</h3>
+<table class="grid"><thead><tr><th>若变更…</th><th>受影响功能</th><th>受影响验收</th><th>需重新确认的人</th></tr></thead><tbody><tr><td>字段字典新增或改名（FR-103）</td><td>FR-104、FR-301、FR-303</td><td>AC-02、AC-09、AC-11</td><td>字段口径签字人 + 秦芮</td></tr><tr><td>版本有效期定义调整（FR-201）</td><td>FR-203、FR-206、FR-207</td><td>AC-05、AC-08、AC-13</td><td>傅景</td></tr><tr><td>缺项清单列结构变更（FR-303）</td><td>FR-304、FR-305</td><td>AC-11、AC-12</td><td>林亦舟</td></tr><tr><td>三类清单条目变更（FR-404）</td><td>FR-403、FR-504</td><td>AC-17、AC-18、AC-19</td><td>顾明岚（决策）+ 傅景（口径）</td></tr><tr><td>审计字段变更（FR-501）</td><td>FR-502、FR-505</td><td>AC-20、AC-21</td><td>傅景 + 资料责任人</td></tr><tr><td>分级阈值调整（AI-04）</td><td>FR-207、FR-405</td><td>AC-13、AC-17</td><td>顾明岚</td></tr></tbody></table>
+<h2 id="section-8">七、验收标准清单</h2>
+<h3>（一）验收原则</h3>
+<ol><li><strong>必过项不设&quot;有条件通过&quot;。</strong> M1、M2、M3、M7、M8 为必过项，任一不达标即不签字，不接受&quot;整体效果良好&quot;的替代论证。</li><li><strong>验收看证据，不看演示。</strong> 每条用例的通过与否，以留存证据（截图、导出文件、日志、校验报告）为准；演示成功不算通过。</li><li><strong>演练验收不等于生产验收。</strong> 40 条样本的通过结论仅对本次演练批次有效，不得作为对外经营数据或生产能力承诺。</li><li><strong>虚构基线仅用于内部对比。</strong> 界面与报告中必须标注&quot;虚构样本&quot;，M10 只能用试点前后对比，不得对外引用。</li><li><strong>判定人具名。</strong> 每个指标只有一个判定人，避免&quot;人人有责等于无人负责&quot;。</li></ol>
+<h3>（二）里程碑门禁 G0 ~ G5</h3>
+<table class="grid"><thead><tr><th>门禁</th><th>时点</th><th>通过条件</th><th>不通过时</th></tr></thead><tbody><tr><td>G0 前置</td><td>开发前 3 天</td><td>字段字典与口径签字单落实；三类清单草案；40 条样本脱敏方案；试点环境就绪</td><td>不启动开发（对应停止条件 S4）</td></tr><tr><td>G1 接入</td><td>第 1 周末</td><td>40 条样本全部落库且保留原行；映射键可生成；未匹配行单独挂出</td><td>回退，先解决字段映射</td></tr><tr><td>G2 版本与时间</td><td>第 2 周末</td><td>版本断链可阻断；双时间戳并排；过期单可挂出；M6 抽样通过</td><td>不进入 G3</td></tr><tr><td>G3 交接与队列</td><td>第 3 周中</td><td>三栏交接必填生效；blocked 队列零默认通过；越权拦截生效</td><td>不进入 G4</td></tr><tr><td>G4 审计与清单</td><td>第 3 周末</td><td>确认链 5 条可还原；哈希链校验通过；缺项清单一页可用</td><td>不进入终验</td></tr><tr><td>G5 终验</td><td>第 4 周末</td><td>M1–M10 达标；S1–S6 未触发；签字包齐备</td><td>延长试点或按停止条件处理</td></tr></tbody></table>
+<h3>（三）功能验收用例 AC-01 ~ AC-28</h3>
+<table class="grid"><thead><tr><th>编号</th><th>验收对象</th><th>验证方法与步骤</th><th>通过标准</th><th>判定人</th></tr></thead><tbody><tr><td>AC-01</td><td>FR-101</td><td>导入三类来源的 40 条脱敏样本，核对原始层行数与来源行数</td><td>40／40 全部落库；原行数一致；无写回调用记录</td><td>秦芮</td></tr><tr><td>AC-02</td><td>FR-104</td><td>对 40 条样本生成映射键，检查唯一性与格式</td><td>键格式合规；同一逻辑单不产生两个键</td><td>秦芮</td></tr><tr><td>AC-03</td><td>FR-105</td><td>构造 3 条无法匹配的样本，观察处理路径</td><td>3 条全部单独挂出；无一条被自动并入他单</td><td>秦芮</td></tr><tr><td>AC-04</td><td>FR-106</td><td>构造&quot;字段为空&quot;与&quot;字段待确认&quot;各 2 条</td><td>两类状态在界面与数据层可区分；文案不混用&quot;空&quot;</td><td>林亦舟</td></tr><tr><td>AC-05</td><td>FR-201、FR-203</td><td>构造同单两版并存、有效期重叠的场景</td><td>系统阻断并提示作废其中一版；作废需填原因</td><td>傅景</td></tr><tr><td>AC-06</td><td>FR-202、FR-207</td><td>构造 v1→v3 缺 v2 的断链样本</td><td>断链被识别并进人工队列；禁止出结果</td><td>傅景</td></tr><tr><td>AC-07</td><td>FR-204、FR-205</td><td>构造群消息先行、次日补表的样本</td><td>两条时间轴并列显示；回填被标记；发生时间缺失显式提示</td><td>林亦舟</td></tr><tr><td>AC-08</td><td>FR-206</td><td>构造接收时间晚于截止时间的样本</td><td>过期单高亮挂出；不自动判定责任</td><td>唐映秋</td></tr><tr><td>AC-09</td><td>FR-301</td><td>对四类问题各构造 2 条样本（共 8 条）</td><td>四类全部命中；同一输入重复执行结论一致</td><td>秦芮</td></tr><tr><td>AC-10</td><td>FR-302</td><td>构造重复编号样本，检查是否被去重</td><td>重复行全部保留并标记；未发生物理删除</td><td>秦芮</td></tr><tr><td>AC-11</td><td>FR-303</td><td>打开缺项清单页，检查列结构与排序</td><td>四列齐全；一页内呈现；按严重度排序</td><td>林亦舟</td></tr><tr><td>AC-12</td><td>FR-304</td><td>抽查 10 条缺项，逐条点击来源位置回查</td><td>10／10 可定位到具体来源行；无&quot;见附件&quot;类模糊表述</td><td>林亦舟</td></tr><tr><td>AC-13</td><td>FR-207、AI-04</td><td>对 40 条样本逐条核对金额差异与来源</td><td>金额差异来源定位 40／40；差额可复算</td><td>傅景</td></tr><tr><td>AC-14</td><td>FR-208、FR-209</td><td>断网后读取，观察页面与日志</td><td>显示快照时间与&quot;停留于某时刻&quot;提示；无编造状态；未自动重试业务动作</td><td>秦芮</td></tr><tr><td>AC-15</td><td>FR-401</td><td>提交一份缺&quot;截止时间&quot;的交接单</td><td>提交被拒绝并给出缺项提示；补齐后可提交</td><td>唐映秋</td></tr><tr><td>AC-16</td><td>FR-402</td><td>尝试将未结项归属改为接收方</td><td>写入被拒绝；原责任人保持不变</td><td>唐映秋</td></tr><tr><td>AC-17</td><td>FR-403</td><td>将无法确认版本的单据推向出结果</td><td>被阻断进入 blocked 队列；默认通过数为 0</td><td>傅景</td></tr><tr><td>AC-18</td><td>FR-504</td><td>用非授权账号访问跨企业资料；用系统主体调用确认接口</td><td>均被拒绝并记 deny 事件；拒绝理由可读</td><td>傅景</td></tr><tr><td>AC-19</td><td>FR-404</td><td>导出三类清单签字版，核对条目与版本号</td><td>条目完整；含版本号与批准人；可导出 PDF</td><td>顾明岚</td></tr><tr><td>AC-20</td><td>FR-501、FR-505</td><td>抽 5 条单据还原确认链</td><td>5／5 可还原&quot;谁查过→用哪版→提什么建议→谁确认&quot;</td><td>傅景</td></tr><tr><td>AC-21</td><td>FR-502</td><td>运行哈希链校验；尝试修改一条审计记录</td><td>校验通过；修改被数据库权限拒绝</td><td>傅景</td></tr><tr><td>AC-22</td><td>FR-502</td><td>检查审计表的数据库权限配置</td><td>应用账号无 UPDATE／DELETE 权限</td><td>运维</td></tr><tr><td>AC-23</td><td>FR-503</td><td>发起一次未声明用途的导出</td><td>请求被拒绝；声明用途后可导出并留痕</td><td>傅景</td></tr><tr><td>AC-24</td><td>FR-601</td><td>问 10 个制度口径问题</td><td>10／10 带引用（文档 + 条款 + 切片号）；引用可点开原文</td><td>林亦舟</td></tr><tr><td>AC-25</td><td>FR-602</td><td>问 5 个制度中不存在的问题</td><td>5／5 明确拒答并转人工；无编造答案</td><td>傅景</td></tr><tr><td>AC-26</td><td>FR-603</td><td>构造含数字的答案，抽查数字溯源</td><td>数字均可回查原文；查不到的标为&quot;部分可核&quot;</td><td>傅景</td></tr><tr><td>AC-27</td><td>BR-06</td><td>复盘页取工时、返工次数、确认完整率</td><td>三项同时出数；取数口径书面确认；无单一指标结论</td><td>叶书</td></tr><tr><td>AC-28</td><td>FR-605、FR-606、FR-607</td><td>演示跳过校验建单、重复使用凭证、模型谎报完成</td><td>均被拦截或纠正；幂等键只产生 1 张单</td><td>秦芮</td></tr></tbody></table>
+<h3>（四）非功能与安全验收</h3>
+<table class="grid"><thead><tr><th>编号</th><th>验收项</th><th>方法</th><th>通过标准</th></tr></thead><tbody><tr><td>AC-N1</td><td>性能基线（NFR-01、NFR-02）</td><td>计时脚本 3 次取中位数</td><td>全量断言 ≤ 2 分钟；清单首屏 ≤ 3 秒</td></tr><tr><td>AC-N2</td><td>脱敏与日志（NFR-05）</td><td>页面抽样 + 日志正则扫描证件号、卡号、手机号</td><td>页面全掩码；日志命中 0 条</td></tr><tr><td>AC-N3</td><td>只读边界（NFR-04）</td><td>接口清单审查 + 抓包</td><td>无写方法、无外发消息、无执行接口</td></tr><tr><td>AC-N4</td><td>降级行为（NFR-10）</td><td>关闭模型服务后重跑</td><td>降级到固定检索；不出现&quot;默认通过&quot;</td></tr><tr><td>AC-N5</td><td>幂等（NFR-09）</td><td>同一文件重复导入 2 次</td><td>计数不变；不产生重复单据</td></tr><tr><td>AC-N6</td><td>可复算（NFR-08）</td><td>指定时点重放一次核对</td><td>结论与首次一致；版本号一致</td></tr><tr><td>AC-N7</td><td>留存与删除（NFR-11）</td><td>核对留存清单与删除记录</td><td>原始版本可查；虚构个人字段按约定删除并留痕</td></tr><tr><td>AC-N8</td><td>离线部署（NFR-12）</td><td>在无外网环境部署一次</td><td>部署成功；核心链路可用</td></tr></tbody></table>
+<h3>（五）试点终验指标 M1 ~ M12</h3>
+<table class="grid"><thead><tr><th>编号</th><th>指标</th><th>目标</th><th>判定人</th><th>依据</th></tr></thead><tbody><tr><td>M1</td><td>金额差异来源定位率</td><td>100%（40／40）</td><td>傅景</td><td>f02、f42</td></tr><tr><td>M2</td><td>每条结果关联来源与人工复核记录</td><td>100%</td><td>傅景</td><td>f42</td></tr><tr><td>M3</td><td>无法确认版本或关键字段进人工队列率</td><td>100%，默认通过 0 条</td><td>傅景</td><td>f44</td></tr><tr><td>M4</td><td>版本断链数与未结项数</td><td>可统计、可追溯到单号</td><td>唐映秋</td><td>BR-01、BR-04</td></tr><tr><td>M5</td><td>拼接成功率与未匹配行挂出率</td><td>未匹配行 100% 挂出且经人工确认</td><td>秦芮</td><td>BR-01</td></tr><tr><td>M6</td><td>过期单挂出准确率</td><td>抽样全部命中，无误挂</td><td>秦芮</td><td>f34</td></tr><tr><td>M7</td><td>一次完整确认链可还原</td><td>抽查 5 条，5／5 通过</td><td>傅景</td><td>f45</td></tr><tr><td>M8</td><td>审计哈希链完整性</td><td>校验通过，无断链</td><td>傅景</td><td>INV-06</td></tr><tr><td>M9</td><td>工时、返工次数、确认完整率</td><td>三项同时出数，不作单一解释</td><td>叶书</td><td>f51</td></tr><tr><td>M10</td><td>重复核对变化</td><td>相对基线的可解释变化（基线为虚构样本）</td><td>顾明岚</td><td>f00、f12</td></tr><tr><td>M11</td><td>缺项清单带来的返工次数变化</td><td>由一线实测记录，周度对比</td><td>林亦舟</td><td>f15</td></tr><tr><td>M12</td><td>AI 建议误报率与采纳率</td><td>可统计；误报率超阈值即降级为提示</td><td>傅景</td><td>AI-02、AI-04</td></tr></tbody></table>
+<p>M11 与 M12 为本方案新增。M11 对应 f15 的原话诉求（&quot;减少返工&quot;），此前方案只验证清单可回溯，未验证返工是否下降；M12 用于防止 AI 建议把&quot;提示&quot;变成&quot;噪音&quot;。两项阈值须在 G0 前由业务负责人确认，未确认则只做统计、不作达标判定。</p>
+<h3>（六）停止条件 S1 ~ S6</h3>
+<p>触发即暂停，不接受&quot;继续观察&quot;。</p>
+<table class="grid"><thead><tr><th>编号</th><th>条件</th><th>拍板人</th><th>触发后动作</th></tr></thead><tbody><tr><td>S1</td><td>出现任一笔&quot;未确认版本仍出结果&quot;</td><td>傅景</td><td>立即停用出结果入口，回溯全部已出结果</td></tr><tr><td>S2</td><td>审计链断链或审计记录被改</td><td>傅景</td><td>冻结系统，导出全量审计核对</td></tr><tr><td>S3</td><td>发生越权访问跨企业资料</td><td>傅景</td><td>冻结账号，核查授权配置</td></tr><tr><td>S4</td><td>字段口径签字人未落实，仍在使用未签字口径</td><td>顾明岚</td><td>停止开发，先补签字</td></tr><tr><td>S5</td><td>投入超出 4 周 × 2 人 × 每周 4 小时预算</td><td>顾明岚</td><td>重新评估范围</td></tr><tr><td>S6</td><td>只修模板不核对效果</td><td>叶书提出，傅景确认</td><td>试点不得结项</td></tr></tbody></table>
+<h3>（七）验收证据包与签字</h3>
+<table class="grid"><thead><tr><th>序号</th><th>证据</th><th>形式</th><th>提交人</th><th>签认人</th></tr></thead><tbody><tr><td>1</td><td>字段字典与口径签字单</td><td>文档 + 签字页</td><td>秦芮</td><td>顾明岚</td></tr><tr><td>2</td><td>三类清单定稿版（必审／授权／越权）</td><td>配置表导出 PDF</td><td>秦芮</td><td>顾明岚、傅景</td></tr><tr><td>3</td><td>40 条样本核对报告</td><td>逐条表格（差异 + 来源位置）</td><td>秦芮</td><td>傅景</td></tr><tr><td>4</td><td>缺项清单与来源定位抽查记录</td><td>截图 + 抽查表</td><td>林亦舟</td><td>傅景</td></tr><tr><td>5</td><td>确认链还原样例</td><td>5 条链路导出</td><td>秦芮</td><td>傅景</td></tr><tr><td>6</td><td>哈希链校验报告</td><td>校验日志</td><td>运维</td><td>傅景</td></tr><tr><td>7</td><td>试点复盘（三项指标）</td><td>对比表</td><td>叶书</td><td>顾明岚</td></tr><tr><td>8</td><td>验收签字包</td><td>汇总 PDF</td><td>项目经理</td><td>顾明岚</td></tr></tbody></table>
+<p>签字规则：任一位签认人未签，该项目不得计为通过；签字页须附对应证据编号，禁止只签结论不签依据。</p>
+<h2 id="section-9">八、实施路线与优先级落地</h2>
+<h3>（一）五个阶段与门禁</h3>
+<table class="grid"><thead><tr><th>阶段</th><th>周期</th><th>主要产出</th><th>AI 改造落地</th><th>门禁</th></tr></thead><tbody><tr><td>P0 前置</td><td>3 天</td><td>字段字典与签字单、三类清单草案、样本脱敏方案、环境</td><td>无</td><td>G0</td></tr><tr><td>P1 接入与归一</td><td>第 1 周</td><td>三源导入、映射键、未匹配挂出、四类断言</td><td>AI-01、AI-03（断言部分）</td><td>G1</td></tr><tr><td>P2 版本与时间</td><td>第 2 周</td><td>有效期判定、双时间戳、快照、过期挂出</td><td>AI-02</td><td>G2</td></tr><tr><td>P3 交接与队列</td><td>第 3 周</td><td>三栏交接、未结项归属、blocked 队列、越权拦截</td><td>AI-05</td><td>G3</td></tr><tr><td>P4 审计与清单</td><td>第 3 周末</td><td>哈希链、确认链还原、一页缺项清单、只读导出</td><td>AI-03（清单部分）、AI-04、AI-08</td><td>G4</td></tr><tr><td>P5 样本核对与复盘</td><td>第 4 周</td><td>40 条核对报告、三项指标、验收签字包</td><td>AI-06（可选试运行）</td><td>G5</td></tr></tbody></table>
+<h3>（二）AI 改造落地顺序与依赖</h3>
+<table class="code-card"><tr><td><p class="mono-line">AI-01 归一映射键</p><p class="mono-line">   └─→ AI-02 版本候选排序 ─→ AI-04 金额差异溯源</p><p class="mono-line">          └─→ AI-03 四类断言与缺项清单</p><p class="mono-line">                 └─→ AI-05 交接单结构化（P1，模板先行）</p><p class="mono-line">                        └─→ AI-06 制度问答（P1，独立可并行）</p><p class="mono-line">                               └─→ AI-07 变更预检 Agent（P2，需规则引擎与凭证就位）</p><p class="mono-line">AI-08 审计链（贯穿 P1–P4，与 P1 同期建表）</p></td></tr></table>
+<p>依赖关系上的两个判断需要说明：</p>
+<p><strong>第一，AI-03 的断言部分先于清单部分上线。</strong> 断言是清单的数据源，断言不稳，清单就是错的排版。因此 P1 只交付&quot;能跑出四类结果&quot;，P4 才交付&quot;能生成一页清单&quot;。</p>
+<p><strong>第二，AI-08 必须在 P1 建表，不能等到 P4。</strong> 审计一旦后补，P1–P3 期间的动作就没有记录，M7 的&quot;确认链还原&quot;必然失败。这是本项目最容易低估的排期风险：审计不是功能，是地基。</p>
+<h3>（三）资源与工时口径</h3>
+<table class="grid"><thead><tr><th>角色</th><th>投入</th><th>主要工作</th><th>不可替代性</th></tr></thead><tbody><tr><td>业务负责人（顾明岚）</td><td>决策点参与</td><td>范围、口径、三类清单拍板</td><td>高（唯一决策人）</td></tr><tr><td>一线专员（林亦舟）</td><td>每日 10 分钟 + 周复盘</td><td>缺项处理、清单可用性反馈</td><td>高（唯一现场视角）</td></tr><tr><td>流程协调（唐映秋）</td><td>每周 ≤ 4 小时</td><td>交接模板、未结项归属</td><td>高</td></tr><tr><td>数字化工程师（秦芮）</td><td>主要开发投入</td><td>接入、断言、审计、部署</td><td>高</td></tr><tr><td>审核与质量（傅景）</td><td>口径与验收</td><td>质量口径、验收判定、停止权</td><td>高（可否决）</td></tr><tr><td>客户协同（叶书）</td><td>周复盘</td><td>三项指标、对外口径</td><td>中</td></tr></tbody></table>
+<h2 id="section-10">九、风险与待验证假设</h2>
+<h3>（一）风险登记册 R1 ~ R10</h3>
+<table class="grid"><thead><tr><th>编号</th><th>风险</th><th>影响</th><th>概率</th><th>等级</th><th>应对</th><th>责任</th></tr></thead><tbody><tr><td>R1</td><td>无统一关联编号，拼接错行</td><td>静默错误，事后才被客户发现</td><td>高</td><td>高</td><td>未匹配行 100% 挂出，禁止默认合并</td><td>秦芮</td></tr><tr><td>R2</td><td>字段口径未签字即接入</td><td>验收无依据</td><td>高</td><td>高</td><td>G0 门禁：无签字不开发</td><td>顾明岚</td></tr><tr><td>R3</td><td>审批权归属未定</td><td>三类清单无法定稿</td><td>高</td><td>高</td><td>由业务负责人决策，审核侧只定质量口径</td><td>顾明岚</td></tr><tr><td>R4</td><td>时效与二次确认窗口冲突</td><td>工具固化矛盾</td><td>高</td><td>中</td><td>先定优先级再上线；系统不裁决</td><td>顾明岚 + 叶书</td></tr><tr><td>R5</td><td>过期阈值未定</td><td>过期识别不准</td><td>中</td><td>中</td><td>先按双时间戳 + 人工判断，阈值后补</td><td>秦芮</td></tr><tr><td>R6</td><td>审计留存期限未定</td><td>合规瑕疵</td><td>中</td><td>中</td><td>试点内按&quot;全程 + 30 天&quot;暂定，签字后固化</td><td>傅景</td></tr><tr><td>R7</td><td>故障期人工核查责任人未定</td><td>旧值被当新值</td><td>中</td><td>中</td><td>明确提示接收人与记录载体后再纳入验收</td><td>秦芮</td></tr><tr><td>R8</td><td>群消息先行习惯被强行收口</td><td>一线抵触，落地失败</td><td>中</td><td>中</td><td>只做标记回填，不禁止群沟通</td><td>林亦舟</td></tr><tr><td>R9</td><td>虚构基线被当作真实数据</td><td>决策失真</td><td>中</td><td>中</td><td>报告与界面标注&quot;虚构样本&quot;</td><td>全员</td></tr><tr><td>R10</td><td>AI 建议误报过多，变成噪音</td><td>一线关闭提示，能力失效</td><td>中</td><td>中</td><td>设误报率阈值，超阈值降级为提示；周复盘</td><td>傅景</td></tr></tbody></table>
+<h3>（二）待验证假设 Q1 ~ Q12</h3>
+<table class="grid"><thead><tr><th>编号</th><th>待核实事项</th><th>当前状态</th><th>闭环方式</th><th>截止</th></tr></thead><tbody><tr><td>Q1</td><td>试点覆盖哪些变更类型与客户范围，谁对字段口径签字</td><td>未采集</td><td>业务负责人书面指定</td><td>G0</td></tr><tr><td>Q2</td><td>是否允许只读层建映射键，规则由谁签字</td><td>未采集</td><td>秦芮提议 + 顾明岚批准</td><td>G0</td></tr><tr><td>Q3</td><td>&quot;过期&quot;指来源晚到还是旧版覆盖已确认版本</td><td>无结论</td><td>傅景先定义，再构造两类样本</td><td>P2</td></tr><tr><td>Q4</td><td>三类清单由谁定稿、何时确认</td><td>未采集</td><td>顾明岚决策</td><td>G0</td></tr><tr><td>Q5</td><td>审计日志版本号生成、留存期限、查阅授权</td><td>未采集</td><td>傅景 + 唐映秋</td><td>P4</td></tr><tr><td>Q6</td><td>故障期人工核查由谁触发、记在哪个载体</td><td>未采集</td><td>秦芮 + 当班人员</td><td>P3</td></tr><tr><td>Q7</td><td>时效与二次确认窗口的优先级、窗口多长</td><td>未采集</td><td>顾明岚 + 傅景</td><td>试点前</td></tr><tr><td>Q8</td><td>40 条样本如何选取与脱敏，复核记录谁留存</td><td>未采集</td><td>唐映秋 + 傅景</td><td>G0</td></tr><tr><td>Q9</td><td>双人核对具体核对哪些字段，是否已有清单</td><td>未核实</td><td>顾明岚 + 一线</td><td>P1</td></tr><tr><td>Q10</td><td>重复核对减少多少算达标</td><td>未核实</td><td>顾明岚定口径</td><td>G0</td></tr><tr><td>Q11</td><td>交接模板字段与登记载体</td><td>未核实</td><td>唐映秋出草案，批次内试运行</td><td>P3</td></tr><tr><td>Q12</td><td>AI 建议误报率与采纳率的阈值</td><td>无结论</td><td>傅景定阈值，试点内统计</td><td>G0</td></tr></tbody></table>
+<h3>（三）四来源收敛状态</h3>
+<table class="grid"><thead><tr><th>来源</th><th>主体</th><th>状态</th><th>缺口</th></tr></thead><tbody><tr><td>Buyer · 业务决策者</td><td>顾明岚</td><td>已采集角色陈述</td><td>目标量化与预算口径待确认</td></tr><tr><td>Brief · 书面需求</td><td>—</td><td>仅场景开场句</td><td>书面 Brief 原文与版本待补</td></tr><tr><td>Industry · 行业可行性</td><td>组件级调研 + 原型实现</td><td>部分补充</td><td>未完成本项目接口与数据条件验证</td></tr><tr><td>Operator · 一线使用者</td><td>林亦舟</td><td>已采集现场陈述</td><td>需样本与操作观察交叉验证</td></tr></tbody></table>
+<p>覆盖率 6／6 角色不等于四来源收敛。Brief 与 Industry 两项仍为空缺，因此本方案只能作为待验证假设推进；任何对外承诺（工期、效率提升比例、准确率）在本轮均不应给出。</p>
+<h2 id="section-11">附录 A 术语表</h2>
+<table class="grid"><thead><tr><th>术语</th><th>含义</th></tr></thead><tbody><tr><td>变更单</td><td>一次薪酬变更诉求的载体，本方案的核心核对对象</td></tr><tr><td>映射键（PCK）</td><td>由客户编号、薪资周期、变更类型、序号构成的唯一标识</td></tr><tr><td>双时间戳</td><td>业务发生时间（事情何时发生）与系统接收时间（我们何时知道）</td></tr><tr><td>版本有效期</td><td>版本生效的起止区间，配合确认状态共同判定&quot;哪一版有效&quot;</td></tr><tr><td>四类断言</td><td>重复编号、空时间、版本断链、单位差异四项确定性检查</td></tr><tr><td>缺项清单</td><td>一页式清单，固定四列：缺什么、来源位置、版本状态、下一步</td></tr><tr><td>未结项</td><td>交接时尚未确认的事项，归属原责任人，不随交接转移</td></tr><tr><td>人工队列</td><td>无法确认版本或关键字段的单据集合，队列内禁止出结果</td></tr><tr><td>哈希链</td><td>每条审计事件带前序哈希，任何删改都会导致链断</td></tr><tr><td>冻结期</td><td>制度规定的不可提交或不可生效的时间窗口</td></tr><tr><td>凭证（token）</td><td>校验通过后签发的一次性授权凭据，绑定具体内容与时效</td></tr></tbody></table>
+<h2 id="section-12">附录 B 访谈事实索引</h2>
+<table class="grid"><thead><tr><th>事实编号</th><th>角色</th><th>要点</th><th>用于</th></tr></thead><tbody><tr><td>f00</td><td>顾明岚</td><td>目标是减少重复核对，保留人工确认与可追溯来源</td><td>M10</td></tr><tr><td>f01</td><td>顾明岚</td><td>链路为客户确认→变更登记→双人核对→出具结果；先看交接点</td><td>现状流程</td></tr><tr><td>f02</td><td>顾明岚</td><td>40 条脱敏样本，金额差异须有来源定位</td><td>M1</td></tr><tr><td>f03</td><td>顾明岚</td><td>四周、两名骨干、每周不超四小时</td><td>A-06、S5</td></tr><tr><td>f04</td><td>顾明岚</td><td>范围由业务负责人定，审核可停止，客户协同确认用途</td><td>治理结构</td></tr><tr><td>f05</td><td>顾明岚</td><td>仅一个批次；不算薪、不付款、不申报</td><td>范围外</td></tr><tr><td>f10</td><td>林亦舟</td><td>变更邮件与月度表格难以追溯到同一版本</td><td>PP-02、PP-06</td></tr><tr><td>f11</td><td>林亦舟</td><td>截止后补发奖金更正，草稿仍引用旧金额</td><td>PP-04</td></tr><tr><td>f12</td><td>林亦舟</td><td>每期 300 条、复核 18 小时（虚构样本）</td><td>M10、R9</td></tr><tr><td>f13</td><td>林亦舟</td><td>群消息先行、表格后补，回填时间不等于发生时间</td><td>PP-03</td></tr><tr><td>f14</td><td>林亦舟</td><td>当班人员核对关键字段，建议不能覆盖原值</td><td>INV-05</td></tr><tr><td>f15</td><td>林亦舟</td><td>需要一页缺项清单与来源位置，不要长摘要</td><td>BR-03、M11</td></tr><tr><td>f20</td><td>唐映秋</td><td>每次交接记录接收人、版本与未结项</td><td>FR-401</td></tr><tr><td>f21</td><td>唐映秋</td><td>可提供虚构变更表、截止规则、复核签名记录</td><td>样本方案</td></tr><tr><td>f22</td><td>唐映秋</td><td>一线可提交，正式确认由业务负责人完成，模型无审批权</td><td>INV-08</td></tr><tr><td>f23</td><td>唐映秋</td><td>交接须列明最新版本、未确认事项、截止时间</td><td>PP-05</td></tr><tr><td>f24</td><td>唐映秋</td><td>版本用有效期与确认状态两条件，作废保留原因</td><td>FR-201、FR-202</td></tr><tr><td>f25</td><td>唐映秋</td><td>资料负责人保存确认链，未确认项不能归到对方名下</td><td>FR-402</td></tr><tr><td>f30</td><td>秦芮</td><td>三类工具，无统一关联编号</td><td>PP-01</td></tr><tr><td>f31</td><td>秦芮</td><td>五项关键字段；缺失值与未确认值必须区分</td><td>FR-103、FR-106</td></tr><tr><td>f32</td><td>秦芮</td><td>仅脱敏只读导出；写回、外部消息、执行接口不开放</td><td>边界一</td></tr><tr><td>f33</td><td>秦芮</td><td>四类质量检查；问题记录必须保留原行</td><td>FR-301、FR-302</td></tr><tr><td>f34</td><td>秦芮</td><td>双时间戳；过期来源不能覆盖已确认新版本</td><td>FR-204、INV-02</td></tr><tr><td>f35</td><td>秦芮</td><td>读取失败保留快照并标记，不编造状态、不悄悄重试</td><td>FR-208、FR-209</td></tr><tr><td>f40</td><td>傅景</td><td>关注授权用途、来源完整性、错误传播</td><td>风险 R2</td></tr><tr><td>f41</td><td>傅景</td><td>正式结论须授权人员确认；跨企业按授权范围访问</td><td>FR-504</td></tr><tr><td>f42</td><td>傅景</td><td>40 条样本核对；每条结果关联来源与复核记录</td><td>M1、M2</td></tr><tr><td>f43</td><td>傅景</td><td>留存原始版本、修订原因、确认人；按约定删除虚构字段</td><td>NFR-11</td></tr><tr><td>f44</td><td>傅景</td><td>无法确认即进队列，必要时暂停，不能默认通过</td><td>S1、M3</td></tr><tr><td>f45</td><td>傅景</td><td>审计须看到谁查过、哪版、什么建议、谁确认</td><td>FR-501、M7</td></tr><tr><td>f50</td><td>叶书</td><td>客户经理重时效，复核要二次确认窗口</td><td>PP-10</td></tr><tr><td>f51</td><td>叶书</td><td>评估看工时、返工次数、确认完整率</td><td>BR-06</td></tr><tr><td>f52</td><td>叶书</td><td>不算薪、不付款、不申报；对外承诺由业务人员确认</td><td>范围外</td></tr><tr><td>f53</td><td>叶书</td><td>按原始记录核对，不比较两张汇总表</td><td>FR-303</td></tr><tr><td>f54</td><td>叶书</td><td>投诉先登记原始问题、版本与恢复需求，不推测意图</td><td>不做 AI 清单</td></tr><tr><td>f55</td><td>叶书</td><td>每周收集误报漏报；只修模板不足以结束试点</td><td>S6、R10</td></tr></tbody></table>
+<h2 id="section-13">附录 C 交付物清单</h2>
+<table class="grid"><thead><tr><th>编号</th><th>交付物</th><th>形式</th><th>验收人</th><th>对应门禁</th></tr></thead><tbody><tr><td>D1</td><td>字段字典与口径签字单</td><td>文档 + 签字页</td><td>顾明岚</td><td>G0</td></tr><tr><td>D2</td><td>三类清单定稿版</td><td>配置表 + PDF</td><td>傅景</td><td>G0、G3</td></tr><tr><td>D3</td><td>只读核对工作台</td><td>可运行系统 + 部署文档</td><td>秦芮</td><td>G4</td></tr><tr><td>D4</td><td>40 条样本核对报告</td><td>逐条表格</td><td>傅景</td><td>G5</td></tr><tr><td>D5</td><td>确认链还原样例</td><td>5 条链路导出</td><td>傅景</td><td>G4</td></tr><tr><td>D6</td><td>试点复盘（三项指标）</td><td>对比表</td><td>叶书</td><td>G5</td></tr><tr><td>D7</td><td>验收签字包</td><td>汇总 PDF</td><td>顾明岚</td><td>G5</td></tr><tr><td>D8</td><td>本需求分析方案</td><td>本文档</td><td>评审会</td><td>—</td></tr></tbody></table>
+<p><strong>文档状态</strong>：v1.0，待需求评审。Q1–Q12 闭环后升级为 v1.1 并进入开发。 <strong>下一步</strong>：召开 G0 门禁会（顾明岚、傅景、唐映秋、秦芮、叶书、林亦舟），完成 D1 签字、D2 定稿、Q8 样本方案确认；未通过则不进入 P1。</p>
+</section>
+
+</body>
+</html>
