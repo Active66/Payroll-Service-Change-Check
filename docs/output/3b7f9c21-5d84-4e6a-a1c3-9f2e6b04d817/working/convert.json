@@ -1,0 +1,5 @@
+exit=0
+docx_exists=True
+size=78482
+stdout={"success": true, "docx_path": "E:\\code\\PayrollServiceChangeCheck\\docs\\output\\3b7f9c21-5d84-4e6a-a1c3-9f2e6b04d817\\stage3\\\u85aa\u916c\u670d\u52a1\u53d8\u66f4\u6838\u5bf9\u7cfb\u7edf-\u6d4b\u8bd5\u65b9\u6848_v1.0.docx", "warnings": [], "fields": [{"key": "auto_1", "bookmark_name": "\u5c0f\u8ba1_01", "display_text": "\u00a0", "source": "automatic", "label": "\u5c0f\u8ba1", "status": "created"}, {"key": "auto_2", "bookmark_name": "\u5c0f\u8ba1_02", "display_text": "\u00a0", "source": "automatic", "label": "\u5c0f\u8ba1", "status": "created"}, {"key": "auto_3", "bookmark_name": "\u5c0f\u8ba1_03", "display_text": "\u00a0", "source": "automatic", "label": "\u5c0f\u8ba1", "status": "created"}, {"key": "auto_4", "bookmark_name": "\u5c0f\u8ba1_04", "display_text": "\u00a0", "source": "autom
+stderr_tail=

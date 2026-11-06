@@ -1,0 +1,44 @@
+EXIT=0
+{
+  "passed": true,
+  "score": 100,
+  "dimensions": {
+    "design_token_compliance": {
+      "passed": true,
+      "score": 100,
+      "issues": []
+    },
+    "structural_integrity": {
+      "passed": true,
+      "score": 100,
+      "issues": []
+    },
+    "typographic_quality": {
+      "passed": true,
+      "score": 100,
+      "issues": [
+        "[TQ-05] 文档出现 15 个 <h2>（WARNING），建议检查是否过于碎片化"
+      ]
+    },
+    "genre_fit": {
+      "passed": true,
+      "score": 100,
+      "issues": []
+    },
+    "decoration_usage": {
+      "passed": true,
+      "score": 100,
+      "issues": []
+    },
+    "security": {
+      "passed": true,
+      "score": 100,
+      "issues": []
+    }
+  },
+  "actionable_feedback": [
+    "[TQ-05] 文档出现 15 个 <h2>（WARNING），建议检查是否过于碎片化"
+  ]
+}
+
+---STDERR---
