@@ -38,5 +38,10 @@ stages:
     html_review_attempts: 0
     fallback: false
   stage_3:
-    status: pending
-consistency_check: pending
+    status: completed
+    completed_at: "2026-11-06T09:58:00+08:00"
+    output_path: "../薪酬服务变更核对系统_需求分析方案_v1.0.docx"
+    pages: 34
+    tables: 46
+    toc_field: true
+consistency_check: passed

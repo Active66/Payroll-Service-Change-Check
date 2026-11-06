@@ -592,3 +592,29 @@ def test_escalate_is_a_valid_ending(registry, s):
     assert res.ok is True
     assert res.data["escalated"] is True
     assert res.next_allowed == [], "转人工之后不该再允许任何工具"
+
+
+def test_bank_account_is_not_graded_as_huge_amount(registry, conn, s):
+    """
+    银行卡号是数字，但**不是金额**。
+
+    这条由文档配图时实测发现：明细里放 6222021234567890 → 6217001234567890，
+    差异被算成万亿级，直接判 L4「需人审」，于是**所有银行卡变更都建不了单**。
+    分级只应看金额字段（MONEY_FIELDS）。
+    """
+    chk = _run_check(
+        registry, ctx(s), s, change_type="bank_account",
+        items=[{"field": "bank_account", "old_value": "6222021234567890",
+                "new_value": "6217001234567890", "effective_date": "2026-12-01"}],
+        materials=["bank_change_form", "bank_account_image"],
+    )
+    assert chk.data["level"] == "L1", f"银行卡号被当成金额了：{chk.data}"
+    assert chk.data["verdict"] == "pass", chk.data
+    assert "amount" not in chk.data["computed"]["checked"], "银行账户变更不该跑金额核对"
+
+
+def test_money_diff_still_works(registry, conn, s):
+    """反向守一条：金额字段的差异仍要算对，别为了修 bug 把功能删了。"""
+    chk = _run_check(registry, ctx(s), s, items=_items(new_salary="20000", old="18500"))
+    assert chk.data["level"] == "L3"      # 差异 1500 落在 1000~5000
+    assert chk.data["verdict"] == "need_review"

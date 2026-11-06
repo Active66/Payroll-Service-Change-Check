@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="docx-page-size" content="A4">
+<title>薪酬服务变更核对系统 项目上线交付运行手册</title>
+<style>
+
+@page { @bottom-center { content: counter(page); } }
+@page cover { @bottom-center { content: none; } }
+section[role="cover"] { page: cover; }
+
+:root {
+  --fs-cover-title: 26pt;
+  --fs-cover-sub: 16pt;
+  --fs-cover-cat: 11pt;
+  --fs-cover-desc: 10pt;
+  --fs-chapter: 17pt;
+  --fs-section: 12pt;
+  --fs-sub: 10.5pt;
+  --fs-body: 10pt;
+  --fs-small: 8.5pt;
+  --fs-tiny: 7.5pt;
+  --fs-toc: 9.5pt;
+  --fs-note: 9.5pt;
+  --fs-code: 8.5pt;
+  --fs-num: 16pt;
+  --fs-review: 13pt;
+  --lh-body: 1.7;
+  --lh-tight: 1.45;
+  --lh-code: 1.5;
+  --lh-toc: 1.9;
+  --sp-cover-top: 3cm;
+  --sp-h1-top: 1.5em;
+  --sp-h1-bottom: 0.5em;
+  --sp-h1-pad: 4pt;
+  --sp-h2-top: 1.1em;
+  --sp-h2-bottom: 0.4em;
+  --sp-h3-top: 0.9em;
+  --sp-h3-bottom: 0.3em;
+  --sp-p: 0.55em;
+  --sp-li: 0.25em;
+  --sp-list-pad: 1.5em;
+  --sp-table: 0.4em;
+  --sp-table-bottom: 0.9em;
+  --sp-cell: 4pt 5pt;
+  --sp-code-cell: 6pt 8pt;
+  --sp-note-pad: 6pt 9pt;
+  --sp-sum-cell: 7pt 9pt;
+  --sp-meta-cell: 5pt 4pt;
+  --sp-cover-gap: 2.2em;
+  --sp-toc-t: 0.6em;
+  --color-primary: #1565C0;
+  --color-heading: #1A237E;
+  --color-text: #212121;
+  --color-muted: #616161;
+  --color-border: #D9DEE5;
+  --color-bg: #FFFFFF;
+  --color-surface: #F2F6FA;
+  --color-code-bg: #F7F9FB;
+  --color-code-text: #263238;
+  --color-code-cmt: #6A737D;
+  --color-warn: #C62828;
+  --color-warn-bg: #FBF3F3;
+  --ff-heading: "微软雅黑", "Microsoft YaHei", sans-serif;
+  --ff-body: "微软雅黑", "Microsoft YaHei", sans-serif;
+  --ff-code: Consolas, "Courier New", monospace;
+  --page-content-width: 16cm;
+}
+
+body { font-family: var(--ff-body); font-size: var(--fs-body); line-height: var(--lh-body); color: var(--color-text); background: var(--color-bg); max-width: var(--page-content-width); margin-left: auto; margin-right: auto; }
+p { margin: 0 0 var(--sp-p) 0; text-align: left; }
+
+h1 { font-family: var(--ff-heading); font-size: var(--fs-cover-title); font-weight: 700; color: var(--color-heading); text-align: left; margin: 0 0 var(--sp-h1-bottom) 0; border-bottom: none; padding-bottom: 0; }
+h2 { font-family: var(--ff-heading); font-size: var(--fs-chapter); font-weight: 700; color: var(--color-heading); text-align: left; margin: var(--sp-h1-top) 0 var(--sp-h1-bottom) 0; padding-bottom: var(--sp-h1-pad); border-bottom: 1.2pt solid var(--color-primary); }
+h3 { font-family: var(--ff-heading); font-size: var(--fs-section); font-weight: 700; color: var(--color-primary); text-align: left; margin: var(--sp-h2-top) 0 var(--sp-h2-bottom) 0; }
+h4 { font-family: var(--ff-heading); font-size: var(--fs-sub); font-weight: 700; color: var(--color-text); text-align: left; margin: var(--sp-h3-top) 0 var(--sp-h3-bottom) 0; }
+strong { font-weight: 700; color: var(--color-heading); }
+ul, ol { margin: 0 0 var(--sp-p) 0; padding-left: var(--sp-list-pad); }
+li { margin-bottom: var(--sp-li); line-height: var(--lh-tight); }
+
+section[role="cover"] { padding-top: var(--sp-cover-top); }
+p.cover-category { font-family: var(--ff-heading); font-size: var(--fs-cover-cat); font-weight: 700; color: var(--color-primary); letter-spacing: 0.12em; text-align: left; margin-bottom: var(--sp-cover-gap); }
+p.cover-title { font-family: var(--ff-heading); font-size: var(--fs-cover-title); font-weight: 700; color: var(--color-heading); text-align: left; margin: 0 0 var(--sp-h1-bottom) 0; }
+p.cover-subtitle { font-family: var(--ff-heading); font-size: var(--fs-cover-sub); font-weight: 700; color: var(--color-primary); text-align: left; margin: 0 0 var(--sp-toc-t) 0; }
+p.cover-desc { font-size: var(--fs-cover-desc); color: var(--color-muted); text-align: left; margin-bottom: var(--sp-cover-gap); }
+table.cover-meta { width: 13cm; border-collapse: collapse; margin-top: var(--sp-toc-t); }
+table.cover-meta th { border-top: 0.5pt solid var(--color-border); padding: var(--sp-meta-cell); font-size: var(--fs-small); color: var(--color-muted); text-align: left; font-weight: 400; width: 3.6cm; }
+table.cover-meta td { border-top: 0.5pt solid var(--color-border); padding: var(--sp-meta-cell); font-size: var(--fs-small); text-align: left; line-height: var(--lh-tight); }
+
+p.toc-title { font-family: var(--ff-heading); font-size: var(--fs-review); font-weight: 700; color: var(--color-heading); text-align: left; margin: 0 0 var(--sp-toc-t) 0; }
+p.toc-ch { font-size: var(--fs-toc); line-height: var(--lh-toc); margin: 0; color: var(--color-text); }
+span.toc-sub { color: var(--color-muted); font-size: var(--fs-small); }
+
+div.executive-summary { border-left: 3pt solid var(--color-primary); background: var(--color-surface); padding: var(--sp-note-pad); margin: var(--sp-table) 0 var(--sp-table-bottom) 0; }
+table.summary { width: 100%; border-collapse: collapse; margin-top: var(--sp-toc-t); }
+table.summary th { background: var(--color-bg); color: var(--color-muted); font-size: var(--fs-small); font-weight: 400; border: 0.5pt solid var(--color-border); padding: var(--sp-sum-cell); text-align: left; }
+table.summary td { border: 0.5pt solid var(--color-border); padding: var(--sp-sum-cell); font-size: var(--fs-note); line-height: var(--lh-tight); text-align: left; vertical-align: top; }
+table.summary td.sum-v { font-family: var(--ff-heading); font-size: var(--fs-num); font-weight: 700; color: var(--color-primary); }
+
+table.tbl { width: 100%; border-collapse: collapse; margin: var(--sp-table) 0 var(--sp-table-bottom) 0; font-size: var(--fs-small); }
+table.tbl th { background: var(--color-surface); color: var(--color-heading); font-weight: 700; font-size: var(--fs-small); border: 0.5pt solid var(--color-border); padding: var(--sp-cell); text-align: left; line-height: var(--lh-tight); }
+table.tbl td { border: 0.5pt solid var(--color-border); padding: var(--sp-cell); vertical-align: top; line-height: var(--lh-tight); text-align: left; }
+table.tbl td.k { font-weight: 700; color: var(--color-heading); }
+
+table.code { width: 100%; border-collapse: collapse; margin: var(--sp-table) 0 var(--sp-table-bottom) 0; }
+table.code th { background: var(--color-surface); color: var(--color-muted); font-size: var(--fs-tiny); font-weight: 400; border: 0.5pt solid var(--color-border); padding: var(--sp-cell); text-align: left; }
+table.code td { border: 0.5pt solid var(--color-border); padding: var(--sp-code-cell); background: var(--color-code-bg); }
+p.code-line { font-family: var(--ff-code); font-size: var(--fs-code); line-height: var(--lh-code); color: var(--color-code-text); margin: 0; text-align: left; }
+p.code-cmt { font-family: var(--ff-code); font-size: var(--fs-code); line-height: var(--lh-code); color: var(--color-code-cmt); margin: 0; text-align: left; }
+
+p.note { border-left: 3pt solid var(--color-primary); background: var(--color-surface); padding: var(--sp-note-pad); margin: var(--sp-table) 0 var(--sp-table-bottom) 0; font-size: var(--fs-note); line-height: var(--lh-tight); }
+p.warn { border-left: 3pt solid var(--color-warn); background: var(--color-warn-bg); padding: var(--sp-note-pad); margin: var(--sp-table) 0 var(--sp-table-bottom) 0; font-size: var(--fs-note); line-height: var(--lh-tight); }
+p.plain { font-size: var(--fs-small); color: var(--color-muted); }
+
+</style>
+</head>
+<body>
+
+<section role="cover">
+  <p class="cover-category">项目交付文档 · 运维与运行保障</p>
+  <p class="cover-title">薪酬服务变更核对系统</p>
+  <p class="cover-subtitle">项目上线交付运行手册</p>
+  <p class="cover-desc">部署与初始化 · 日常巡检 · 故障处置 · 应急回滚 · 安全合规</p>
+  <table class="cover-meta">
+    <thead><tr><th>项目</th><th>内容</th></tr></thead>
+    <tbody>
+    <tr><td class="cover-key">文档编号</td><td>PCC-OPS-RUN-001</td></tr>
+    <tr><td class="cover-key">版本</td><td>v1.0（交付版，待三方签字确认）</td></tr>
+    <tr><td class="cover-key">适用系统</td><td>薪酬服务变更核对系统（仓库代号 my_tool，命令入口 payroll-check）</td></tr>
+    <tr><td class="cover-key">部署形态</td><td>内网单机、单实例</td></tr>
+    <tr><td class="cover-key">读者</td><td>运维工程师、实施与集成开发、SSC 管理员、上线评审与安全</td></tr>
+    <tr><td class="cover-key">编制日期</td><td>2026 年 11 月 6 日</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section role="body" data-page-restart="1">
+
+<p class="toc-title">目录</p>
+<p class="toc-ch">一、文档说明</p>
+<p class="toc-ch">二、系统交付概述</p>
+<p class="toc-ch">三、环境与部署</p>
+<p class="toc-ch">四、系统初始化配置</p>
+<p class="toc-ch">五、日常运行</p>
+<p class="toc-ch">六、监控与告警</p>
+<p class="toc-ch">七、故障处理</p>
+<p class="toc-ch">八、应急响应</p>
+<p class="toc-ch">九、安全与合规运行要求</p>
+<p class="toc-ch">十、变更与发布管理</p>
+<p class="toc-ch">十一、值班与支持</p>
+<p class="toc-ch">附录 A 常用命令速查　<span class="toc-sub">附录 B 环境变量全表　附录 C 错误码全表　附录 D 上线检查签字页　附录 E 巡检记录表模板</span></p>
+
+<div class="executive-summary">
+<h3>交付摘要</h3>
+<p>本手册面向接手的运维与业务运营，只讲操作：命令、路径、阈值、判定条件、处置动作、责任人。手册不重复业务价值与技术选型理由，那些在项目方案与设计说明中。</p>
+<table class="summary">
+  <thead>
+    <tr><th>上线阻塞缺口</th><th>上线检查项</th><th>每日巡检</th><th>回滚目标</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="sum-v">6 项</td><td class="sum-v">25 项</td><td class="sum-v">10 分钟</td><td class="sum-v">15 分钟</td></tr>
+    <tr><td colspan="4">本期交付的是可运行的单实例系统：只读接入、双时间戳、版本有效期与确认状态双条件判定、全链路留痕。系统不写回业务系统、不自动审批、不编造状态、不对外发消息——这四条边界不是配置项，不能靠调参绕过。</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="note">&nbsp;&nbsp;<strong>最该先读的一节是 2.6。</strong>那里如实列出当前代码的 13 项能力缺口，其中 G-02～G-06 为阻塞项。上线评审前若不看这一节，后续所有巡检与应急预案都会建立在不成立的前提上。</p>
+
+<h2>一、文档说明</h2>
+<p>本章交代手册的用途、读者与术语口径，是后面所有操作步骤的前提。</p>
+
+<h3>1.1 编制目的</h3>
+<p>本手册解决一个问题：系统从项目组交到运维和业务运营手里之后，<strong>在没有原开发人员的情况下，如何让它稳定跑起来、坏了怎么修、谁能动它、动完留什么痕</strong>。</p>
+
+<h3>1.2 适用范围</h3>
+<p>适用于单实例部署、单批次试点的当前版本。系统在这套约束下是完整可用的；超出约束的部分（多实例、全量铺开、多客户并行）不在本手册覆盖范围内，需要重新评估，原因见 2.5 节。</p>
+
+<h3>1.3 读者对象</h3>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:34%">读者</th><th>主要关注章节</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>运维工程师（SRE）</td><td>三、五、六、七、八章</td></tr>
+    <tr><td>实施与集成开发</td><td>三、四、七、九章</td></tr>
+    <tr><td>SSC 管理员（业务侧）</td><td>四、五、九章</td></tr>
+    <tr><td>上线评审与安全</td><td>二、六、八、九章，附录 D</td></tr>
+    <tr><td>值班人员</td><td>六、七、八章及附录 A、C</td></tr>
+  </tbody>
+</table>
+
+<h3>1.4 术语</h3>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:26%">术语</th><th>含义</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Chunk（切片）</td><td>制度文档按条款切分后的最小检索单元，编号形如 POL-CMP-2026-001#c003</td></tr>
+    <tr><td>拒答（refused）</td><td>检索无有效证据时系统直接返回"制度里没有依据"，不调用模型、不消耗 token</td></tr>
+    <tr><td>partial</td><td>答案已生成但存在告警（未溯源数字、引用异常等），需人工复核</td></tr>
+    <tr><td>闸门（gate）</td><td>Agent 建单前的四层顺序约束，含一次性 validation_token 与人工 confirm_token</td></tr>
+    <tr><td>轨迹（trace）</td><td>agent_traces 表中记录的工具调用流水，回答"它为什么这么判断"的唯一依据</td></tr>
+    <tr><td>制度参数</td><td>policy_params 表中的结构化数值，每个参数必须挂 source_clause</td></tr>
+  </tbody>
+</table>
+
+<h2>二、系统交付概述</h2>
+<p>先建立整体印象：交给运维的是什么、它不做什么、当前哪些能力还没补齐。</p>
+
+<h3>2.1 系统定位</h3>
+<p>系统的核心风险不是"查不到制度"，而是<strong>答得像制度、其实不在制度里</strong>。因此本期交付的能力围绕三件事构建：答案必须能回到原文、数字不由模型产出、没有依据就闭嘴。</p>
+<p>能力边界同样是交付内容的一部分。运维需要清楚哪些事系统<strong>永远不会做</strong>：</p>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:32%">系统不做</th><th>表现</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>不写回业务系统</td><td>没有回写接口，建单止于草稿加人工确认</td></tr>
+    <tr><td>不自动审批、不自动放行</td><td>L3/L4 分级不给凭证，模型拿不到凭证就建不了单</td></tr>
+    <tr><td>不编造最新状态</td><td>读取失败保留快照并标注"停留于某时刻"，不重试业务动作</td></tr>
+    <tr><td>不做真实薪资计算与发放</td><td>无工资表生成、无付款、无报税动作</td></tr>
+    <tr><td>不对外发消息</td><td>无消息推送通道，转人工只记录不触达外部</td></tr>
+  </tbody>
+</table>
+<p>任何要求系统"自动修数据""自动确认""直接对外发结果"的需求，都属于越界需求。运维应按变更管理流程拒绝，而不是临时变通。</p>
+
+<h3>2.2 交付物清单</h3>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:12%">编号</th><th style="width:30%">交付物</th><th style="width:26%">形式</th><th>存放位置</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>D-01</td><td>应用代码与依赖清单</td><td>Python 包 my_tool</td><td>代码仓库 src/my_tool/</td></tr>
+    <tr><td>D-02</td><td>命令行入口</td><td>payroll-check（未安装时 python -m my_tool）</td><td>pyproject.toml</td></tr>
+    <tr><td>D-03</td><td>部署与启动脚本</td><td>deploy.sh、run_server.bat</td><td>仓库 scripts/</td></tr>
+    <tr><td>D-04</td><td>数据库文件</td><td>SQLite chat.db</td><td>data/</td></tr>
+    <tr><td>D-05</td><td>制度原文与上传件</td><td>data/policy/（含 uploads）</td><td>data/</td></tr>
+    <tr><td>D-06</td><td>检索索引（派生物）</td><td>index.faiss、chunks.jsonl、vectors.npy、vec_cache_*</td><td>data/index/</td></tr>
+    <tr><td>D-07</td><td>认证密钥</td><td>.auth_secret</td><td>data/</td></tr>
+    <tr><td>D-08</td><td>运维与设计文档</td><td>本手册及同目录 12 份技术文档</td><td>docs/</td></tr>
+    <tr><td>D-09</td><td>上线前检查清单</td><td>5 维度 × 5 项</td><td>docs/go-live-checklist.md</td></tr>
+    <tr><td>D-10</td><td>Agent 评测用例与 runner</td><td>30 条用例 + eval_agent.py</td><td>eval/、scripts/</td></tr>
+  </tbody>
+</table>
+<p>交付时须逐项核对签名，尤其 D-07：<strong>data/.auth_secret 丢失会导致所有人被踢下线</strong>，重建密钥等于让历史 JWT 全部失效。</p>
+
+<h3>2.3 运行架构</h3>
+<p>系统是四层单向依赖结构，运维排障时可以按层定位问题：</p>
+<table class="code">
+  <thead>
+    <tr><th>分层结构</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>
+<p class="code-line">入口层    CLI（main.py） / HTTP（FastAPI：/chat SSE、/admin、/api/v1）</p>
+<p class="code-line">              |</p>
+<p class="code-line">编排层    orchestrator：检索 -&gt; 组装 prompt -&gt; 生成 -&gt; 护栏 -&gt; 引用</p>
+<p class="code-line">              |</p>
+<p class="code-line">          +----------+----------+</p>
+<p class="code-line">检索层    hybrid（向量 + BM25 + RRF） | llm 适配层（唯一出网口） | guard（程序化复核）</p>
+<p class="code-line">              |</p>
+<p class="code-line">持久层    store/db.py -&gt; store/chat_repo.py（只有这里写 SQL）</p>
+</td></tr>
+  </tbody>
+</table>
+<p>排障时这条依赖顺序就是排查顺序：入口层报错先看协议与鉴权，编排层报错看检索与模型，持久层报错看库与锁。<strong>唯一出网口是 core/llm/http.py</strong>，所以"是否真的调了模型"只要看这一个地方的日志就能确定。</p>
+
+<h3>2.4 运行拓扑</h3>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:22%">项</th><th style="width:30%">取值</th><th>说明</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>部署形态</td><td>内网单机、单实例</td><td>多实例的两处障碍见 2.5</td></tr>
+    <tr><td>服务地址</td><td>http://127.0.0.1:8000</td><td>登录页 /login，员工页 /，后台 /admin</td></tr>
+    <tr><td>数据库</td><td>SQLite 单文件</td><td>BEGIN IMMEDIATE 短事务，写并发不高</td></tr>
+    <tr><td>索引</td><td>本地文件</td><td>FAISS + chunks.jsonl，重建即全量</td></tr>
+    <tr><td>模型</td><td>OpenAI 兼容 HTTP 接口</td><td>LLM_PROVIDER 切换厂商，只改三个变量</td></tr>
+    <tr><td>反向代理</td><td>建议 Nginx</td><td>终结 HTTPS，设 COOKIE_SECURE=1</td></tr>
+    <tr><td>时区</td><td>与业务同区（Asia/Shanghai）</td><td>双时间戳与"过期单"判定依赖时区一致</td></tr>
+  </tbody>
+</table>
+
+<h3>2.5 关键约束</h3>
+<p>以下四条是当前实现的客观限制，不是配置项，<strong>不能靠调参绕过</strong>：</p>
+<ol>
+  <li><strong>索引重建与提示词缓存是单实例语义。</strong>多实例部署时，重建锁与缓存失效不跨进程，会出现"一台已用新制度、一台还在用旧制度"。要做多实例，必须先把这两件事挪到外部队列或共享存储。</li>
+  <li><strong>限流是进程内滑动窗口。</strong>对外 /api/v1 多实例时实际上限等于实例数乘以配额。</li>
+  <li><strong>网页端 JWT 路径当前没有限流</strong>（见 2.6 缺口 G-03）。在补齐之前，不得把员工入口直接暴露到公网。</li>
+  <li><strong>BM25 是内存倒排。</strong>千条切片内无感，上万条需要换 tsvector 或独立检索服务。</li>
+</ol>
+
+<h3>2.6 交付现状与已知缺口</h3>
+<p>本节需要被每一任接手人读到。下表如实反映当前代码状态："已具备"指有实现且有测试，"部分"指有实现但缺一环，"缺失"指尚无实现。</p>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:8%">编号</th><th style="width:30%">能力</th><th style="width:9%">状态</th><th style="width:27%">上线影响</th><th>上线前必须动作</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>G-01</td><td>员工档案查询出口脱敏</td><td>已具备</td><td>—</td><td>回归验证星号位数</td></tr>
+    <tr><td>G-02</td><td>变更单明细与 Agent 轨迹中的账号明文</td><td>缺失</td><td><strong>阻塞</strong>：建单环节恰是最需要保护的数据</td><td>落地掩码或加密列，见 9.2</td></tr>
+    <tr><td>G-03</td><td>网页端（JWT）提问限流</td><td>缺失</td><td><strong>阻塞</strong>：一个循环脚本即可打空当月预算</td><td>补单账号并发 1、20 次每分钟</td></tr>
+    <tr><td>G-04</td><td>全局 LLM 并发与日预算</td><td>缺失</td><td><strong>阻塞</strong>：预算耗尽表现为"全站答不出来"</td><td>全局并发不超过 8，80% 告警、100% 降级固定 RAG</td></tr>
+    <tr><td>G-05</td><td>应用日志不含 PII</td><td>部分</td><td>阻塞项，需实测确认</td><td>跑 10 次问答加 1 次建单后 grep 扫描</td></tr>
+    <tr><td>G-06</td><td>保留期与到期删除可执行</td><td>缺失</td><td>阻塞项，合规要求</td><td>提供清理命令或定时任务，留批次号与条数</td></tr>
+    <tr><td>G-07</td><td>供应商 429/5xx 退避</td><td>部分</td><td>有重试，缺熔断</td><td>连续失败 5 次熔断 60 秒</td></tr>
+    <tr><td>G-08</td><td>LLM 超时与空回复处置</td><td>部分</td><td>不得以 answered 落库</td><td>60 秒内返回带 trace_id 的错误，可一键重试</td></tr>
+    <tr><td>G-09</td><td>降级开关</td><td>部分</td><td>30 秒内生效，无需改代码</td><td>验证 AGENT_ENABLED=0、AGENT_DEFAULT_MODE=rag</td></tr>
+    <tr><td>G-10</td><td>代码与镜像回滚</td><td>部分</td><td>目标不超过 15 分钟</td><td>预发演练一次并计时</td></tr>
+    <tr><td>G-11</td><td>数据库迁移可逆</td><td>部分</td><td>迁移前自动备份（表重建为 DROP，不可逆）</td><td>备份恢复演练至独立目录</td></tr>
+    <tr><td>G-12</td><td>索引蓝绿切换</td><td>部分</td><td>索引落盘是原地覆盖</td><td>改为目录级切换，回滚不超过 1 分钟</td></tr>
+    <tr><td>G-13</td><td>数据修复与撤销</td><td>缺失</td><td>错单目前只能改 SQL</td><td>提供带 dry-run 的双人确认脚本</td></tr>
+  </tbody>
+</table>
+<p class="warn">&nbsp;&nbsp;<strong>处置原则：</strong>G-02～G-06 为阻塞项，未通过不得上线；未通过项需技术负责人与业务方共同签字接受，默认不允许。其余为建议项，可带风险上线但须书面记录在附录 D 的签字页上。</p>
+
+<h2>三、环境与部署</h2>
+<p>从零把系统跑起来。按顺序执行，每步都有可验证的产出。</p>
+
+<h3>3.1 前置条件</h3>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:20%">类别</th><th>要求</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>操作系统</td><td>Windows Server 2019 及以上，或 Linux（内网单机）</td></tr>
+    <tr><td>Python</td><td>3.12（后端栈 FastAPI，core 与 store 均在 3.12 验证）</td></tr>
+    <tr><td>内存</td><td>不低于 4 GB（索引常驻内存，千条切片量级）</td></tr>
+    <tr><td>磁盘</td><td>不低于 20 GB（库、制度原文、索引、日志）</td></tr>
+    <tr><td>网络</td><td>出网仅需模型厂商 HTTPS 端点，其余全部内网</td></tr>
+    <tr><td>端口</td><td>8000（应用）、443（反向代理）</td></tr>
+    <tr><td>浏览器</td><td>Chrome / Edge（语音输入依赖 Web Speech API）</td></tr>
+  </tbody>
+</table>
+
+<h3>3.2 目录规划</h3>
+<table class="code">
+  <thead>
+    <tr><th>目录结构</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>
+<p class="code-line">&lt;deploy_root&gt;/</p>
+<p class="code-line">|- src/my_tool/            应用代码</p>
+<p class="code-line">|- scripts/                deploy.sh、run_server.bat、eval_agent.py</p>
+<p class="code-line">|- eval/                   agent_cases.json</p>
+<p class="code-line">|- config/default.yaml     配置基线</p>
+<p class="code-line">|- .env                    环境变量（已排除，禁止提交）</p>
+<p class="code-line">|- logs/                   应用日志（须做 PII 扫描）</p>
+<p class="code-line">|- data/                   唯一需要备份的目录，见 5.7</p>
+<p class="code-line">   |- chat.db              主库</p>
+<p class="code-line">   |- chat.db.bak.*        备份</p>
+<p class="code-line">   |- policy/              制度原文 + uploads/</p>
+<p class="code-line">   |- index/               派生物，可重建</p>
+<p class="code-line">   |- .auth_secret         认证密钥，必须持久化</p>
+</td></tr>
+  </tbody>
+</table>
+<p class="note">&nbsp;&nbsp;<strong>目录纪律：</strong>data/ 是唯一需要备份的目录；data/index/ 是派生物，可以删、可以重建。不要为索引做增量备份——那会在回滚时把新旧切片混在一起。</p>
+
+<h3>3.3 部署步骤</h3>
+<p>以下步骤按顺序执行，每步都有可验证的产出，不建议合并执行：</p>
+<table class="code">
+  <thead>
+    <tr><th>部署命令</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>
+<p class="code-cmt"># 1. 安装依赖（建议虚拟环境）</p>
+<p class="code-line">python -m venv .venv &amp;&amp; source .venv/bin/activate</p>
+<p class="code-cmt"># Windows: .venv\Scripts\activate</p>
+<p class="code-line">pip install -e .</p>
+<p class="code-line"> </p>
+<p class="code-cmt"># 2. 配置环境变量（复制模板后逐项填写，禁止用 default.yaml 承载密钥）</p>
+<p class="code-line">cp .env.example .env</p>
+<p class="code-line"> </p>
+<p class="code-cmt"># 3. 初始化库表与演示数据（首次部署）</p>
+<p class="code-line">payroll-check data seed        # 写入 16 个制度参数 + 5 份演示人事档案</p>
+<p class="code-line">payroll-check data params      # 核对参数与条款出处是否齐全</p>
+<p class="code-line"> </p>
+<p class="code-cmt"># 4. 构建索引（首次必须执行）</p>
+<p class="code-line">payroll-check build</p>
+<p class="code-line"> </p>
+<p class="code-cmt"># 5. 自检：配置与索引 manifest</p>
+<p class="code-line">payroll-check info</p>
+<p class="code-line"> </p>
+<p class="code-cmt"># 6. 启动服务</p>
+<p class="code-line">payroll-check serve            # 或 Windows 双击 scripts\run_server.bat</p>
+</td></tr>
+  </tbody>
+</table>
+<p class="warn">&nbsp;&nbsp;<strong>首次启动必须看一眼控制台。</strong>管理员账号会自动创建，密码取自 ADMIN_SEED_PASSWORD；未设置时随机生成并只在启动日志里打印一次。错过这一行只能用 user reset 重置。</p>
+
+<h3>3.4 环境变量</h3>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:27%">变量</th><th style="width:14%">默认</th><th style="width:32%">说明</th><th>变更影响</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>LLM_PROVIDER</td><td>mock</td><td>openai / deepseek / qwen / moonshot / zhipu / ollama / vllm</td><td>需重启</td></tr>
+    <tr><td>LLM_API_KEY</td><td>空</td><td>未配置时自动降级为 mock</td><td>需重启；缺失表现为答案质量骤降</td></tr>
+    <tr><td>LLM_BASE_URL / LLM_MODEL</td><td>厂商默认</td><td>换自建网关只改这两项</td><td>需重启</td></tr>
+    <tr><td>EMBEDDING_PROVIDER</td><td>hash</td><td><strong>生产必须替换</strong>，hash 无语义能力</td><td>变更后必须重建索引</td></tr>
+    <tr><td>TOP_K / RECALL_K</td><td>3 / 12</td><td>送入 prompt 条数 / 单路召回数</td><td>需重启</td></tr>
+    <tr><td>MIN_VECTOR_SCORE / MIN_BM25_SCORE</td><td>0.25 / 4.0</td><td>拒答闸门阈值</td><td><strong>换向量模型必须重标定</strong></td></tr>
+    <tr><td>INDEX_DIR</td><td>data/index</td><td>索引目录</td><td>改这一项即可完成索引回滚</td></tr>
+    <tr><td>AUTH_REQUIRED</td><td>1</td><td>0 等于演示模式，所有访问按管理员处理</td><td><strong>生产禁止为 0</strong></td></tr>
+    <tr><td>COOKIE_SECURE</td><td>0</td><td>走 HTTPS 时设 1</td><td>需重启</td></tr>
+    <tr><td>AUTH_SECRET</td><td>空</td><td>多实例统一密钥；单实例留空则用 data/.auth_secret</td><td>变更会使所有 JWT 失效</td></tr>
+    <tr><td>ADMIN_SEED_PASSWORD</td><td>空</td><td>首次建管理员用</td><td>仅首次生效</td></tr>
+    <tr><td>GATE_TOKEN_TTL_SECONDS</td><td>600</td><td>建单校验凭证有效期</td><td>太短反复校验，太长旧校验可复用</td></tr>
+    <tr><td>PROMPT_CACHE_SECONDS</td><td>默认</td><td>多 worker 下提示词生效延迟</td><td>单 worker 立即生效</td></tr>
+    <tr><td>AGENT_ENABLED</td><td>依配置</td><td>Agent 能力是否可用</td><td>需重启；降级手段之一</td></tr>
+    <tr><td>AGENT_DEFAULT_MODE</td><td>rag</td><td>/chat 默认走 rag 还是 agent</td><td>需重启</td></tr>
+    <tr><td>OFFSCOPE_ANSWER</td><td>默认</td><td>越界问题的统一话术</td><td>需重启</td></tr>
+  </tbody>
+</table>
+<p class="warn">&nbsp;&nbsp;<strong>阈值硬提醒：</strong>MIN_VECTOR_SCORE 与 MIN_BM25_SCORE 的当前值是按 hash 占位向量标定的（有效问题 0.27~0.38，越界问题不超过 0.12）。换成 bge-m3 这类真实向量模型后相关分会整体抬高，不重标定就会出现大范围误拒答。这类故障的典型表现是"系统突然什么都不知道了"，而日志里没有任何错误。</p>
+
+<h3>3.5 账号初始化</h3>
+<table class="code">
+  <thead>
+    <tr><th>账号命令</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>
+<p class="code-line">payroll-check user list                                   # 查看现有账号</p>
+<p class="code-line">payroll-check user add --username zhangsan --name "张三" --role employee</p>
+<p class="code-line">payroll-check user add --username lisi --name "李四" --role admin --password "Pass1234"</p>
+<p class="code-line">payroll-check user reset --username admin                 # 随机生成新密码并打印</p>
+</td></tr>
+  </tbody>
+</table>
+<p>不传 --password 时系统随机生成并打印。这比自己想一个更安全，也能避免全公司共用一个密码。本期没有用户管理页面（两个角色撑不起一套 CRUD 界面），账号维护走命令行。</p>
+
+<h3>3.6 上线门禁</h3>
+<p>上线评审按下列四条执行，任一条不满足则不上线：</p>
+<ol>
+  <li>25 项检查中所有【阻塞】项通过；未通过项须技术负责人加业务方共同签字接受。</li>
+  <li>上线前 24 小时冻结代码与提示词，只接受修复阻塞项的热修。</li>
+  <li>上线后 2 小时双人值守，盯四个指标：错误率、首字延迟 P95、LLM 429 比例、注入拦截次数。</li>
+  <li>首日抽样 20 条真实问答加 5 张真实单据人工复核，准确率低于 95% 即启动回滚评估。</li>
+</ol>
+
+<h2>四、系统初始化配置</h2>
+<p>系统起来之后，把制度、参数、账号与对外凭证配到位。</p>
+
+<h3>4.1 制度入库</h3>
+<p>两条路径：命令行 build（首次全量）与后台「知识库」页上传（日常增量）。</p>
+<p>后台路径为：知识库页，选文件，填标题、版本、生效期，上传。约束如下：</p>
+<ul>
+  <li>支持 .md / .txt / .pdf，单文件不超过 10 MB；</li>
+  <li>上传后<strong>不会立刻生效</strong>，触发后台重建，页面顶部显示"重建中"；</li>
+  <li>重建期间员工照常提问，用的是上一版索引；完成后原子热切换；</li>
+  <li>同一 doc_id 已存在时被拒绝（KB_003），制度不能静默覆盖。</li>
+</ul>
+<p class="note">&nbsp;&nbsp;<strong>PDF 的边界必须说清：</strong>只支持有文本层的 PDF，扫描件直接报错并提示需要 OCR。这是刻意设计——静默产出一份空文档比报错糟糕得多：上传成功、问答永远答不出，还找不到原因。表格多的制度建议用 Markdown，pypdf 只给文本流，行列关系会丢。</p>
+
+<h3>4.2 制度参数与员工档案</h3>
+<table class="code">
+  <thead>
+    <tr><th>初始化命令</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>
+<p class="code-line">payroll-check data seed      # 16 个参数 + 5 份档案（含一个缺法人归属的样本，用于验证阻断）</p>
+<p class="code-line">payroll-check data params    # 核对参数与条款出处</p>
+</td></tr>
+  </tbody>
+</table>
+<p><strong>数值只从 policy_params 来，每一行都必须有 source_clause。</strong>参数缺失时系统返回 missing，这是给 Agent 的行动信号：必须转人工，不许猜。地区优先级为"本地区，其次全国默认，最后 missing"。</p>
+<p>当前只有 310000 一套参数，其他地区会全部 missing。这是刻意行为，不是缺陷。</p>
+
+<h3>4.3 部门与组织归属</h3>
+<table class="code">
+  <thead>
+    <tr><th>组织命令</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>
+<p class="code-line">payroll-check dept add --name 华东区域 --code EC</p>
+<p class="code-line">payroll-check dept add --name SSC上海 --parent 华东区域</p>
+<p class="code-line">payroll-check dept assign --username zhangsan --dept SSC上海 --title 高级薪酬专员</p>
+<p class="code-line">payroll-check dept list</p>
+</td></tr>
+  </tbody>
+</table>
+<p>只做两级是有意的：SSC 要回答的是"华东区这个月多少人在问冻结期、拒答率多少"，两级够用；更深的组织树属 HR 主数据，应对接而非自建。</p>
+<p>统计口径必须看清，否则数字会被误读：</p>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:26%">项</th><th>口径</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>提问数</td><td><strong>次数</strong>，一人问 10 次算 10 次</td></tr>
+    <tr><td>参与人数</td><td>该组有提问的不同账号数</td></tr>
+    <tr><td>拒答率</td><td>refused / (answered + partial + refused)，排除流式占位行</td></tr>
+    <tr><td>时间窗</td><td>固定近 30 天</td></tr>
+    <tr><td>未归属</td><td>未挂部门或部门已删的问答合成一组</td></tr>
+  </tbody>
+</table>
+
+<h3>4.4 对外 API Key</h3>
+<table class="code">
+  <thead>
+    <tr><th>Key 命令</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>
+<p class="code-line">payroll-check apikey add --name hr-portal --owner 张工 --rate-limit 60</p>
+<p class="code-line">payroll-check apikey list</p>
+<p class="code-line">payroll-check apikey revoke --id 3f2a1b0c      # 支持短 id</p>
+</td></tr>
+  </tbody>
+</table>
+<p>明文<strong>只打印一次</strong>，库里只存 sha256。丢了就吊销重发，不要试图找回。Key 无过期时间，只有"吊销"，定期轮换要靠人——建议写进运维日历，按季度轮换一次。</p>
+
+<h3>4.5 Agent 开关</h3>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:30%">变量</th><th>作用</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>AGENT_ENABLED</td><td>能力是否可用（关掉后 Agent 模式不可选）</td></tr>
+    <tr><td>AGENT_DEFAULT_MODE</td><td>/chat 默认走 rag（固定检索）还是 agent（工具链）</td></tr>
+  </tbody>
+</table>
+<p>上线初期建议 AGENT_DEFAULT_MODE=rag，观察两周后再切换默认值。Agent 模式的最终答案不是真流式：工具循环跑完后一次性发 delta，前端用打字机弥补观感，对超长对话的首字延迟影响明显。</p>
+
+<h2>五、日常运行</h2>
+<p>每天、每周要做什么，以及制度换版、索引重建、备份这些高频动作的标准做法。</p>
+
+<h3>5.1 启停</h3>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:20%">动作</th><th style="width:36%">命令</th><th>说明</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>启动</td><td>payroll-check serve</td><td>前台运行；生产建议由 systemd 或 NSSM 托管</td></tr>
+    <tr><td>启动（Windows）</td><td>scripts\run_server.bat</td><td>起服务并自动打开登录页</td></tr>
+    <tr><td>停止</td><td>Ctrl+C 或服务管理器</td><td>无优雅停机队列，SSE 连接会中断</td></tr>
+    <tr><td>重启</td><td>同上</td><td>密钥取自 data/.auth_secret，重启不踢人</td></tr>
+  </tbody>
+</table>
+<p><strong>重启会导致的可见影响：</strong>进行中的流式回答中断；索引重建任务丢失，需重新触发。因此重启窗口应避开业务高峰，建议 20:00 之后。</p>
+
+<h3>5.2 每日巡检（10 分钟）</h3>
+<p>按顺序走一遍，全部通过即结束：</p>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:6%">#</th><th style="width:20%">检查</th><th style="width:40%">方法</th><th>异常判据</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>服务存活</td><td>curl http://127.0.0.1:8000/healthz</td><td>无响应或 ready=false</td></tr>
+    <tr><td>2</td><td>索引状态</td><td>同上，看 chunk_count、built_at、rebuilding</td><td>chunk_count 与昨日差异无解释；rebuilding 长期为 true</td></tr>
+    <tr><td>3</td><td>概览页</td><td>/admin</td><td>黄条提示（演示模式）、待处理违规堆积</td></tr>
+    <tr><td>4</td><td>当日问答量</td><td>/admin 概览</td><td>与近 7 日均值偏离 50% 以上需问一句为什么</td></tr>
+    <tr><td>5</td><td>拒答率</td><td>/admin 概览</td><td>单日高于 30% 视为异常（可能索引坏了或阈值漂移）</td></tr>
+    <tr><td>6</td><td>错误日志</td><td>grep -E 'ERROR|Traceback' logs/*.log</td><td>出现未捕获异常、上游 5xx</td></tr>
+    <tr><td>7</td><td>流式中断</td><td>日志中 CLI_001 频次</td><td>突增说明前端或网络有问题</td></tr>
+  </tbody>
+</table>
+
+<h3>5.3 每周巡检</h3>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:22%">事项</th><th style="width:52%">动作</th><th>责任</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>三项指标复盘</td><td>工时、返工次数、确认完整率同时出数，不以单一工时解释效果</td><td>流程协调 + 业务侧</td></tr>
+    <tr><td>误报漏报收集</td><td>收集未确认项与误拒答样本，形成改进项</td><td>全员参与</td></tr>
+    <tr><td>轨迹抽查</td><td>抽查 5 条 Agent 会话的 agent_traces，确认工具序列合理</td><td>运维</td></tr>
+    <tr><td>备份校验</td><td>取一份 chat.db.bak.* 恢复到临时目录并统计行数</td><td>运维</td></tr>
+    <tr><td>制度版本核对</td><td>后台「历史版本」页确认无悬挂 active 版本</td><td>管理员</td></tr>
+    <tr><td>成本核对</td><td>token 日消耗对照供应商账单，偏差低于 15%</td><td>财务 BP + 运维</td></tr>
+  </tbody>
+</table>
+
+<h3>5.4 制度换版与回滚</h3>
+<p>这是本期最重要的运行变化。旧做法是"先删旧版再传新版"，两步之间索引里没有这份制度，员工提问会直接拒答；真实制度每年都改，这个窗口期就是事故窗口。</p>
+<p><strong>正确做法：</strong>知识库页，上传，<strong>保持 doc_id 不变、版本号加一</strong>，上传。系统在同一事务内完成：新版入库（active）、旧版置 superseded、触发重建，全程没有"制度不见了"的时刻。</p>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:22%">状态</th><th style="width:44%">含义</th><th>问答是否使用</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>active</td><td>现行版本</td><td>是（且生效日已到）</td></tr>
+    <tr><td>superseded</td><td>被新版替代，留档</td><td>否</td></tr>
+    <tr><td>deleted</td><td>软删，文件保留</td><td>否</td></tr>
+  </tbody>
+</table>
+<p>三条硬规矩：</p>
+<ol>
+  <li><strong>同 doc_id 加同版本重复上传会被拒绝</strong>（KB_003）。要改内容就提升版本号，否则"当时生效的是哪一版"说不清。</li>
+  <li><strong>版本号是数字，不做大小比较。</strong>系统只用它判断"是不是同一版"。展示用版本串（v1.0、2026-A）填在「版本标识」里，与纸质文件对照。</li>
+  <li><strong>待生效版本不进索引。</strong>effective_from 填未来日期时，这一版入库但不进索引，列表页显示「待生效」徽标。</li>
+</ol>
+<p><strong>回滚：</strong>文档详情，版本历史，点「回滚到本版」。回滚不是删除：把旧版重新置 active，当前版变 superseded，再重建索引。新版写错了用回滚，<strong>不要用删除</strong>——删掉会让制度整体消失，回滚则全程有依据。</p>
+
+<h3>5.5 索引重建</h3>
+<p>全量重建是唯一方式（FAISS 索引无法局部摘除向量），但只有内容变化的切片才重新向量化，向量缓存在 data/index/vec_cache_*。</p>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:24%">场景</th><th style="width:34%">动作</th><th>预计影响</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>制度上传、换版、回滚</td><td>后台自动触发</td><td>重建期间用旧索引，无服务中断</td></tr>
+    <tr><td>换向量模型</td><td>必须手动重建（build）</td><td>重建期间不可检索旧索引，需安排窗口</td></tr>
+    <tr><td>索引损坏</td><td>删除 data/index/ 后 build</td><td>全量重建，耗时与切片数成正比</td></tr>
+  </tbody>
+</table>
+<p>重建失败不影响线上检索——重建失败时旧索引仍在使用，但必须当天处理，否则下一次换版就没有退路。</p>
+
+<h3>5.6 提示词变更</h3>
+<p>提示词页，编辑，点「用草稿预览」，保存。三条约束：</p>
+<ol>
+  <li><strong>保存等于新建版本</strong>，历史永远在，可回滚到任意版本；</li>
+  <li>{context} 与 {question} 两个占位符必须保留，否则拒绝保存——少了 {context} 模型只拿到问题、没有资料，它会直接开始编，而事故发生在员工页；</li>
+  <li>页面上的「系统强制追加」改不了：角标格式是系统契约不是话术，护栏按 [1] [2] 核对引用，模型不标角标答案就会被判"引用缺失"。</li>
+</ol>
+<p>生效时机：保存后下一个问题就用新版（单 worker 立即生效；多 worker 最长等 PROMPT_CACHE_SECONDS）。每条回答都记下当时用的 prompt_version，审计页可查。</p>
+<p class="warn">&nbsp;&nbsp;<strong>流程要求：</strong>提示词改动属高风险变更，须走 10.3 的评审清单，且改动后必须重跑注入红队用例。提示词调优会悄悄削弱拒绝倾向，这是最容易回归的地方。</p>
+
+<h3>5.7 备份与恢复</h3>
+<p>需要备份的只有三样：</p>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:18%">对象</th><th style="width:34%">路径</th><th style="width:24%">频率</th><th>保留</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>主库</td><td>data/chat.db</td><td>每日 + 每次变更前</td><td>30 天</td></tr>
+    <tr><td>制度原文</td><td>data/policy/（含 uploads）</td><td>每周 + 每次上传后</td><td>全程</td></tr>
+    <tr><td>认证密钥</td><td>data/.auth_secret</td><td>一次性归档到密钥管理</td><td>长期</td></tr>
+  </tbody>
+</table>
+<p>data/index/ 是派生物，不在备份范围，重建即可。</p>
+<table class="code">
+  <thead>
+    <tr><th>备份与恢复</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>
+<p class="code-cmt"># 备份</p>
+<p class="code-line">cp data/chat.db "data/chat.db.bak.$(date +%Y%m%d%H%M)"</p>
+<p class="code-line">cp -r data/index "data/index.bak.$(date +%Y%m%d%H%M)"</p>
+<p class="code-line"> </p>
+<p class="code-cmt"># 恢复（先停服务）</p>
+<p class="code-cmt"># 1) 丢弃当前库，换回备份</p>
+<p class="code-cmt"># 2) 若备份与当前索引不匹配，删除 data/index/ 后执行 build</p>
+<p class="code-cmt"># 3) 启动并跑 5.2 的巡检第 1~3 项</p>
+</td></tr>
+  </tbody>
+</table>
+<p class="warn">&nbsp;&nbsp;<strong>恢复演练要求：</strong>上线前必须完成一次"备份、恢复至独立目录、校验行数"的完整演练并记录耗时。备份没被恢复验证过，等于没有备份。</p>
+
+<h3>5.8 日志与审计数据</h3>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:18%">数据</th><th style="width:22%">载体</th><th style="width:24%">留存要求</th><th>处置</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>应用日志</td><td>logs/</td><td>30 天</td><td>每日轮转，含 PII 即整改</td></tr>
+    <tr><td>问答记录</td><td>chat_messages</td><td>试点全程</td><td>到期按 G-06 的清理任务删除</td></tr>
+    <tr><td>Agent 轨迹</td><td>agent_traces</td><td>试点全程</td><td>每次工具调用一条，不可删改</td></tr>
+    <tr><td>人工标记</td><td>message_audits</td><td>长期</td><td>事件式追加，改判留旧记录</td></tr>
+    <tr><td>制度原文</td><td>data/policy/</td><td>按档案要求</td><td>不随问答记录清理</td></tr>
+  </tbody>
+</table>
+<p>保留期与到期删除当前尚未实现（G-06），上线前必须补齐。否则"承诺删除但删不掉"是合规瑕疵，不是技术债。</p>
+
+<h2>六、监控与告警</h2>
+<p>盯哪些数、阈值是多少、超了找谁。技术指标与业务质量指标要一起看。</p>
+
+<h3>6.1 健康检查</h3>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:24%">接口</th><th style="width:26%">用途</th><th>返回</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>GET /healthz</td><td>内部探活</td><td>索引、模型、数据库状态；索引坏也返回 200，需看字段</td></tr>
+    <tr><td>GET /api/v1/healthz</td><td>对外探活（需 Bearer）</td><td>ready、chunk_count、doc_count、built_at、rebuilding</td></tr>
+  </tbody>
+</table>
+<p>内部 /healthz 刻意在索引损坏时仍返回 200，是为了让探针区分"进程死了"与"能力降级"。<strong>告警规则必须读字段，不能只看状态码。</strong></p>
+
+<h3>6.2 技术指标</h3>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:24%">指标</th><th style="width:26%">采集方式</th><th style="width:22%">阈值</th><th>处置</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>错误率（5xx + SRV_001）</td><td>日志或网关</td><td>高于 2% 持续 5 分钟</td><td>见第七章排障</td></tr>
+    <tr><td>首字延迟 P95</td><td>SSE 帧时间戳</td><td>高于 8 秒</td><td>查模型上游与检索耗时</td></tr>
+    <tr><td>LLM 429 比例</td><td>llm/http.py 日志</td><td>高于 5%</td><td>降并发或换配额</td></tr>
+    <tr><td>注入拦截次数</td><td>红队用例 + deny 记录</td><td>单日异常升高</td><td>安全事件，按 8.2 处置</td></tr>
+    <tr><td>上游超时率（LLM_001）</td><td>日志</td><td>高于 3%</td><td>检查厂商状态页</td></tr>
+    <tr><td>索引重建时长</td><td>后台任务日志</td><td>超过 10 分钟</td><td>排查切片数与缓存命中</td></tr>
+  </tbody>
+</table>
+
+<h3>6.3 业务质量指标</h3>
+<p>质量指标比技术指标更早暴露问题，建议每日看一次：</p>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:20%">指标</th><th style="width:30%">计算口径</th><th style="width:18%">健康区间</th><th>异常含义</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>拒答率</td><td>refused / (answered + partial + refused)</td><td>10%~25%</td><td>骤升是索引坏或阈值漂移；长期为 0 是闸门失效</td></tr>
+    <tr><td>partial 率</td><td>partial / 总回答</td><td>低于 10%</td><td>升高说明未溯源数字增多，模型在编</td></tr>
+    <tr><td>零引用答案</td><td>answered 且 citations 为空</td><td>0</td><td>护栏失效，属阻塞级</td></tr>
+    <tr><td>未溯源数字</td><td>guard.unverified_numbers 非空条数</td><td>趋势下降</td><td>提示词或资料质量问题</td></tr>
+    <tr><td>反馈负向率</td><td>feedback 统计</td><td>低于 15%</td><td>结合样本看是知识缺口还是表达问题</td></tr>
+  </tbody>
+</table>
+<p>系统预筛的四条规则（R1 未溯源数字、R2 拒答却出现金额、R3 推测语气、R4 正常作答无引用）是<strong>提示不是结论</strong>，且实时计算不落库。只有人工标记才进 message_audits——这样"确认违规 3 条"这个数字才永远可信。</p>
+
+<h3>6.4 成本监控</h3>
+<table class="code">
+  <thead>
+    <tr><th>查询语句</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>
+<p class="code-cmt">-- 当日 token 消耗</p>
+<p class="code-line">SELECT sum(token_in + token_out) FROM chat_messages</p>
+<p class="code-line"> WHERE date(created_at) = date('now');</p>
+</td></tr>
+  </tbody>
+</table>
+<p>预算控制要求：80% 告警、100% 自动降级固定 RAG 并在页面公告。当前该能力尚未实现（G-04），上线前必须以外部手段兜底（如厂商侧配额上限加人工每日看数），不能留空。</p>
+
+<h3>6.5 告警分级</h3>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:10%">级别</th><th style="width:44%">定义</th><th style="width:20%">响应时限</th><th>通知</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>P1</td><td>全站不可用、数据泄露、越权访问成功</td><td>15 分钟</td><td>值班电话 + 技术负责人 + 业务负责人</td></tr>
+    <tr><td>P2</td><td>部分功能不可用、错误率高于 5%、预算耗尽</td><td>1 小时</td><td>值班群 + 技术负责人</td></tr>
+    <tr><td>P3</td><td>单点异常、质量指标劣化</td><td>4 小时</td><td>值班群</td></tr>
+    <tr><td>P4</td><td>体验问题、文档不一致</td><td>次工作日</td><td>工单</td></tr>
+  </tbody>
+</table>
+
+<h2>七、故障处理</h2>
+<p>按现象定位、按错误码处置。先恢复服务，再找根因。</p>
+
+<h3>7.1 排障总流程</h3>
+<p>按分层顺序定位，不要跳步：</p>
+<table class="code">
+  <thead>
+    <tr><th>排障步骤</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>
+<p class="code-line">1. 现象分类：全站 / 单功能 / 单用户 / 数据不准</p>
+<p class="code-line">2. 看 healthz：ready、chunk_count、rebuilding、doc_count</p>
+<p class="code-line">3. 看错误码：有码走 7.2 表；无码看 7.3 场景</p>
+<p class="code-line">4. 看 trace_id：从界面或日志拿到，串起一次完整请求</p>
+<p class="code-line">5. 看轨迹：涉及建单或判定的，查 agent_traces 的 tool_name 与 args</p>
+<p class="code-line">6. 处置：先恢复（降级或回滚），再定位根因</p>
+</td></tr>
+  </tbody>
+</table>
+<p class="note">&nbsp;&nbsp;<strong>处置优先级原则：</strong>能通过降级开关恢复的，先降级；不能的，回滚代码或索引；以上都不行的，切只读公告并转人工。不要在故障现场改代码。</p>
+
+<h3>7.2 错误码速查</h3>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:12%">码</th><th style="width:8%">HTTP</th><th style="width:40%">含义</th><th>处置</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>REQ_001</td><td>400</td><td>请求非合法 JSON</td><td>调用方问题，看接入方日志</td></tr>
+    <tr><td>REQ_002</td><td>400</td><td>缺少必填参数</td><td>同上</td></tr>
+    <tr><td>REQ_003</td><td>400</td><td>问题为空</td><td>前端校验缺失</td></tr>
+    <tr><td>REQ_004</td><td>400</td><td>问题过长（上限 500 字）</td><td>提示用户拆分</td></tr>
+    <tr><td>REQ_005</td><td>400</td><td>会话标识格式不正确</td><td>清本地会话</td></tr>
+    <tr><td>SES_001</td><td>404</td><td>会话不存在或被清理</td><td>自动新建重发</td></tr>
+    <tr><td>SES_002</td><td>410</td><td>会话已删除</td><td>自动新建</td></tr>
+    <tr><td>SES_004</td><td>409</td><td>该会话正在生成回答</td><td>前端应禁用发送；频繁出现说明流未正常收尾</td></tr>
+    <tr><td>IDX_001</td><td>503</td><td>索引未就绪</td><td>执行 build；检查 data/index/ 是否完整</td></tr>
+    <tr><td>IDX_002</td><td>503</td><td>索引与当前向量模型不一致</td><td><strong>必须重建索引</strong>，不要改配置迁就旧索引</td></tr>
+    <tr><td>LLM_001</td><td>504</td><td>生成超时</td><td>查厂商状态；连续出现按 6.2 告警</td></tr>
+    <tr><td>LLM_002</td><td>502</td><td>模型配置或鉴权错误</td><td>检查 LLM_API_KEY、LLM_BASE_URL、LLM_MODEL</td></tr>
+    <tr><td>LLM_003</td><td>502</td><td>模型服务不可用</td><td>厂商 5xx，重试加降级</td></tr>
+    <tr><td>SRV_001</td><td>500</td><td>未捕获异常</td><td>带 trace_id 查堆栈</td></tr>
+    <tr><td>SRV_002</td><td>429</td><td>并发超限</td><td>看 retry_after；调并发或配额</td></tr>
+    <tr><td>AUTH_001</td><td>401</td><td>Key 缺失、错误或已吊销（不区分）</td><td>重新签发；不区分是为了避免成为枚举接口</td></tr>
+    <tr><td>KB_003</td><td>—</td><td>同 doc_id 同版本重复</td><td>提升版本号，或先删除该版再传</td></tr>
+    <tr><td>AGT_001</td><td>—</td><td>校验凭证签名无效</td><td>伪造或篡改，安全事件</td></tr>
+    <tr><td>AGT_002</td><td>—</td><td>凭证过期</td><td>默认 600 秒；长对话需重新校验</td></tr>
+    <tr><td>AGT_003</td><td>—</td><td>凭证内容与提交不一致</td><td><strong>校验 A 建 B</strong>，属越权尝试，需审计</td></tr>
+    <tr><td>AGT_004</td><td>—</td><td>凭证已使用</td><td>一次性凭证的正常代价；重试应命中幂等键</td></tr>
+    <tr><td>AGT_005</td><td>—</td><td>用需复核的凭证硬建</td><td>verdict 非 pass，应转人工</td></tr>
+    <tr><td>AGT_007</td><td>—</td><td>越权查询他人档案</td><td>权限在工具与 SQL 层强制，非提示词</td></tr>
+    <tr><td>CLI_001</td><td>—</td><td>客户端已断开</td><td>仅日志与落库，不告警</td></tr>
+  </tbody>
+</table>
+
+<h3>7.3 常见故障场景</h3>
+<p>以下是试点期最可能遇到的八类故障，按发生概率排序。每类都给出定位顺序与处置动作。</p>
+
+<h4>场景 1：服务起不来</h4>
+<p>先看启动日志首屏。三类原因：端口占用（8000）、data/.auth_secret 不可写、迁移失败。迁移在一个事务内，失败会整体回滚，不会留半张表——回滚后可安全重试，但重试前必须先备份。</p>
+
+<h4>场景 2：全部问题都拒答，且无报错</h4>
+<p>这是最容易被误判为"模型坏了"的故障，最常见原因是闸门阈值与向量模型不匹配（见 3.4）。排查顺序：</p>
+<ol>
+  <li>payroll-check info 看 manifest 的 backend 与 dim 是否与当前配置一致；</li>
+  <li>若不一致，重建索引；</li>
+  <li>若一致，用 --debug 跑一个已知有效问题，看两路 best_vector_score、best_bm25_score 与阈值的关系；</li>
+  <li>分数整体低于阈值，说明换模型后未重标定，需重新标定而非下调阈值凑数。</li>
+</ol>
+
+<h4>场景 3：全站答不出来，日志里有大量 429</h4>
+<p>预算或并发配额耗尽，这是"预算烧完"的典型表现。立即：AGENT_DEFAULT_MODE=rag 降级、暂停对外 Key、按 6.4 查消耗曲线找异常账号。恢复后必须补上限流（G-03、G-04），否则同样故障会复发。</p>
+
+<h4>场景 4：答案出现半截就停了</h4>
+<p>流式已发出的内容收不回来。此时消息应以 partial 落库，不能标 answered。前端必须给出"待核"标记与重试入口。不要指望它像非流式那样干净——这是上线前必须与业务方确认并接受的取舍。</p>
+
+<h4>场景 5：登录后频繁被踢下线</h4>
+<p>data/.auth_secret 变了（被重建、被覆盖、容器未挂载持久卷）。多实例部署时各实例密钥不一致也会如此，此时必须统一用 AUTH_SECRET 环境变量。</p>
+
+<h4>场景 6：制度已上传但问不到</h4>
+<p>四个可能：effective_from 在未来（待生效不入索引）、重建未完成（看 rebuilding）、doc_id 已有同版本被拒（KB_003，旧版仍在）、切片为空（PDF 无文本层）。</p>
+
+<h4>场景 7：Agent 说"已为您建单"，但列表里没有</h4>
+<p>模型谎报写操作。系统会核对"模型说了什么"与"实际发生了什么"，命中时状态置 inconsistent，答复开头加"本次并没有实际完成建单"。处置：查 agent_traces 确认工具被拒的原因码，<strong>不要手工补单</strong>——补单会绕过闸门。</p>
+
+<h4>场景 8：同一张单出现两条记录</h4>
+<p>先看是否命中幂等键。create_draft 第一步查 idempotency_key，命中返回上次那张单且 created=false；这是唯一一条"没有凭证也能返回成功"的路径，因为它没有产生新写入。若仍重复，说明调用方每次换了幂等键，属接入方缺陷，须在集成侧修正。</p>
+
+<h3>7.4 取证</h3>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:32%">要回答的问题</th><th>查哪里</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>这次请求发生了什么</td><td>按 trace_id 串日志与 chat_messages</td></tr>
+    <tr><td>为什么这么判断</td><td>agent_traces（每次工具调用一条：tool_name、args、ok、错误码）</td></tr>
+    <tr><td>用的是哪一版提示词</td><td>chat_messages.prompt_version</td></tr>
+    <tr><td>引用来自哪条原文</td><td>citations 到 chunk_id，再到 chunks.jsonl</td></tr>
+    <tr><td>谁查过、谁确认</td><td>audit_event、message_audits</td></tr>
+    <tr><td>数据是否被改过</td><td>哈希链校验（每日一次）</td></tr>
+  </tbody>
+</table>
+<p>取证的纪律：只读、只追加。审计表在数据库层面收回 UPDATE 与 DELETE 权限，任何"修一下日志"的诉求都必须拒绝。</p>
+
+<h3>7.5 升级与回滚</h3>
+<p>升级顺序（每次都按此执行，不得跳步）：</p>
+<table class="code">
+  <thead>
+    <tr><th>升级命令</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>
+<p class="code-cmt"># 1. 备份（迁移不可逆，这一步省不得）</p>
+<p class="code-line">cp data/chat.db "data/chat.db.bak.$(date +%Y%m%d%H%M)"</p>
+<p class="code-line">cp -r data/index "data/index.bak.$(date +%Y%m%d%H%M)"</p>
+<p class="code-line"> </p>
+<p class="code-cmt"># 2. 停服务</p>
+<p class="code-cmt"># 3. 更新代码，启动（数据库自动迁移，日志会打印迁移行数）</p>
+<p class="code-cmt"># 4. 自检三条</p>
+<p class="code-line">payroll-check ask "冻结期内可以改银行账户吗？"</p>
+<p class="code-line">payroll-check agent run --script happy</p>
+<p class="code-line"> </p>
+<p class="code-cmt"># 5. 回归</p>
+<p class="code-line">PYTHONPATH=src python -m pytest -q</p>
+</td></tr>
+  </tbody>
+</table>
+<p>回滚三条路径：</p>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:18%">对象</th><th style="width:28%">做法</th><th style="width:18%">目标耗时</th><th>前提</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>代码与镜像</td><td>回退到上一 tag</td><td>不超过 15 分钟</td><td>不需要改库（迁移遵循"只加不删"）</td></tr>
+    <tr><td>索引</td><td>改 INDEX_DIR 指向旧目录</td><td>不超过 1 分钟</td><td>旧索引产物仍在</td></tr>
+    <tr><td>提示词与配置</td><td>后台「恢复默认」或回滚版本</td><td>不超过 1 分钟</td><td>版本表保留最近 N 版</td></tr>
+  </tbody>
+</table>
+<p class="warn">&nbsp;&nbsp;<strong>索引回滚有一个必须提前做的前提：</strong>落盘是原地覆盖（VectorStore.save 直接写 chunks.jsonl），进程内切换是原子的、磁盘不是。因此首次上线前必须补上"备份加目录级切换"（G-12），否则"回滚索引"只是一句口号。</p>
+
+<h2>八、应急响应</h2>
+<p>五类最坏情况的预案，以及六条不可商量的停止条件。</p>
+
+<h3>8.1 应急分级</h3>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:10%">级别</th><th style="width:36%">判定</th><th style="width:26%">首要动作</th><th>决策人</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>一级</td><td>数据泄露、越权访问成功、审计记录被改</td><td>立即停服，保留现场</td><td>安全负责人</td></tr>
+    <tr><td>二级</td><td>全站不可用超过 30 分钟</td><td>降级或回滚</td><td>技术负责人</td></tr>
+    <tr><td>三级</td><td>单功能不可用、质量指标严重劣化</td><td>切只读加公告</td><td>值班负责人</td></tr>
+    <tr><td>四级</td><td>影响面小、有替代路径</td><td>记录加排期修</td><td>运维</td></tr>
+  </tbody>
+</table>
+
+<h3>8.2 五类场景预案</h3>
+<p>预案不是流程文件，是当场照着做的东西。每一条都以“先做什么”开头。</p>
+
+<h4>预案 A：模型服务不可用</h4>
+<ol>
+  <li>确认是厂商故障还是本侧配置（LLM_002 与 LLM_003 的区别）；</li>
+  <li>厂商故障：切备用 LLM_PROVIDER，或置 AGENT_DEFAULT_MODE=rag 观察；</li>
+  <li>仍不可用：置 AGENT_ENABLED=0，页面公告"当前仅提供制度检索，暂不支持建单"；</li>
+  <li>全程保持历史会话可查，不要让系统整体变成白屏。</li>
+</ol>
+
+<h4>预案 B：疑似数据泄露</h4>
+<ol>
+  <li>立即停服，断开对外 /api/v1；</li>
+  <li>导出 audit_event 中 view 与 export 事件，锁定时间窗与账号；</li>
+  <li>核查导出记录（每次导出必须写 export 事件，含行数与用途声明）；</li>
+  <li>未查明前不恢复服务，不修日志，不覆盖库。</li>
+</ol>
+
+<h4>预案 C：发现越权访问</h4>
+<ol>
+  <li>保留 deny 事件与请求体，不做脱敏；</li>
+  <li>吊销相关账号与 API Key；</li>
+  <li>复核该账号近 30 天的 view 记录，评估影响范围；</li>
+  <li>按一级事件上报。</li>
+</ol>
+
+<h4>预案 D：审计链断裂或记录被改</h4>
+<p>这是停止条件之一，没有"继续观察"的选项。立即暂停试点，按 S2 处理：保留现场、导出最近一次校验通过的快照、由质量负责人确认处置方案。</p>
+
+<h4>预案 E：错误单据已提交</h4>
+<p>当前没有撤销接口（G-13），只能改 SQL。因此处置必须走双人确认：一人执行、一人复核，执行前 dry-run 打印将受影响的单据，执行后留痕并 30 分钟内通知到员工。模板须经业务方审核，不能临时手写 SQL。</p>
+
+<h3>8.3 降级开关</h3>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:24%">开关</th><th style="width:26%">效果</th><th style="width:20%">生效时间</th><th>副作用</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>AGENT_ENABLED=0</td><td>关闭 Agent 能力</td><td>重启（目标 30 秒内）</td><td>建单不可用，问答仍可用</td></tr>
+    <tr><td>AGENT_DEFAULT_MODE=rag</td><td>默认走固定检索</td><td>重启</td><td>无建单，引用更稳定</td></tr>
+    <tr><td>AUTH_REQUIRED=0</td><td>免登录</td><td>重启</td><td><strong>仅演示，生产禁用</strong></td></tr>
+    <tr><td>停止对外 Key</td><td>外部集成中断</td><td>立即</td><td>调用方需切人工</td></tr>
+    <tr><td>摘除制度（软删）</td><td>该制度不再被引用</td><td>重建后</td><td>相关问题转为拒答</td></tr>
+  </tbody>
+</table>
+
+<h3>8.4 停止条件</h3>
+<p>以下六条任一触发即暂停试点，不得"继续观察"：</p>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:10%">编号</th><th style="width:56%">条件</th><th>拍板人</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>S1</td><td>出现任一笔"未确认版本仍出结果"</td><td>质量负责人</td></tr>
+    <tr><td>S2</td><td>审计链断链或审计记录被改</td><td>质量负责人</td></tr>
+    <tr><td>S3</td><td>发生越权访问跨企业资料</td><td>质量负责人</td></tr>
+    <tr><td>S4</td><td>字段口径签字人未落实，仍在使用未签字口径</td><td>业务负责人</td></tr>
+    <tr><td>S5</td><td>工时投入超出 4 周 × 2 人 × 4 小时预算</td><td>业务负责人</td></tr>
+    <tr><td>S6</td><td>只修模板不核对效果</td><td>流程协调提出，质量负责人确认</td></tr>
+  </tbody>
+</table>
+
+<h2>九、安全与合规运行要求</h2>
+<p>权限、脱敏、密钥、审计、留存五件事的硬要求。</p>
+
+<h3>9.1 权限模型</h3>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:26%">角色</th><th style="width:12%">可提交</th><th style="width:14%">可确认</th><th style="width:12%">可导出</th><th style="width:16%">可改口径</th><th>可停试点</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>一线服务专员</td><td>是</td><td>否</td><td>受限（脱敏）</td><td>否</td><td>否</td></tr>
+    <tr><td>流程协调员</td><td>是</td><td>否</td><td>受限</td><td>否</td><td>否</td></tr>
+    <tr><td>数字化工程师</td><td>否</td><td>否</td><td>受限</td><td>提议</td><td>否</td></tr>
+    <tr><td>审核与质量负责人</td><td>否</td><td>否（不代授审批权）</td><td>是</td><td>质量口径</td><td>是</td></tr>
+    <tr><td>业务负责人</td><td>是</td><td>是</td><td>是</td><td>业务口径</td><td>是</td></tr>
+    <tr><td>客户协同代表</td><td>否</td><td>否</td><td>受限</td><td>用途确认</td><td>否</td></tr>
+  </tbody>
+</table>
+<p>三条不可协商的边界：质量负责人不代授审批权；模型与系统无任何可写 confirm 的主体；越权拦截在 API 网关与状态机两处执行，不依赖提示词。</p>
+
+<h3>9.2 脱敏与 PII</h3>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:24%">数据面</th><th style="width:20%">当前状态</th><th>要求</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>员工档案查询输出</td><td>已具备</td><td>证件号、银行卡、手机仅保留后 4 位，星号数等于原长度减 4</td></tr>
+    <tr><td>变更单明细 items</td><td><strong>缺失（G-02）</strong></td><td>账号须为掩码或密文；order_hash 仍可用规范化值校验；审计需要时受控解密</td></tr>
+    <tr><td>Agent 轨迹 args</td><td><strong>缺失（G-02）</strong></td><td>同上，建单场景是最需要保护的数据</td></tr>
+    <tr><td>应用日志</td><td>部分（G-05）</td><td>命中 PII 正则即逐条确认；http_post_json 不得记录 payload</td></tr>
+  </tbody>
+</table>
+<p>每日 PII 扫描命令（命中即逐条确认，测试数据除外）：</p>
+<table class="code">
+  <thead>
+    <tr><th>扫描命令</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>
+<p class="code-line">grep -rEo '([0-9]{17}[0-9Xx]|1[3-9][0-9]{9}|[0-9]{16,19})' logs/ data/*.log 2&gt;/dev/null | sort -u | head</p>
+</td></tr>
+  </tbody>
+</table>
+
+<h3>9.3 密钥管理</h3>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:22%">密钥</th><th style="width:20%">位置</th><th>要求</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>data/.auth_secret</td><td>文件</td><td>必须持久化；丢失等于全员掉线；多实例必须统一用 AUTH_SECRET</td></tr>
+    <tr><td>LLM_API_KEY</td><td>.env</td><td>不得入库、不得进日志、不得写进提示词；.env 已被 .gitignore 排除</td></tr>
+    <tr><td>gate_secret</td><td>配置</td><td>留空则从 auth_secret 派生（HMAC-KDF，不直接复用）</td></tr>
+    <tr><td>API Key（对外）</td><td>库中存 sha256</td><td>明文只打印一次；按季度轮换</td></tr>
+  </tbody>
+</table>
+<p>轮换纪律：任何密钥变更都要在变更单记录影响面（会不会踢人、会不会使凭证失效），并在低峰执行。GATE_TOKEN_TTL_SECONDS 的调整属安全参数变更，同样走变更评审。</p>
+
+<h3>9.4 审计留痕</h3>
+<p>审计要回答四个问题，缺一不可：</p>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:16%">问题</th><th style="width:46%">记录方式</th><th>载体</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>谁查过</td><td>每次 view 与 export 写事件（含 IP、角色、查询条件）</td><td>audit_event</td></tr>
+    <tr><td>用哪个版本</td><td>version_id 加 version_no 加 received_at 三元组</td><td>audit_event</td></tr>
+    <tr><td>提了什么建议</td><td>系统建议以 propose 事件独立记录，<strong>永不覆盖原值</strong></td><td>audit_event.payload</td></tr>
+    <tr><td>谁确认</td><td>confirm 事件与 confirm_by 双写，两处一致才算有效</td><td>两处</td></tr>
+  </tbody>
+</table>
+<p>硬约束：审计只追加，无 UPDATE 与 DELETE 权限；每次导出必须写 export 事件；哈希链每日校验一次，断链即触发 S2。</p>
+
+<h3>9.5 数据留存</h3>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:32%">数据</th><th style="width:32%">留存</th><th>说明</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>原始版本、修订原因、确认人</td><td>试点期全程加约定周期</td><td>不可覆盖</td></tr>
+    <tr><td>审计事件</td><td>同左，不可删改</td><td>哈希链保证完整性</td></tr>
+    <tr><td>虚构个人字段</td><td>练习结束按约定删除</td><td>需可执行</td></tr>
+    <tr><td>脱敏样本原文件</td><td>试点结束后 30 天内清除</td><td>期限待业务确认</td></tr>
+  </tbody>
+</table>
+
+<h2>十、变更与发布管理</h2>
+<p>什么时间能发、什么改动风险最高、评审要回答哪些问题。</p>
+
+<h3>10.1 发布窗口与冻结</h3>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:22%">项</th><th>规定</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>常规窗口</td><td>工作日 20:00—22:00，避开月末结薪与月初高峰期</td></tr>
+    <tr><td>冻结期</td><td>上线前 24 小时冻结代码与提示词</td></tr>
+    <tr><td>冻结期例外</td><td>仅接受修复阻塞项的热修，须技术负责人与业务方双签</td></tr>
+    <tr><td>禁发窗口</td><td>月末最后 3 个工作日、月初前 2 个工作日、制度换版当天</td></tr>
+  </tbody>
+</table>
+
+<h3>10.2 版本与记录</h3>
+<p>每次发布必须留下四项：版本号（tag）、变更清单、影响面评估、回滚点。变更清单要写清"改了哪一层"——不同层的改动风险完全不同：</p>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:28%">改动层</th><th style="width:14%">风险</th><th>附加要求</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>入口与协议</td><td>中</td><td>契约只增不改，错误码语义不得变</td></tr>
+    <tr><td>检索（切片、融合、闸门）</td><td><strong>高</strong></td><td>必须重跑评测，clause@3 不得低于阈值</td></tr>
+    <tr><td>生成（prompt、model）</td><td><strong>高</strong></td><td>必须重跑注入红队用例</td></tr>
+    <tr><td>护栏与闸门</td><td><strong>高</strong></td><td>必须跑全量回归（265 项）</td></tr>
+    <tr><td>持久层与迁移</td><td><strong>高</strong></td><td>必须备份并验证可逆</td></tr>
+    <tr><td>前端与文案</td><td>低</td><td>回归主要路径</td></tr>
+  </tbody>
+</table>
+
+<h3>10.3 变更评审清单</h3>
+<p>任何进入生产的变更，评审时逐条回答，答不出即不通过：</p>
+<ol>
+  <li>这个变更会不会改变已有答案？请举例说明。</li>
+  <li>回滚方式是什么？多久能回？</li>
+  <li>需要重建索引吗？重建期间服务是否可用？</li>
+  <li>涉及数据库迁移吗？备份做了吗？能否退回旧代码？</li>
+  <li>影响哪些角色？需要通知谁？</li>
+  <li>有没有对应的验证用例？在哪跑？</li>
+  <li>变更后哪个指标应该变化？变了没有？</li>
+</ol>
+
+<h3>10.4 交接与知识转移</h3>
+<p>交付完成的标准不是"文档给了"，而是"接手的人能独立处置一次故障"。建议的交接动作：</p>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:34%">动作</th><th style="width:16%">时长</th><th>验收</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>架构与依赖走查</td><td>2 小时</td><td>能画出四层依赖并说明唯一出网口</td></tr>
+    <tr><td>部署演练（含首次启动）</td><td>2 小时</td><td>独立完成 3.3 全部步骤</td></tr>
+    <tr><td>故障演练（场景 2、5、7）</td><td>3 小时</td><td>独立定位并给出处置动作</td></tr>
+    <tr><td>回滚演练（代码加索引）</td><td>2 小时</td><td>两项均在目标时限内完成</td></tr>
+    <tr><td>制度换版演练</td><td>1 小时</td><td>完成换版与回滚，全程无"制度消失"时刻</td></tr>
+    <tr><td>备份恢复演练</td><td>2 小时</td><td>恢复到独立目录并校验行数</td></tr>
+  </tbody>
+</table>
+
+<h2>十一、值班与支持</h2>
+<p>谁负责什么、出事找谁、承诺多久恢复。</p>
+
+<h3>11.1 职责矩阵</h3>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:30%">职责</th><th style="width:30%">角色</th><th>说明</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>服务可用性、发布、备份</td><td>运维工程师</td><td>本手册主要执行人</td></tr>
+    <tr><td>制度维护、账号与部门</td><td>SSC 管理员</td><td>后台操作</td></tr>
+    <tr><td>集成对接、API Key</td><td>集成开发</td><td>对外 /api/v1</td></tr>
+    <tr><td>质量口径、停止试点</td><td>审核与质量负责人</td><td>不代授审批权</td></tr>
+    <tr><td>范围与预算决策</td><td>业务负责人</td><td>变更与停止的最终拍板</td></tr>
+    <tr><td>一线反馈收集</td><td>一线服务专员、流程协调</td><td>每周复盘输入</td></tr>
+  </tbody>
+</table>
+
+<h3>11.2 联系表</h3>
+<p>上线前由项目组填写并随交付包下发。值班人员须存为离线可用，不依赖系统本身：</p>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:20%">角色</th><th style="width:14%">姓名</th><th style="width:16%">电话</th><th style="width:22%">备用联系方式</th><th>值班时段</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>一线值班</td><td>待填</td><td>待填</td><td>待填</td><td>工作日 9:00—18:00</td></tr>
+    <tr><td>运维负责人</td><td>待填</td><td>待填</td><td>待填</td><td>7×24 待命</td></tr>
+    <tr><td>技术负责人</td><td>待填</td><td>待填</td><td>待填</td><td>7×24 待命</td></tr>
+    <tr><td>业务负责人</td><td>待填</td><td>待填</td><td>待填</td><td>工作日</td></tr>
+    <tr><td>质量负责人</td><td>待填</td><td>待填</td><td>待填</td><td>工作日</td></tr>
+    <tr><td>模型厂商支持</td><td>待填</td><td>待填</td><td>工单入口</td><td>7×24</td></tr>
+  </tbody>
+</table>
+
+<h3>11.3 服务目标</h3>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:24%">项</th><th style="width:30%">目标</th><th>说明</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>可用性</td><td>99.5%（工作日 9:00—18:00）</td><td>不含计划内维护窗口</td></tr>
+    <tr><td>首字延迟 P95</td><td>不超过 8 秒</td><td>Agent 模式放宽至 12 秒</td></tr>
+    <tr><td>故障响应</td><td>P1 15 分钟、P2 1 小时</td><td>从告警发出计时</td></tr>
+    <tr><td>故障恢复</td><td>P1 2 小时、P2 4 小时</td><td>含回滚</td></tr>
+    <tr><td>数据恢复点（RPO）</td><td>不超过 24 小时</td><td>依赖每日备份</td></tr>
+    <tr><td>数据恢复时间（RTO）</td><td>不超过 4 小时</td><td>含重建索引</td></tr>
+  </tbody>
+</table>
+
+<h3>11.4 上线后 30 天护航</h3>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:14%">阶段</th><th style="width:48%">重点</th><th>交付</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>第 1 周</td><td>每日双人值守，盯四个技术指标加首日抽样</td><td>日报：问题清单与处置记录</td></tr>
+    <tr><td>第 2 周</td><td>质量指标基线建立（拒答率、partial 率）</td><td>基线报告</td></tr>
+    <tr><td>第 3 周</td><td>缺口补齐（G-02 至 G-06）复验</td><td>复验记录</td></tr>
+    <tr><td>第 4 周</td><td>交接验收，完成 10.4 六项演练</td><td>交接签字包</td></tr>
+  </tbody>
+</table>
+
+<h2>附录 A 常用命令速查</h2>
+<p>日常操作最常用的命令，按用途分组，可直接复制。</p>
+<table class="code">
+  <thead>
+    <tr><th>命令速查</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>
+<p class="code-cmt"># 配置与索引</p>
+<p class="code-line">payroll-check info                  # 当前配置 + 索引 manifest</p>
+<p class="code-line">payroll-check build                 # 全量重建索引</p>
+<p class="code-line">payroll-check eval                  # 内置 8 题检索评测</p>
+<p class="code-line"> </p>
+<p class="code-cmt"># 问答</p>
+<p class="code-line">payroll-check ask "问题" --debug    # 单次提问，打印双通道名次与耗时</p>
+<p class="code-line">payroll-check chat                  # 交互模式：/sources /debug /quit</p>
+<p class="code-line"> </p>
+<p class="code-cmt"># 数据初始化</p>
+<p class="code-line">payroll-check data seed             # 16 参数 + 5 档案</p>
+<p class="code-line">payroll-check data params           # 参数与条款出处</p>
+<p class="code-line"> </p>
+<p class="code-cmt"># 规则校验</p>
+<p class="code-line">payroll-check check --type salary_adjust --emp E1001 \</p>
+<p class="code-line">  --field fixed_salary --old 18500 --new 19000 --effective 2026-11-01 \</p>
+<p class="code-line">  --materials approval_form,adjust_basis --as-of 2026-10-10</p>
+<p class="code-line"> </p>
+<p class="code-cmt"># Agent 离线演练</p>
+<p class="code-line">payroll-check agent run --script happy | skip | loop | badargs</p>
+<p class="code-line"> </p>
+<p class="code-cmt"># 账号与组织</p>
+<p class="code-line">payroll-check user list | add | reset</p>
+<p class="code-line">payroll-check dept add | list | assign</p>
+<p class="code-line"> </p>
+<p class="code-cmt"># 对外 Key</p>
+<p class="code-line">payroll-check apikey add | list | revoke</p>
+<p class="code-line"> </p>
+<p class="code-cmt"># 回归与安全</p>
+<p class="code-line">PYTHONPATH=src python -m pytest -q</p>
+<p class="code-line">PYTHONPATH=src python scripts/eval_agent.py --filter violation --out eval/_golive.json</p>
+<p class="code-line"> </p>
+<p class="code-cmt"># 服务</p>
+<p class="code-line">payroll-check serve</p>
+</td></tr>
+  </tbody>
+</table>
+
+<h2>附录 B 环境变量全表</h2>
+<p>完整清单见 3.4。补两条运维注意：.env 由 config 自动加载，优先级为<strong>环境变量高于 config/default.yaml，高于类默认值</strong>；改完需重启，除提示词类配置外均不支持热更新。</p>
+
+<h2>附录 C 错误码全表</h2>
+<p>完整清单见 7.2。契约纪律：code 语义永不改变，message 为中文可调整，新增码只能追加。</p>
+
+<h2>附录 D 上线检查签字页</h2>
+<p>上线评审时逐项打勾并签字。未通过的阻塞项必须写明补偿措施。</p>
+
+<h3>D.1 阻塞项确认</h3>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:8%">编号</th><th style="width:38%">检查项</th><th style="width:20%">结论</th><th style="width:16%">证据</th><th style="width:10%">确认人</th><th>日期</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1.1</td><td>员工档案对外脱敏</td><td>□通过　□不通过</td><td></td><td></td><td></td></tr>
+    <tr><td>1.2</td><td>变更单明细与轨迹无账号明文</td><td>□通过　□不通过</td><td></td><td></td><td></td></tr>
+    <tr><td>1.3</td><td>应用日志不含 PII</td><td>□通过　□不通过</td><td></td><td></td><td></td></tr>
+    <tr><td>1.4</td><td>保留期与到期删除可执行</td><td>□通过　□不通过</td><td></td><td></td><td></td></tr>
+    <tr><td>1.5</td><td>凭据与登录面</td><td>□通过　□不通过</td><td></td><td></td><td></td></tr>
+    <tr><td>2.1</td><td>网页端提问限流</td><td>□通过　□不通过</td><td></td><td></td><td></td></tr>
+    <tr><td>2.2</td><td>全局并发与日预算</td><td>□通过　□不通过</td><td></td><td></td><td></td></tr>
+    <tr><td>2.3</td><td>供应商 429/5xx 退避</td><td>□通过　□不通过</td><td></td><td></td><td></td></tr>
+    <tr><td>3.1</td><td>LLM 超时处置</td><td>□通过　□不通过</td><td></td><td></td><td></td></tr>
+    <tr><td>3.2</td><td>空回复与截断 JSON</td><td>□通过　□不通过</td><td></td><td></td><td></td></tr>
+    <tr><td>3.3</td><td>工具失败</td><td>□通过　□不通过</td><td></td><td></td><td></td></tr>
+    <tr><td>3.4</td><td>建单中断与幂等</td><td>□通过　□不通过</td><td></td><td></td><td></td></tr>
+    <tr><td>3.5</td><td>降级开关</td><td>□通过　□不通过</td><td></td><td></td><td></td></tr>
+    <tr><td>4.1</td><td>直接注入</td><td>□通过　□不通过</td><td></td><td></td><td></td></tr>
+    <tr><td>4.2</td><td>间接注入</td><td>□通过　□不通过</td><td></td><td></td><td></td></tr>
+    <tr><td>4.3</td><td>越权访问他人数据</td><td>□通过　□不通过</td><td></td><td></td><td></td></tr>
+    <tr><td>4.4</td><td>编造数字与政策</td><td>□通过　□不通过</td><td></td><td></td><td></td></tr>
+    <tr><td>5.1</td><td>代码与镜像回滚</td><td>□通过　□不通过</td><td></td><td></td><td></td></tr>
+    <tr><td>5.2</td><td>数据库迁移可逆</td><td>□通过　□不通过</td><td></td><td></td><td></td></tr>
+    <tr><td>5.3</td><td>索引蓝绿切换</td><td>□通过　□不通过</td><td></td><td></td><td></td></tr>
+    <tr><td>5.5</td><td>数据修复与撤销</td><td>□通过　□不通过</td><td></td><td></td><td></td></tr>
+  </tbody>
+</table>
+
+<h3>D.2 风险接受签字</h3>
+<p>未通过的阻塞项，须逐项写明接受理由、补偿措施与责任期限：</p>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:8%">编号</th><th style="width:24%">未通过原因</th><th style="width:26%">补偿措施</th><th style="width:18%">责任人与期限</th><th style="width:12%">业务方签字</th><th>技术方签字</th></tr>
+  </thead>
+  <tbody>
+    <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+  </tbody>
+</table>
+
+<h3>D.3 三方签字</h3>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:30%">角色</th><th style="width:24%">姓名</th><th style="width:24%">签字</th><th>日期</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>技术负责人</td><td></td><td></td><td></td></tr>
+    <tr><td>安全负责人</td><td></td><td></td><td></td></tr>
+    <tr><td>HR / 薪酬业务方</td><td></td><td></td><td></td></tr>
+  </tbody>
+</table>
+
+<h2>附录 E 巡检记录表模板</h2>
+<p>每日巡检的记录格式，建议按周归档。</p>
+<table class="tbl">
+  <thead>
+    <tr><th style="width:10%">日期</th><th style="width:12%">服务</th><th style="width:12%">索引</th><th style="width:9%">问答量</th><th style="width:9%">拒答率</th><th style="width:9%">partial 率</th><th style="width:8%">错误数</th><th style="width:8%">备份</th><th style="width:14%">异常与处置</th><th>巡检人</th></tr>
+  </thead>
+  <tbody>
+    <tr><td></td><td>□正常 □异常</td><td>□正常 □重建中</td><td></td><td></td><td></td><td></td><td>□完成 □失败</td><td></td><td></td></tr>
+    <tr><td></td><td>□正常 □异常</td><td>□正常 □重建中</td><td></td><td></td><td></td><td></td><td>□完成 □失败</td><td></td><td></td></tr>
+    <tr><td></td><td>□正常 □异常</td><td>□正常 □重建中</td><td></td><td></td><td></td><td></td><td>□完成 □失败</td><td></td><td></td></tr>
+  </tbody>
+</table>
+
+<p class="plain">手册维护：本手册随系统版本同步更新。每次发布若涉及环境变量、命令、阈值、错误码、约束的变化，须在发布前更新对应章节，版本号与发布 tag 保持一致。手册与代码不一致时，以代码为准，并在 24 小时内修正手册。</p>
+
+</section>
+</body>
+</html>

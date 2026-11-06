@@ -2,6 +2,25 @@
 
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [0.7.1] - 2026-11-06
+
+修复银行卡号被当成金额导致的分级错误（由场景测试文档的配图核对发现）。
+
+### 修复
+
+- **非金额字段参与金额差异计算**：`_check_amount` 把明细项新旧值一律转数字取差值，
+  银行卡号 `6222021234567890` 被 `float()` 解析成 6.2×10¹⁵，差异判为万亿级 →
+  直接 L4「需人审」→ Agent 拿不到凭证 → **所有银行账户变更都建不了单**。
+  改为按 `MONEY_FIELDS` 白名单过滤，只有金额字段参与差异计算。修复后同一输入 `pass L1`。
+- 补两条测试守着：银行卡变更必须 L1 且不跑金额核对；金额字段差异仍要算对（18500→20000 判 L3）。
+
+### 新增
+
+- `scripts/scenario_traces.py`：三场景轨迹采集（确定性，可复现），产出
+  `docs/assets/scenario-traces.json`。
+- `scripts/render_scenario_figs.py`：由轨迹 JSON 渲染 4 张流程配图。
+- `docs/薪酬核对助手_场景测试过程文档.docx`：三场景测试过程记录（含图、轨迹表、断言结果、缺陷复盘）。
+
 ## [0.7.0] - 2026-10-31
 
 制度外问题可选走通用知识（`OFFSCOPE_ANSWER=general`），默认仍严格拒答。
@@ -390,6 +409,7 @@ Agent 工具链：9 个 Function Calling 工具、制度规则引擎、校验凭
 - 拒答闸门只能拦截明显越界问题；「制度相关但库中无依据」需阶段 2 的 Router 意图分流。
 - 单文档单版本，暂无制度版本表与多地区并存。
 
+[0.7.1]: https://github.com/your-org/payroll-change-check/releases/tag/v0.7.1
 [0.7.0]: https://github.com/your-org/payroll-change-check/releases/tag/v0.7.0
 [0.6.3]: https://github.com/your-org/payroll-change-check/releases/tag/v0.6.3
 [0.6.2]: https://github.com/your-org/payroll-change-check/releases/tag/v0.6.2

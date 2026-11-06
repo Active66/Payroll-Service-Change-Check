@@ -1,0 +1,1467 @@
+{
+  "generated_at": "2026-11-06 10:02:24",
+  "employee": "E1001",
+  "scenarios": [
+    {
+      "id": "A",
+      "title": "正常调薪：建单前强制拦截",
+      "turns": [
+        {
+          "question": "帮我把固定薪资从 18500 调到 19000，12 月 1 日生效",
+          "events": [
+            {
+              "kind": "start",
+              "data": {
+                "question": "帮我把固定薪资从 18500 调到 19000，12 月 1 日生效"
+              },
+              "t_ms": 0
+            },
+            {
+              "kind": "tool_call",
+              "data": {
+                "name": "get_employee",
+                "args": {
+                  "employee_no": "E1001"
+                }
+              },
+              "t_ms": 6
+            },
+            {
+              "kind": "tool_result",
+              "data": {
+                "name": "get_employee",
+                "ok": true,
+                "error_code": "",
+                "summary": "E1001 爱丽丝",
+                "next_allowed": []
+              },
+              "t_ms": 14
+            },
+            {
+              "kind": "tool_call",
+              "data": {
+                "name": "lookup_param",
+                "args": {
+                  "keys": [
+                    "raise_cap_pct",
+                    "diff_l2_max",
+                    "diff_l3_max"
+                  ],
+                  "region_code": "310000"
+                }
+              },
+              "t_ms": 20
+            },
+            {
+              "kind": "tool_result",
+              "data": {
+                "name": "lookup_param",
+                "ok": true,
+                "error_code": "",
+                "summary": "3 个参数",
+                "next_allowed": []
+              },
+              "t_ms": 31
+            },
+            {
+              "kind": "tool_call",
+              "data": {
+                "name": "check_rules",
+                "args": {
+                  "change_type": "salary_adjust",
+                  "employee_no": "E1001",
+                  "items": [
+                    {
+                      "field": "fixed_salary",
+                      "old_value": "18500",
+                      "new_value": "19000",
+                      "effective_date": "2026-12-01"
+                    }
+                  ],
+                  "materials": [
+                    "approval_form",
+                    "adjust_basis"
+                  ]
+                }
+              },
+              "t_ms": 38
+            },
+            {
+              "kind": "tool_result",
+              "data": {
+                "name": "check_rules",
+                "ok": true,
+                "error_code": "",
+                "summary": "pass L2",
+                "next_allowed": [
+                  "create_draft",
+                  "escalate_to_human"
+                ]
+              },
+              "t_ms": 54
+            },
+            {
+              "kind": "tool_call",
+              "data": {
+                "name": "create_draft",
+                "args": {
+                  "validation_token": "eyJleHAiOjE3OTM5MzExNDQsImZvcmNlZCI6ZmFsc2UsImlzcyI6InJ1bGVfZW5naW5lIiwiaXNzdWVkX2F0IjoxNzkzOTMwNTQ0LCJqdGkiOiJiNWZiNDFiMDZmMjNiOGFmNGFkZjRhZmMiLCJsZXZlbCI6IkwyIiwib3JkZXJfaGFzaCI6Ijc5MjI4NzEwOTQ5MmUzN2Y2MjAxZDcxNWVhY2MyYjU5NThlZmUzYjRmYTc0M2ZlNmM3YzRkNWU0MWFlZjFlNmYiLCJ2ZXJkaWN0IjoicGFzcyJ9.OK-Sp5I-0dg23no5TNwpU4m64AFEpAJ7l5tB-sC6hBY",
+                  "change_type": "salary_adjust",
+                  "employee_no": "E1001",
+                  "items": [
+                    {
+                      "field": "fixed_salary",
+                      "old_value": "18500",
+                      "new_value": "19000",
+                      "effective_date": "2026-12-01"
+                    }
+                  ],
+                  "materials": [
+                    "approval_form",
+                    "adjust_basis"
+                  ],
+                  "idempotency_key": "scn-a"
+                }
+              },
+              "t_ms": 60
+            },
+            {
+              "kind": "confirmation_required",
+              "data": {
+                "status": "awaiting_confirmation",
+                "draft": {
+                  "employee_no": "E1001",
+                  "change_type": "salary_adjust",
+                  "risk_level": "L2",
+                  "items": [
+                    {
+                      "field": "fixed_salary",
+                      "old_value": "18500",
+                      "new_value": "19000",
+                      "effective_date": "2026-12-01"
+                    }
+                  ],
+                  "warnings": [],
+                  "blocking": [],
+                  "draft_hash": "792287109492e37f6201d715eacc2b5958efe3b4fa743fe6c7c4d5e41aef1e6f"
+                }
+              },
+              "t_ms": 61
+            },
+            {
+              "kind": "final",
+              "data": {
+                "status": "awaiting_confirmation",
+                "answer": "已为您生成变更单草稿，请核对以下内容，确认无误后点击「确认建单」。",
+                "turns": 4
+              },
+              "t_ms": 61
+            }
+          ],
+          "final": {
+            "status": "awaiting_confirmation",
+            "answer": "已为您生成变更单草稿，请核对以下内容，确认无误后点击「确认建单」。",
+            "turns": 4,
+            "degraded": false
+          },
+          "draft_preview": {
+            "change_type": "salary_adjust",
+            "employee_no": "E1001",
+            "employee_name": "爱丽丝",
+            "items": [
+              {
+                "field": "fixed_salary",
+                "old_value": "18500",
+                "new_value": "19000",
+                "effective_date": "2026-12-01"
+              }
+            ],
+            "materials": [
+              "approval_form",
+              "adjust_basis"
+            ],
+            "risk_level": "L2",
+            "blocking": [],
+            "warnings": [],
+            "draft_hash": "792287109492e37f6201d715eacc2b5958efe3b4fa743fe6c7c4d5e41aef1e6f",
+            "validation_token": "eyJleHAiOjE3OTM5MzExNDQsImZvcmNlZCI6ZmFsc2UsImlzcyI6InJ1bGVfZW5naW5lIiwiaXNzdWVkX2F0IjoxNzkzOTMwNTQ0LCJqdGkiOiJiNWZiNDFiMDZmMjNiOGFmNGFkZjRhZmMiLCJsZXZlbCI6IkwyIiwib3JkZXJfaGFzaCI6Ijc5MjI4NzEwOTQ5MmUzN2Y2MjAxZDcxNWVhY2MyYjU5NThlZmUzYjRmYTc0M2ZlNmM3YzRkNWU0MWFlZjFlNmYiLCJ2ZXJkaWN0IjoicGFzcyJ9.OK-Sp5I-0dg23no5TNwpU4m64AFEpAJ7l5tB-sC6hBY"
+          },
+          "tool_calls": [
+            {
+              "name": "get_employee",
+              "args": {
+                "employee_no": "E1001"
+              },
+              "ok": true,
+              "error_code": "",
+              "next_allowed": [],
+              "summary": "E1001 爱丽丝"
+            },
+            {
+              "name": "lookup_param",
+              "args": {
+                "keys": [
+                  "raise_cap_pct",
+                  "diff_l2_max",
+                  "diff_l3_max"
+                ],
+                "region_code": "310000"
+              },
+              "ok": true,
+              "error_code": "",
+              "next_allowed": [],
+              "summary": "3 个参数"
+            },
+            {
+              "name": "check_rules",
+              "args": {
+                "change_type": "salary_adjust",
+                "employee_no": "E1001",
+                "items": [
+                  {
+                    "field": "fixed_salary",
+                    "old_value": "18500",
+                    "new_value": "19000",
+                    "effective_date": "2026-12-01"
+                  }
+                ],
+                "materials": [
+                  "approval_form",
+                  "adjust_basis"
+                ]
+              },
+              "ok": true,
+              "error_code": "",
+              "next_allowed": [
+                "create_draft",
+                "escalate_to_human"
+              ],
+              "summary": "pass L2"
+            },
+            {
+              "name": "create_draft",
+              "args": {
+                "validation_token": "eyJleHAiOjE3OTM5MzExNDQsImZvcmNlZCI6ZmFsc2UsImlzcyI6InJ1bGVfZW5naW5lIiwiaXNzdWVkX2F0IjoxNzkzOTMwNTQ0LCJqdGkiOiJiNWZiNDFiMDZmMjNiOGFmNGFkZjRhZmMiLCJsZXZlbCI6IkwyIiwib3JkZXJfaGFzaCI6Ijc5MjI4NzEwOTQ5MmUzN2Y2MjAxZDcxNWVhY2MyYjU5NThlZmUzYjRmYTc0M2ZlNmM3YzRkNWU0MWFlZjFlNmYiLCJ2ZXJkaWN0IjoicGFzcyJ9.OK-Sp5I-0dg23no5TNwpU4m64AFEpAJ7l5tB-sC6hBY",
+                "change_type": "salary_adjust",
+                "employee_no": "E1001",
+                "items": [
+                  {
+                    "field": "fixed_salary",
+                    "old_value": "18500",
+                    "new_value": "19000",
+                    "effective_date": "2026-12-01"
+                  }
+                ],
+                "materials": [
+                  "approval_form",
+                  "adjust_basis"
+                ],
+                "idempotency_key": "scn-a"
+              },
+              "ok": false,
+              "error_code": "",
+              "next_allowed": [],
+              "summary": "已拦截：等待员工确认草稿"
+            }
+          ],
+          "seen_tools": [
+            [
+              "lookup_policy",
+              "lookup_param",
+              "get_employee",
+              "get_change_order",
+              "check_rules",
+              "create_draft",
+              "submit_draft",
+              "escalate_to_human",
+              "ask_clarification"
+            ],
+            [
+              "lookup_policy",
+              "lookup_param",
+              "get_employee",
+              "get_change_order",
+              "check_rules",
+              "create_draft",
+              "submit_draft",
+              "escalate_to_human",
+              "ask_clarification"
+            ],
+            [
+              "lookup_policy",
+              "lookup_param",
+              "get_employee",
+              "get_change_order",
+              "check_rules",
+              "create_draft",
+              "submit_draft",
+              "escalate_to_human",
+              "ask_clarification"
+            ],
+            [
+              "create_draft",
+              "escalate_to_human"
+            ]
+          ],
+          "elapsed_ms": 61
+        }
+      ],
+      "orders_before": 0,
+      "orders_after": 1,
+      "confirmed": {
+        "ok": true,
+        "error": "",
+        "order_no": "CC2026115B2CF8"
+      },
+      "order": {
+        "order_no": "CC2026115B2CF8",
+        "status": "draft",
+        "risk_level": "L2"
+      },
+      "logs": {
+        "runs": [
+          {
+            "id": 1,
+            "session_id": "scn-a",
+            "turn_no": 1,
+            "question": "帮我把固定薪资从 18500 调到 19000，12 月 1 日生效",
+            "model": "mock-agent",
+            "tokens_in": 12,
+            "tokens_out": 0,
+            "finish_reason": "tool_calls",
+            "thought": "",
+            "chose_tools": [
+              "get_employee"
+            ],
+            "degraded": false,
+            "latency_ms": 0,
+            "created_at": "2026-11-06T10:02:24+08:00"
+          },
+          {
+            "id": 2,
+            "session_id": "scn-a",
+            "turn_no": 2,
+            "question": "帮我把固定薪资从 18500 调到 19000，12 月 1 日生效",
+            "model": "mock-agent",
+            "tokens_in": 11,
+            "tokens_out": 0,
+            "finish_reason": "tool_calls",
+            "thought": "",
+            "chose_tools": [
+              "lookup_param"
+            ],
+            "degraded": false,
+            "latency_ms": 0,
+            "created_at": "2026-11-06T10:02:24+08:00"
+          },
+          {
+            "id": 3,
+            "session_id": "scn-a",
+            "turn_no": 3,
+            "question": "帮我把固定薪资从 18500 调到 19000，12 月 1 日生效",
+            "model": "mock-agent",
+            "tokens_in": 12,
+            "tokens_out": 0,
+            "finish_reason": "tool_calls",
+            "thought": "",
+            "chose_tools": [
+              "check_rules"
+            ],
+            "degraded": false,
+            "latency_ms": 0,
+            "created_at": "2026-11-06T10:02:24+08:00"
+          },
+          {
+            "id": 4,
+            "session_id": "scn-a",
+            "turn_no": 4,
+            "question": "帮我把固定薪资从 18500 调到 19000，12 月 1 日生效",
+            "model": "mock-agent",
+            "tokens_in": 12,
+            "tokens_out": 0,
+            "finish_reason": "tool_calls",
+            "thought": "",
+            "chose_tools": [
+              "create_draft"
+            ],
+            "degraded": false,
+            "latency_ms": 0,
+            "created_at": "2026-11-06T10:02:24+08:00"
+          }
+        ],
+        "traces": [
+          {
+            "id": 1,
+            "session_id": "scn-a",
+            "turn_no": 1,
+            "seq": 1,
+            "tool_name": "get_employee",
+            "args": {
+              "employee_no": "E1001"
+            },
+            "result": {
+              "summary": "E1001 爱丽丝",
+              "ok": true,
+              "next_allowed": []
+            },
+            "ok": true,
+            "error_code": null,
+            "latency_ms": 3,
+            "created_at": "2026-11-06T10:02:24+08:00"
+          },
+          {
+            "id": 2,
+            "session_id": "scn-a",
+            "turn_no": 1,
+            "seq": 2,
+            "tool_name": "lookup_param",
+            "args": {
+              "keys": [
+                "raise_cap_pct",
+                "diff_l2_max",
+                "diff_l3_max"
+              ],
+              "region_code": "310000"
+            },
+            "result": {
+              "summary": "3 个参数",
+              "ok": true,
+              "next_allowed": []
+            },
+            "ok": true,
+            "error_code": null,
+            "latency_ms": 4,
+            "created_at": "2026-11-06T10:02:24+08:00"
+          },
+          {
+            "id": 3,
+            "session_id": "scn-a",
+            "turn_no": 1,
+            "seq": 3,
+            "tool_name": "check_rules",
+            "args": {
+              "change_type": "salary_adjust",
+              "employee_no": "E1001",
+              "items": [
+                {
+                  "field": "fixed_salary",
+                  "old_value": "18500",
+                  "new_value": "19000",
+                  "effective_date": "2026-12-01"
+                }
+              ],
+              "materials": [
+                "approval_form",
+                "adjust_basis"
+              ]
+            },
+            "result": {
+              "summary": "pass L2",
+              "ok": true,
+              "next_allowed": [
+                "create_draft",
+                "escalate_to_human"
+              ]
+            },
+            "ok": true,
+            "error_code": null,
+            "latency_ms": 9,
+            "created_at": "2026-11-06T10:02:24+08:00"
+          },
+          {
+            "id": 4,
+            "session_id": "scn-a",
+            "turn_no": 1,
+            "seq": 4,
+            "tool_name": "create_draft",
+            "args": {
+              "validation_token": "eyJleHAiOjE3OTM5MzExNDQsImZvcmNlZCI6ZmFsc2UsImlzcyI6InJ1bGVfZW5naW5lIiwiaXNzdWVkX2F0IjoxNzkzOTMwNTQ0LCJqdGkiOiJiNWZiNDFiMDZmMjNiOGFmNGFkZjRhZmMiLCJsZXZlbCI6IkwyIiwib3JkZXJfaGFzaCI6Ijc5MjI4NzEwOTQ5MmUzN2Y2MjAxZDcxNWVhY2MyYjU5NThlZmUzYjRmYTc0M2ZlNmM3YzRkNWU0MWFlZjFlNmYiLCJ2ZXJkaWN0IjoicGFzcyJ9.OK-Sp5I-0dg23no5TNwpU4m64AFEpAJ7l5tB-sC6hBY",
+              "change_type": "salary_adjust",
+              "employee_no": "E1001",
+              "items": [
+                {
+                  "field": "fixed_salary",
+                  "old_value": "18500",
+                  "new_value": "19000",
+                  "effective_date": "2026-12-01"
+                }
+              ],
+              "materials": [
+                "approval_form",
+                "adjust_basis"
+              ],
+              "idempotency_key": "792287109492e37f6201d715eacc2b5958efe3b4fa743fe6c7c4d5e41aef1e6f"
+            },
+            "result": {
+              "summary": "CC2026115B2CF8 新建",
+              "ok": true,
+              "next_allowed": [
+                "submit_draft",
+                "escalate_to_human"
+              ]
+            },
+            "ok": true,
+            "error_code": null,
+            "latency_ms": 15,
+            "created_at": "2026-11-06T10:02:24+08:00"
+          }
+        ]
+      }
+    },
+    {
+      "id": "B",
+      "title": "信息缺失：先澄清，不猜",
+      "turns": [
+        {
+          "question": "帮我改一下银行卡",
+          "events": [
+            {
+              "kind": "start",
+              "data": {
+                "question": "帮我改一下银行卡"
+              },
+              "t_ms": 0
+            },
+            {
+              "kind": "tool_call",
+              "data": {
+                "name": "ask_clarification",
+                "args": {
+                  "questions": [
+                    {
+                      "field": "bank_account",
+                      "question": "请提供新的银行卡号"
+                    },
+                    {
+                      "field": "effective_date",
+                      "question": "这笔变更希望什么时候生效？"
+                    }
+                  ]
+                }
+              },
+              "t_ms": 5
+            },
+            {
+              "kind": "tool_result",
+              "data": {
+                "name": "ask_clarification",
+                "ok": true,
+                "error_code": "",
+                "summary": "问 2 个问题",
+                "next_allowed": []
+              },
+              "t_ms": 11
+            },
+            {
+              "kind": "final",
+              "data": {
+                "status": "answered",
+                "answer": "请补充新卡号与生效日期，我再帮您校验。",
+                "turns": 2
+              },
+              "t_ms": 20
+            }
+          ],
+          "final": {
+            "status": "answered",
+            "answer": "请补充新卡号与生效日期，我再帮您校验。",
+            "turns": 2,
+            "degraded": false
+          },
+          "draft_preview": null,
+          "tool_calls": [
+            {
+              "name": "ask_clarification",
+              "args": {
+                "questions": [
+                  {
+                    "field": "bank_account",
+                    "question": "请提供新的银行卡号"
+                  },
+                  {
+                    "field": "effective_date",
+                    "question": "这笔变更希望什么时候生效？"
+                  }
+                ]
+              },
+              "ok": true,
+              "error_code": "",
+              "next_allowed": [],
+              "summary": "问 2 个问题"
+            }
+          ],
+          "seen_tools": [
+            [
+              "lookup_policy",
+              "lookup_param",
+              "get_employee",
+              "get_change_order",
+              "check_rules",
+              "create_draft",
+              "submit_draft",
+              "escalate_to_human",
+              "ask_clarification"
+            ],
+            [
+              "lookup_policy",
+              "lookup_param",
+              "get_employee",
+              "get_change_order",
+              "check_rules",
+              "create_draft",
+              "submit_draft",
+              "escalate_to_human",
+              "ask_clarification"
+            ]
+          ],
+          "elapsed_ms": 20
+        },
+        {
+          "question": "卡号 6217001234567890，12 月 1 日生效",
+          "events": [
+            {
+              "kind": "start",
+              "data": {
+                "question": "卡号 6217001234567890，12 月 1 日生效"
+              },
+              "t_ms": 0
+            },
+            {
+              "kind": "tool_call",
+              "data": {
+                "name": "get_employee",
+                "args": {
+                  "employee_no": "E1001"
+                }
+              },
+              "t_ms": 6
+            },
+            {
+              "kind": "tool_result",
+              "data": {
+                "name": "get_employee",
+                "ok": true,
+                "error_code": "",
+                "summary": "E1001 爱丽丝",
+                "next_allowed": []
+              },
+              "t_ms": 15
+            },
+            {
+              "kind": "tool_call",
+              "data": {
+                "name": "lookup_policy",
+                "args": {
+                  "query": "银行账户变更 双人复核 生效 材料"
+                }
+              },
+              "t_ms": 20
+            },
+            {
+              "kind": "tool_result",
+              "data": {
+                "name": "lookup_policy",
+                "ok": true,
+                "error_code": "",
+                "summary": "3 条条款",
+                "next_allowed": []
+              },
+              "t_ms": 26
+            },
+            {
+              "kind": "tool_call",
+              "data": {
+                "name": "check_rules",
+                "args": {
+                  "change_type": "bank_account",
+                  "employee_no": "E1001",
+                  "items": [
+                    {
+                      "field": "bank_account",
+                      "old_value": "6222021234567890",
+                      "new_value": "6217001234567890",
+                      "effective_date": "2026-12-01"
+                    }
+                  ],
+                  "materials": [
+                    "bank_change_form",
+                    "bank_account_image"
+                  ]
+                }
+              },
+              "t_ms": 31
+            },
+            {
+              "kind": "tool_result",
+              "data": {
+                "name": "check_rules",
+                "ok": true,
+                "error_code": "",
+                "summary": "pass L1",
+                "next_allowed": [
+                  "create_draft",
+                  "escalate_to_human"
+                ]
+              },
+              "t_ms": 41
+            },
+            {
+              "kind": "tool_call",
+              "data": {
+                "name": "create_draft",
+                "args": {
+                  "validation_token": "eyJleHAiOjE3OTM5MzExNDQsImZvcmNlZCI6ZmFsc2UsImlzcyI6InJ1bGVfZW5naW5lIiwiaXNzdWVkX2F0IjoxNzkzOTMwNTQ0LCJqdGkiOiIyMGNlNmRkZDg2NzkwNzQwZWE4ZGRjOGIiLCJsZXZlbCI6IkwxIiwib3JkZXJfaGFzaCI6IjkwZTFjZDI5MTI1ZGY3ZGI3MGRmMTcwNzczNmRhNDFjYTE1MGE2ZDg0N2U3Y2JjZDMwNmI5ODE0N2Q4NmUxZjAiLCJ2ZXJkaWN0IjoicGFzcyJ9.qbGIFwih6YcB2GaLwH_ocvA7wAHXk_ddkw2KXeKZwnY",
+                  "change_type": "bank_account",
+                  "employee_no": "E1001",
+                  "items": [
+                    {
+                      "field": "bank_account",
+                      "old_value": "6222021234567890",
+                      "new_value": "6217001234567890",
+                      "effective_date": "2026-12-01"
+                    }
+                  ],
+                  "materials": [
+                    "bank_change_form",
+                    "bank_account_image"
+                  ],
+                  "idempotency_key": "scn-b"
+                }
+              },
+              "t_ms": 47
+            },
+            {
+              "kind": "confirmation_required",
+              "data": {
+                "status": "awaiting_confirmation",
+                "draft": {
+                  "employee_no": "E1001",
+                  "change_type": "bank_account",
+                  "risk_level": "L1",
+                  "items": [
+                    {
+                      "field": "bank_account",
+                      "old_value": "6222021234567890",
+                      "new_value": "6217001234567890",
+                      "effective_date": "2026-12-01"
+                    }
+                  ],
+                  "warnings": [
+                    {
+                      "code": "WARN_DUAL_REVIEW",
+                      "clause": "第二十三条",
+                      "message": "银行账户变更需另一名 SSC 复核岗核对账号与证明材料后方可生效",
+                      "final": false
+                    }
+                  ],
+                  "blocking": [],
+                  "draft_hash": "90e1cd29125df7db70df1707736da41ca150a6d847e7cbcd306b98147d86e1f0"
+                }
+              },
+              "t_ms": 47
+            },
+            {
+              "kind": "final",
+              "data": {
+                "status": "awaiting_confirmation",
+                "answer": "已为您生成变更单草稿，请核对以下内容，确认无误后点击「确认建单」。",
+                "turns": 4
+              },
+              "t_ms": 47
+            }
+          ],
+          "final": {
+            "status": "awaiting_confirmation",
+            "answer": "已为您生成变更单草稿，请核对以下内容，确认无误后点击「确认建单」。",
+            "turns": 4,
+            "degraded": false
+          },
+          "draft_preview": {
+            "change_type": "bank_account",
+            "employee_no": "E1001",
+            "employee_name": "爱丽丝",
+            "items": [
+              {
+                "field": "bank_account",
+                "old_value": "6222021234567890",
+                "new_value": "6217001234567890",
+                "effective_date": "2026-12-01"
+              }
+            ],
+            "materials": [
+              "bank_change_form",
+              "bank_account_image"
+            ],
+            "risk_level": "L1",
+            "blocking": [],
+            "warnings": [
+              {
+                "code": "WARN_DUAL_REVIEW",
+                "clause": "第二十三条",
+                "message": "银行账户变更需另一名 SSC 复核岗核对账号与证明材料后方可生效",
+                "final": false
+              }
+            ],
+            "draft_hash": "90e1cd29125df7db70df1707736da41ca150a6d847e7cbcd306b98147d86e1f0",
+            "validation_token": "eyJleHAiOjE3OTM5MzExNDQsImZvcmNlZCI6ZmFsc2UsImlzcyI6InJ1bGVfZW5naW5lIiwiaXNzdWVkX2F0IjoxNzkzOTMwNTQ0LCJqdGkiOiIyMGNlNmRkZDg2NzkwNzQwZWE4ZGRjOGIiLCJsZXZlbCI6IkwxIiwib3JkZXJfaGFzaCI6IjkwZTFjZDI5MTI1ZGY3ZGI3MGRmMTcwNzczNmRhNDFjYTE1MGE2ZDg0N2U3Y2JjZDMwNmI5ODE0N2Q4NmUxZjAiLCJ2ZXJkaWN0IjoicGFzcyJ9.qbGIFwih6YcB2GaLwH_ocvA7wAHXk_ddkw2KXeKZwnY"
+          },
+          "tool_calls": [
+            {
+              "name": "get_employee",
+              "args": {
+                "employee_no": "E1001"
+              },
+              "ok": true,
+              "error_code": "",
+              "next_allowed": [],
+              "summary": "E1001 爱丽丝"
+            },
+            {
+              "name": "lookup_policy",
+              "args": {
+                "query": "银行账户变更 双人复核 生效 材料"
+              },
+              "ok": true,
+              "error_code": "",
+              "next_allowed": [],
+              "summary": "3 条条款"
+            },
+            {
+              "name": "check_rules",
+              "args": {
+                "change_type": "bank_account",
+                "employee_no": "E1001",
+                "items": [
+                  {
+                    "field": "bank_account",
+                    "old_value": "6222021234567890",
+                    "new_value": "6217001234567890",
+                    "effective_date": "2026-12-01"
+                  }
+                ],
+                "materials": [
+                  "bank_change_form",
+                  "bank_account_image"
+                ]
+              },
+              "ok": true,
+              "error_code": "",
+              "next_allowed": [
+                "create_draft",
+                "escalate_to_human"
+              ],
+              "summary": "pass L1"
+            },
+            {
+              "name": "create_draft",
+              "args": {
+                "validation_token": "eyJleHAiOjE3OTM5MzExNDQsImZvcmNlZCI6ZmFsc2UsImlzcyI6InJ1bGVfZW5naW5lIiwiaXNzdWVkX2F0IjoxNzkzOTMwNTQ0LCJqdGkiOiIyMGNlNmRkZDg2NzkwNzQwZWE4ZGRjOGIiLCJsZXZlbCI6IkwxIiwib3JkZXJfaGFzaCI6IjkwZTFjZDI5MTI1ZGY3ZGI3MGRmMTcwNzczNmRhNDFjYTE1MGE2ZDg0N2U3Y2JjZDMwNmI5ODE0N2Q4NmUxZjAiLCJ2ZXJkaWN0IjoicGFzcyJ9.qbGIFwih6YcB2GaLwH_ocvA7wAHXk_ddkw2KXeKZwnY",
+                "change_type": "bank_account",
+                "employee_no": "E1001",
+                "items": [
+                  {
+                    "field": "bank_account",
+                    "old_value": "6222021234567890",
+                    "new_value": "6217001234567890",
+                    "effective_date": "2026-12-01"
+                  }
+                ],
+                "materials": [
+                  "bank_change_form",
+                  "bank_account_image"
+                ],
+                "idempotency_key": "scn-b"
+              },
+              "ok": false,
+              "error_code": "",
+              "next_allowed": [],
+              "summary": "已拦截：等待员工确认草稿"
+            }
+          ],
+          "seen_tools": [
+            [
+              "lookup_policy",
+              "lookup_param",
+              "get_employee",
+              "get_change_order",
+              "check_rules",
+              "create_draft",
+              "submit_draft",
+              "escalate_to_human",
+              "ask_clarification"
+            ],
+            [
+              "lookup_policy",
+              "lookup_param",
+              "get_employee",
+              "get_change_order",
+              "check_rules",
+              "create_draft",
+              "submit_draft",
+              "escalate_to_human",
+              "ask_clarification"
+            ],
+            [
+              "lookup_policy",
+              "lookup_param",
+              "get_employee",
+              "get_change_order",
+              "check_rules",
+              "create_draft",
+              "submit_draft",
+              "escalate_to_human",
+              "ask_clarification"
+            ],
+            [
+              "create_draft",
+              "escalate_to_human"
+            ]
+          ],
+          "elapsed_ms": 47
+        }
+      ],
+      "logs": {
+        "runs": [
+          {
+            "id": 5,
+            "session_id": "scn-b",
+            "turn_no": 1,
+            "question": "帮我改一下银行卡",
+            "model": "mock-agent",
+            "tokens_in": 12,
+            "tokens_out": 0,
+            "finish_reason": "tool_calls",
+            "thought": "",
+            "chose_tools": [
+              "ask_clarification"
+            ],
+            "degraded": false,
+            "latency_ms": 0,
+            "created_at": "2026-11-06T10:02:24+08:00"
+          },
+          {
+            "id": 7,
+            "session_id": "scn-b",
+            "turn_no": 1,
+            "question": "卡号 6217001234567890，12 月 1 日生效",
+            "model": "mock-agent",
+            "tokens_in": 12,
+            "tokens_out": 0,
+            "finish_reason": "tool_calls",
+            "thought": "",
+            "chose_tools": [
+              "get_employee"
+            ],
+            "degraded": false,
+            "latency_ms": 0,
+            "created_at": "2026-11-06T10:02:24+08:00"
+          },
+          {
+            "id": 6,
+            "session_id": "scn-b",
+            "turn_no": 2,
+            "question": "帮我改一下银行卡",
+            "model": "mock-agent",
+            "tokens_in": 12,
+            "tokens_out": 19,
+            "finish_reason": "stop",
+            "thought": "请补充新卡号与生效日期，我再帮您校验。",
+            "chose_tools": [],
+            "degraded": false,
+            "latency_ms": 0,
+            "created_at": "2026-11-06T10:02:24+08:00"
+          },
+          {
+            "id": 8,
+            "session_id": "scn-b",
+            "turn_no": 2,
+            "question": "卡号 6217001234567890，12 月 1 日生效",
+            "model": "mock-agent",
+            "tokens_in": 12,
+            "tokens_out": 0,
+            "finish_reason": "tool_calls",
+            "thought": "",
+            "chose_tools": [
+              "lookup_policy"
+            ],
+            "degraded": false,
+            "latency_ms": 0,
+            "created_at": "2026-11-06T10:02:24+08:00"
+          },
+          {
+            "id": 9,
+            "session_id": "scn-b",
+            "turn_no": 3,
+            "question": "卡号 6217001234567890，12 月 1 日生效",
+            "model": "mock-agent",
+            "tokens_in": 12,
+            "tokens_out": 0,
+            "finish_reason": "tool_calls",
+            "thought": "",
+            "chose_tools": [
+              "check_rules"
+            ],
+            "degraded": false,
+            "latency_ms": 0,
+            "created_at": "2026-11-06T10:02:24+08:00"
+          },
+          {
+            "id": 10,
+            "session_id": "scn-b",
+            "turn_no": 4,
+            "question": "卡号 6217001234567890，12 月 1 日生效",
+            "model": "mock-agent",
+            "tokens_in": 12,
+            "tokens_out": 0,
+            "finish_reason": "tool_calls",
+            "thought": "",
+            "chose_tools": [
+              "create_draft"
+            ],
+            "degraded": false,
+            "latency_ms": 0,
+            "created_at": "2026-11-06T10:02:24+08:00"
+          }
+        ],
+        "traces": [
+          {
+            "id": 5,
+            "session_id": "scn-b",
+            "turn_no": 1,
+            "seq": 1,
+            "tool_name": "ask_clarification",
+            "args": {
+              "questions": [
+                {
+                  "field": "bank_account",
+                  "question": "请提供新的银行卡号"
+                },
+                {
+                  "field": "effective_date",
+                  "question": "这笔变更希望什么时候生效？"
+                }
+              ]
+            },
+            "result": {
+              "summary": "问 2 个问题",
+              "ok": true,
+              "next_allowed": []
+            },
+            "ok": true,
+            "error_code": null,
+            "latency_ms": 0,
+            "created_at": "2026-11-06T10:02:24+08:00"
+          },
+          {
+            "id": 6,
+            "session_id": "scn-b",
+            "turn_no": 1,
+            "seq": 2,
+            "tool_name": "get_employee",
+            "args": {
+              "employee_no": "E1001"
+            },
+            "result": {
+              "summary": "E1001 爱丽丝",
+              "ok": true,
+              "next_allowed": []
+            },
+            "ok": true,
+            "error_code": null,
+            "latency_ms": 4,
+            "created_at": "2026-11-06T10:02:24+08:00"
+          },
+          {
+            "id": 7,
+            "session_id": "scn-b",
+            "turn_no": 1,
+            "seq": 3,
+            "tool_name": "lookup_policy",
+            "args": {
+              "query": "银行账户变更 双人复核 生效 材料"
+            },
+            "result": {
+              "summary": "3 条条款",
+              "ok": true,
+              "next_allowed": []
+            },
+            "ok": true,
+            "error_code": null,
+            "latency_ms": 0,
+            "created_at": "2026-11-06T10:02:24+08:00"
+          },
+          {
+            "id": 8,
+            "session_id": "scn-b",
+            "turn_no": 1,
+            "seq": 4,
+            "tool_name": "check_rules",
+            "args": {
+              "change_type": "bank_account",
+              "employee_no": "E1001",
+              "items": [
+                {
+                  "field": "bank_account",
+                  "old_value": "6222021234567890",
+                  "new_value": "6217001234567890",
+                  "effective_date": "2026-12-01"
+                }
+              ],
+              "materials": [
+                "bank_change_form",
+                "bank_account_image"
+              ]
+            },
+            "result": {
+              "summary": "pass L1",
+              "ok": true,
+              "next_allowed": [
+                "create_draft",
+                "escalate_to_human"
+              ]
+            },
+            "ok": true,
+            "error_code": null,
+            "latency_ms": 4,
+            "created_at": "2026-11-06T10:02:24+08:00"
+          }
+        ]
+      }
+    },
+    {
+      "id": "C",
+      "title": "降薪缺书面确认：阻断并转人工",
+      "turns": [
+        {
+          "question": "把 E1001 的薪资降到 15000",
+          "events": [
+            {
+              "kind": "start",
+              "data": {
+                "question": "把 E1001 的薪资降到 15000"
+              },
+              "t_ms": 0
+            },
+            {
+              "kind": "tool_call",
+              "data": {
+                "name": "get_employee",
+                "args": {
+                  "employee_no": "E1001"
+                }
+              },
+              "t_ms": 6
+            },
+            {
+              "kind": "tool_result",
+              "data": {
+                "name": "get_employee",
+                "ok": true,
+                "error_code": "",
+                "summary": "E1001 爱丽丝",
+                "next_allowed": []
+              },
+              "t_ms": 15
+            },
+            {
+              "kind": "tool_call",
+              "data": {
+                "name": "check_rules",
+                "args": {
+                  "change_type": "salary_adjust",
+                  "employee_no": "E1001",
+                  "items": [
+                    {
+                      "field": "fixed_salary",
+                      "old_value": "18500",
+                      "new_value": "15000",
+                      "effective_date": "2026-12-01"
+                    }
+                  ],
+                  "materials": [
+                    "approval_form",
+                    "adjust_basis"
+                  ]
+                }
+              },
+              "t_ms": 22
+            },
+            {
+              "kind": "tool_result",
+              "data": {
+                "name": "check_rules",
+                "ok": true,
+                "error_code": "",
+                "summary": "block 1 项",
+                "next_allowed": [
+                  "escalate_to_human",
+                  "ask_clarification"
+                ]
+              },
+              "t_ms": 32
+            },
+            {
+              "kind": "tool_call",
+              "data": {
+                "name": "escalate_to_human",
+                "args": {
+                  "reason_code": "blocked_final",
+                  "summary": "降薪缺少员工书面确认，属最终阻断，需人工介入",
+                  "context": {
+                    "clause": "第二十七条",
+                    "code": "BLK_SALARY_CUT_NO_CONSENT"
+                  }
+                }
+              },
+              "t_ms": 37
+            },
+            {
+              "kind": "tool_result",
+              "data": {
+                "name": "escalate_to_human",
+                "ok": true,
+                "error_code": "",
+                "summary": "escalate blocked_final",
+                "next_allowed": []
+              },
+              "t_ms": 42
+            },
+            {
+              "kind": "final",
+              "data": {
+                "status": "escalated",
+                "answer": "降薪缺少员工书面确认，属最终阻断，需人工介入",
+                "turns": 3
+              },
+              "t_ms": 42
+            }
+          ],
+          "final": {
+            "status": "escalated",
+            "answer": "降薪缺少员工书面确认，属最终阻断，需人工介入",
+            "turns": 3,
+            "degraded": false
+          },
+          "draft_preview": null,
+          "tool_calls": [
+            {
+              "name": "get_employee",
+              "args": {
+                "employee_no": "E1001"
+              },
+              "ok": true,
+              "error_code": "",
+              "next_allowed": [],
+              "summary": "E1001 爱丽丝"
+            },
+            {
+              "name": "check_rules",
+              "args": {
+                "change_type": "salary_adjust",
+                "employee_no": "E1001",
+                "items": [
+                  {
+                    "field": "fixed_salary",
+                    "old_value": "18500",
+                    "new_value": "15000",
+                    "effective_date": "2026-12-01"
+                  }
+                ],
+                "materials": [
+                  "approval_form",
+                  "adjust_basis"
+                ]
+              },
+              "ok": true,
+              "error_code": "",
+              "next_allowed": [
+                "escalate_to_human",
+                "ask_clarification"
+              ],
+              "summary": "block 1 项"
+            },
+            {
+              "name": "escalate_to_human",
+              "args": {
+                "reason_code": "blocked_final",
+                "summary": "降薪缺少员工书面确认，属最终阻断，需人工介入",
+                "context": {
+                  "clause": "第二十七条",
+                  "code": "BLK_SALARY_CUT_NO_CONSENT"
+                }
+              },
+              "ok": true,
+              "error_code": "",
+              "next_allowed": [],
+              "summary": "escalate blocked_final"
+            }
+          ],
+          "seen_tools": [
+            [
+              "lookup_policy",
+              "lookup_param",
+              "get_employee",
+              "get_change_order",
+              "check_rules",
+              "create_draft",
+              "submit_draft",
+              "escalate_to_human",
+              "ask_clarification"
+            ],
+            [
+              "lookup_policy",
+              "lookup_param",
+              "get_employee",
+              "get_change_order",
+              "check_rules",
+              "create_draft",
+              "submit_draft",
+              "escalate_to_human",
+              "ask_clarification"
+            ],
+            [
+              "escalate_to_human",
+              "ask_clarification"
+            ]
+          ],
+          "elapsed_ms": 42
+        }
+      ],
+      "logs": {
+        "runs": [
+          {
+            "id": 11,
+            "session_id": "scn-c",
+            "turn_no": 1,
+            "question": "把 E1001 的薪资降到 15000",
+            "model": "mock-agent",
+            "tokens_in": 11,
+            "tokens_out": 0,
+            "finish_reason": "tool_calls",
+            "thought": "",
+            "chose_tools": [
+              "get_employee"
+            ],
+            "degraded": false,
+            "latency_ms": 0,
+            "created_at": "2026-11-06T10:02:24+08:00"
+          },
+          {
+            "id": 12,
+            "session_id": "scn-c",
+            "turn_no": 2,
+            "question": "把 E1001 的薪资降到 15000",
+            "model": "mock-agent",
+            "tokens_in": 12,
+            "tokens_out": 0,
+            "finish_reason": "tool_calls",
+            "thought": "",
+            "chose_tools": [
+              "check_rules"
+            ],
+            "degraded": false,
+            "latency_ms": 0,
+            "created_at": "2026-11-06T10:02:24+08:00"
+          },
+          {
+            "id": 13,
+            "session_id": "scn-c",
+            "turn_no": 3,
+            "question": "把 E1001 的薪资降到 15000",
+            "model": "mock-agent",
+            "tokens_in": 12,
+            "tokens_out": 0,
+            "finish_reason": "tool_calls",
+            "thought": "",
+            "chose_tools": [
+              "escalate_to_human"
+            ],
+            "degraded": false,
+            "latency_ms": 0,
+            "created_at": "2026-11-06T10:02:24+08:00"
+          }
+        ],
+        "traces": [
+          {
+            "id": 9,
+            "session_id": "scn-c",
+            "turn_no": 1,
+            "seq": 1,
+            "tool_name": "get_employee",
+            "args": {
+              "employee_no": "E1001"
+            },
+            "result": {
+              "summary": "E1001 爱丽丝",
+              "ok": true,
+              "next_allowed": []
+            },
+            "ok": true,
+            "error_code": null,
+            "latency_ms": 3,
+            "created_at": "2026-11-06T10:02:24+08:00"
+          },
+          {
+            "id": 10,
+            "session_id": "scn-c",
+            "turn_no": 1,
+            "seq": 2,
+            "tool_name": "check_rules",
+            "args": {
+              "change_type": "salary_adjust",
+              "employee_no": "E1001",
+              "items": [
+                {
+                  "field": "fixed_salary",
+                  "old_value": "18500",
+                  "new_value": "15000",
+                  "effective_date": "2026-12-01"
+                }
+              ],
+              "materials": [
+                "approval_form",
+                "adjust_basis"
+              ]
+            },
+            "result": {
+              "summary": "block 1 项",
+              "ok": true,
+              "next_allowed": [
+                "escalate_to_human",
+                "ask_clarification"
+              ]
+            },
+            "ok": true,
+            "error_code": null,
+            "latency_ms": 4,
+            "created_at": "2026-11-06T10:02:24+08:00"
+          },
+          {
+            "id": 11,
+            "session_id": "scn-c",
+            "turn_no": 1,
+            "seq": 3,
+            "tool_name": "escalate_to_human",
+            "args": {
+              "reason_code": "blocked_final",
+              "summary": "降薪缺少员工书面确认，属最终阻断，需人工介入",
+              "context": {
+                "clause": "第二十七条",
+                "code": "BLK_SALARY_CUT_NO_CONSENT"
+              }
+            },
+            "result": {
+              "summary": "escalate blocked_final",
+              "ok": true,
+              "next_allowed": []
+            },
+            "ok": true,
+            "error_code": null,
+            "latency_ms": 0,
+            "created_at": "2026-11-06T10:02:24+08:00"
+          }
+        ]
+      }
+    }
+  ]
+}

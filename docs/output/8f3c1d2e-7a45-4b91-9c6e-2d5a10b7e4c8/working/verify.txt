@@ -1,0 +1,194 @@
+paragraphs=242 tables=58 sections=2
+---- first 40 paragraphs ----
+[Normal] 项目交付文档 · 运维与运行保障
+[Normal] 薪酬服务变更核对系统
+[Normal] 项目上线交付运行手册
+[Normal] 部署与初始化 · 日常巡检 · 故障处置 · 应急回滚 · 安全合规
+[Normal] 目录
+[Normal] 一、文档说明
+[Normal] 二、系统交付概述
+[Normal] 三、环境与部署
+[Normal] 四、系统初始化配置
+[Normal] 五、日常运行
+[Normal] 六、监控与告警
+[Normal] 七、故障处理
+[Normal] 八、应急响应
+[Normal] 九、安全与合规运行要求
+[Normal] 十、变更与发布管理
+[Normal] 十一、值班与支持
+[Normal] 附录 A 常用命令速查　附录 B 环境变量全表　附录 C 错误码全表　附录 D 上线检查签字页　附录 E 巡检记录表模板
+[Heading 3] 交付摘要
+[Normal] 本手册面向接手的运维与业务运营，只讲操作：命令、路径、阈值、判定条件、处置动作、责任人。手册不重复业务价值与技术选型理由，那些在项目方案与设计说明中。
+[Normal] 最该先读的一节是 2.6。那里如实列出当前代码的 13 项能力缺口，其中 G-02～G-06 为阻塞项。上线评审前若不看这一节，后续所有巡检与应急预案都会建立在
+[Heading 2] 一、文档说明
+[Normal] 本章交代手册的用途、读者与术语口径，是后面所有操作步骤的前提。
+[Heading 3] 1.1 编制目的
+[Normal] 本手册解决一个问题：系统从项目组交到运维和业务运营手里之后，在没有原开发人员的情况下，如何让它稳定跑起来、坏了怎么修、谁能动它、动完留什么痕。
+[Heading 3] 1.2 适用范围
+[Normal] 适用于单实例部署、单批次试点的当前版本。系统在这套约束下是完整可用的；超出约束的部分（多实例、全量铺开、多客户并行）不在本手册覆盖范围内，需要重新评估，原因见 
+[Heading 3] 1.3 读者对象
+[Heading 3] 1.4 术语
+[Heading 2] 二、系统交付概述
+[Normal] 先建立整体印象：交给运维的是什么、它不做什么、当前哪些能力还没补齐。
+[Heading 3] 2.1 系统定位
+[Normal] 系统的核心风险不是"查不到制度"，而是答得像制度、其实不在制度里。因此本期交付的能力围绕三件事构建：答案必须能回到原文、数字不由模型产出、没有依据就闭嘴。
+[Normal] 能力边界同样是交付内容的一部分。运维需要清楚哪些事系统永远不会做：
+[Normal] 任何要求系统"自动修数据""自动确认""直接对外发结果"的需求，都属于越界需求。运维应按变更管理流程拒绝，而不是临时变通。
+[Heading 3] 2.2 交付物清单
+[Normal] 交付时须逐项核对签名，尤其 D-07：data/.auth_secret 丢失会导致所有人被踢下线，重建密钥等于让历史 JWT 全部失效。
+[Heading 3] 2.3 运行架构
+[Normal] 系统是四层单向依赖结构，运维排障时可以按层定位问题：
+---- headings ----
+[Heading 3] 交付摘要
+[Heading 2] 一、文档说明
+[Heading 3] 1.1 编制目的
+[Heading 3] 1.2 适用范围
+[Heading 3] 1.3 读者对象
+[Heading 3] 1.4 术语
+[Heading 2] 二、系统交付概述
+[Heading 3] 2.1 系统定位
+[Heading 3] 2.2 交付物清单
+[Heading 3] 2.3 运行架构
+[Heading 3] 2.4 运行拓扑
+[Heading 3] 2.5 关键约束
+[Heading 3] 2.6 交付现状与已知缺口
+[Heading 2] 三、环境与部署
+[Heading 3] 3.1 前置条件
+[Heading 3] 3.2 目录规划
+[Heading 3] 3.3 部署步骤
+[Heading 3] 3.4 环境变量
+[Heading 3] 3.5 账号初始化
+[Heading 3] 3.6 上线门禁
+[Heading 2] 四、系统初始化配置
+[Heading 3] 4.1 制度入库
+[Heading 3] 4.2 制度参数与员工档案
+[Heading 3] 4.3 部门与组织归属
+[Heading 3] 4.4 对外 API Key
+[Heading 3] 4.5 Agent 开关
+[Heading 2] 五、日常运行
+[Heading 3] 5.1 启停
+[Heading 3] 5.2 每日巡检（10 分钟）
+[Heading 3] 5.3 每周巡检
+[Heading 3] 5.4 制度换版与回滚
+[Heading 3] 5.5 索引重建
+[Heading 3] 5.6 提示词变更
+[Heading 3] 5.7 备份与恢复
+[Heading 3] 5.8 日志与审计数据
+[Heading 2] 六、监控与告警
+[Heading 3] 6.1 健康检查
+[Heading 3] 6.2 技术指标
+[Heading 3] 6.3 业务质量指标
+[Heading 3] 6.4 成本监控
+[Heading 3] 6.5 告警分级
+[Heading 2] 七、故障处理
+[Heading 3] 7.1 排障总流程
+[Heading 3] 7.2 错误码速查
+[Heading 3] 7.3 常见故障场景
+[Heading 4] 场景 1：服务起不来
+[Heading 4] 场景 2：全部问题都拒答，且无报错
+[Heading 4] 场景 3：全站答不出来，日志里有大量 429
+[Heading 4] 场景 4：答案出现半截就停了
+[Heading 4] 场景 5：登录后频繁被踢下线
+[Heading 4] 场景 6：制度已上传但问不到
+[Heading 4] 场景 7：Agent 说"已为您建单"，但列表里没有
+[Heading 4] 场景 8：同一张单出现两条记录
+[Heading 3] 7.4 取证
+[Heading 3] 7.5 升级与回滚
+[Heading 2] 八、应急响应
+[Heading 3] 8.1 应急分级
+[Heading 3] 8.2 五类场景预案
+[Heading 4] 预案 A：模型服务不可用
+[Heading 4] 预案 B：疑似数据泄露
+[Heading 4] 预案 C：发现越权访问
+[Heading 4] 预案 D：审计链断裂或记录被改
+[Heading 4] 预案 E：错误单据已提交
+[Heading 3] 8.3 降级开关
+[Heading 3] 8.4 停止条件
+[Heading 2] 九、安全与合规运行要求
+[Heading 3] 9.1 权限模型
+[Heading 3] 9.2 脱敏与 PII
+[Heading 3] 9.3 密钥管理
+[Heading 3] 9.4 审计留痕
+[Heading 3] 9.5 数据留存
+[Heading 2] 十、变更与发布管理
+[Heading 3] 10.1 发布窗口与冻结
+[Heading 3] 10.2 版本与记录
+[Heading 3] 10.3 变更评审清单
+[Heading 3] 10.4 交接与知识转移
+[Heading 2] 十一、值班与支持
+[Heading 3] 11.1 职责矩阵
+[Heading 3] 11.2 联系表
+[Heading 3] 11.3 服务目标
+[Heading 3] 11.4 上线后 30 天护航
+[Heading 2] 附录 A 常用命令速查
+[Heading 2] 附录 B 环境变量全表
+[Heading 2] 附录 C 错误码全表
+[Heading 2] 附录 D 上线检查签字页
+[Heading 3] D.1 阻塞项确认
+[Heading 3] D.2 风险接受签字
+[Heading 3] D.3 三方签字
+[Heading 2] 附录 E 巡检记录表模板
+---- table sizes ----
+table 1: rows=7 cols=2 first=项目
+table 2: rows=3 cols=4 first=上线阻塞缺口
+table 3: rows=6 cols=2 first=读者
+table 4: rows=7 cols=2 first=术语
+table 5: rows=6 cols=2 first=系统不做
+table 6: rows=11 cols=4 first=编号
+table 7: rows=2 cols=1 first=分层结构
+table 8: rows=8 cols=3 first=项
+table 9: rows=14 cols=5 first=编号
+table 10: rows=8 cols=2 first=类别
+table 11: rows=2 cols=1 first=目录结构
+table 12: rows=2 cols=1 first=部署命令
+table 13: rows=17 cols=4 first=变量
+table 14: rows=2 cols=1 first=账号命令
+table 15: rows=2 cols=1 first=初始化命令
+table 16: rows=2 cols=1 first=组织命令
+table 17: rows=6 cols=2 first=项
+table 18: rows=2 cols=1 first=Key  命令
+table 19: rows=3 cols=2 first=变量
+table 20: rows=5 cols=3 first=动作
+table 21: rows=8 cols=4 first=#
+table 22: rows=7 cols=3 first=事项
+table 23: rows=4 cols=3 first=状态
+table 24: rows=4 cols=3 first=场景
+table 25: rows=4 cols=4 first=对象
+table 26: rows=2 cols=1 first=备份与恢复
+table 27: rows=6 cols=4 first=数据
+table 28: rows=3 cols=3 first=接口
+table 29: rows=7 cols=4 first=指标
+table 30: rows=6 cols=4 first=指标
+table 31: rows=2 cols=1 first=查询语句
+table 32: rows=5 cols=4 first=级别
+table 33: rows=2 cols=1 first=排障步骤
+table 34: rows=25 cols=4 first=码
+table 35: rows=7 cols=2 first=要回答的问题
+table 36: rows=2 cols=1 first=升级命令
+table 37: rows=4 cols=4 first=对象
+table 38: rows=5 cols=4 first=级别
+table 39: rows=6 cols=4 first=开关
+table 40: rows=7 cols=3 first=编号
+table 41: rows=7 cols=6 first=角色
+table 42: rows=5 cols=3 first=数据面
+table 43: rows=2 cols=1 first=扫描命令
+table 44: rows=5 cols=3 first=密钥
+table 45: rows=5 cols=3 first=问题
+table 46: rows=5 cols=3 first=数据
+table 47: rows=5 cols=2 first=项
+table 48: rows=7 cols=3 first=改动层
+table 49: rows=7 cols=3 first=动作
+table 50: rows=7 cols=3 first=职责
+table 51: rows=7 cols=5 first=角色
+table 52: rows=7 cols=3 first=项
+table 53: rows=5 cols=3 first=阶段
+table 54: rows=2 cols=1 first=命令速查
+table 55: rows=22 cols=6 first=编号
+table 56: rows=4 cols=6 first=编号
+table 57: rows=4 cols=4 first=角色
+table 58: rows=4 cols=10 first=日期
+---- footer sections ----
+section 0: start=NEW_PAGE (2)
+  footer text: 
+section 1: start=NEW_PAGE (2)
+  footer text: 		

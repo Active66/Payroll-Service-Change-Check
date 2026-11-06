@@ -68,6 +68,14 @@ CHECK_MATRIX: dict[str, set[str]] = {
 # 冻结期内"不影响当期发放"的类型：第八条明确银行账户可受理但不参与当期发放
 FREEZE_EXEMPT = {"si_base", "hf_base", "address", "tax_special"}
 
+# 只有这些字段是"金额"，参与差异计算与分级。
+#
+# 不加白名单的后果（实测过）：银行账号 "6222021234567890" 会被 float() 吃成 6.2e15，
+# 差异算出来是万亿级 → 直接判 L4 → 所有银行卡变更都被推到"需人审"，永远建不了单。
+# 证件号、地址同理。这类"数字看起来像金额"的字段必须显式排除。
+MONEY_FIELDS = {"fixed_salary", "salary", "allowance", "si_base", "hf_base",
+                "tax_special", "bonus"}
+
 
 @dataclass
 class Issue:
@@ -414,9 +422,12 @@ def _check_amount(out: RuleVerdict, conn: sqlite3.Connection, change_type: str,
     info: dict[str, Any] = {"diff_amount": 0.0, "annual_raise_pct": None,
                             "band_violation": None, "annual_base": None}
 
-    # 金额差异：取各明细项新旧值的最大绝对差
+    # 金额差异：取各**金额字段**新旧值的最大绝对差。
+    # 先按字段名过滤再转数字，否则银行卡号/证件号这类长数字会被当成巨额变更。
     diffs = []
     for i in items:
+        if str(i.get("field") or "") not in MONEY_FIELDS:
+            continue
         old, new = _num(i.get("old_value")), _num(i.get("new_value"))
         if old is not None and new is not None:
             diffs.append(abs(new - old))
